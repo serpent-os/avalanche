@@ -11,6 +11,7 @@ html
         link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
 
     body
+        include primary_navigation
         main
             div.container-fluid.py-0.px-0.my-0.mx-0
                 div.container-fluid.py-5

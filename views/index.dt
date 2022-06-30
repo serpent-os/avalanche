@@ -5,4 +5,14 @@ block title
 
 block content
 
-    h1 TODO: Improve!
+    div.row.justify-content-center
+        div.card.col-sm-4.row-sm-6
+            div.card-status-top.bg-info
+            div.card-body
+                h3.card-title Setup Avalanche v0.0.0
+                p.card-text.text-muted
+                    > Avalanche manage build nodes on behalf of the Summit Dashboard.
+                    br
+                    > You will now be guided through the initial configuration of
+                    > Avalanche and given the option to set up one or more nodes.
+                a.btn(href="/") Proceed to setup
