@@ -4,7 +4,10 @@
 	],
 	"copyright": "Copyright © 2022, Serpent OS Developers",
 	"dependencies": {
-		"vibe-d": "~master"
+		"vibe-d": "~master",
+		"moss-core": {
+			"path": "../moss-core"
+	}
 	},
 	"description": "boulder as a service",
 	"license": "Zlib",
