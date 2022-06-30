@@ -15,7 +15,15 @@
 
 module main;
 
-void main()
-{
+import avalanche.cli;
+import moss.core.logger;
 
+int main(string[] args)
+{
+    configureLogger();
+
+    /* Everything can happen via CLI execution */
+    auto cli = cliProcessor!AvalancheCLI(args);
+    cli.addCommand!RunCommand;
+    return cli.process(args);
 }
