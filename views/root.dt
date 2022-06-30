@@ -7,8 +7,8 @@ html
         block title
             title Undefined title...
 
-        // TODO: Vendor
-        link(rel="stylesheet", href="https://unpkg.com/@tabler/core@1.0.0-beta10/dist/css/tabler.min.css")
+        // TODO: Use a site refix
+        link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
 
     body
         main
@@ -17,5 +17,5 @@ html
                     block content
                         h1 undefined content
 
-    // TODO: Vendor
-    script(src="https://unpkg.com/@tabler/core@1.0.0-beta10/dist/js/tabler.min.js")
+    // TODO: Use a site prefix
+    script(src="/static/tabler/js/tabler.min.js")

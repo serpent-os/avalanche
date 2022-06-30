@@ -32,6 +32,12 @@ public final class Server
         settings.bindAddresses = ["127.0.0.1",];
         settings.port = 8081;
         listener = listenHTTP(settings, router);
+
+        fileSettings = new HTTPFileServerSettings();
+        fileSettings.serverPathPrefix = "/static";
+
+        /* Serve static files.. */
+        router.get("/static/*", serveStaticFiles("public/", fileSettings));
     }
 
     /**
@@ -51,5 +57,6 @@ private:
 
     URLRouter router;
     HTTPServerSettings settings;
+    HTTPFileServerSettings fileSettings;
     HTTPListener listener;
 }
