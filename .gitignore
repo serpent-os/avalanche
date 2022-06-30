@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/avalanche
+avalanche.so
+avalanche.dylib
+avalanche.dll
+avalanche.a
+avalanche.lib
+avalanche-test-*
+*.exe
+*.o
+*.obj
+*.lst
