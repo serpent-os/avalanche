@@ -18,6 +18,10 @@ module avalanche.cli.run_command;
 import moss.core.cli;
 import std.experimental.logger;
 
+import avalanche.server;
+import avalanche.controller;
+import vibe.d;
+
 /**
  * Handle the `avalanche run` subcommand
  */
@@ -30,7 +34,8 @@ public struct RunCommand
     @CommandEntry()
     int run(ref string[] args)
     {
-        error("not yet implemented");
-        return 0;
+        auto server = new Server();
+        server.addInterface(new Controller());
+        return runEventLoop();
     }
 }
