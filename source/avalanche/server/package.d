@@ -42,6 +42,11 @@ public final class Server
         router.registerRestInterface(iface);
     }
 
+    void addWeb(T)(T web)
+    {
+        router.registerWebInterface(web);
+    }
+
 private:
 
     URLRouter router;

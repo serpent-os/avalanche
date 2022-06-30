@@ -20,6 +20,7 @@ import std.experimental.logger;
 
 import avalanche.server;
 import avalanche.controller;
+import avalanche.web;
 import vibe.d;
 
 /**
@@ -36,6 +37,7 @@ public struct RunCommand
     {
         auto server = new Server();
         server.addInterface(new Controller());
+        server.addWeb(new WebApp());
         return runEventLoop();
     }
 }

@@ -27,6 +27,6 @@ public import vibe.d : path;
      * GET /api/v1/controller/version_identifier
      *
      * Placeholder. :)
-     */ 
+     */
     @property string versionIdentifier() @safe;
 }
