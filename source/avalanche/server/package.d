@@ -7,7 +7,7 @@
 /**
  * avalanche.server
  *
- * Core server setup
+ * Core server setup. A server can be used with 
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
@@ -32,12 +32,6 @@ public final class Server
         settings.bindAddresses = ["127.0.0.1",];
         settings.port = 8081;
         listener = listenHTTP(settings, router);
-
-        fileSettings = new HTTPFileServerSettings();
-        fileSettings.serverPathPrefix = "/static";
-
-        /* Serve static files.. */
-        router.get("/static/*", serveStaticFiles("public/", fileSettings));
     }
 
     /**
@@ -48,9 +42,28 @@ public final class Server
         router.registerRestInterface(iface);
     }
 
+    /**
+     * Add a web interface
+     */
     void addWeb(T)(T web)
     {
         router.registerWebInterface(web);
+    }
+
+    /**
+     * Configure publically accessible file sharing
+     */
+    void configureFileSharing(const(string) inputDirectory, const(string) webPrefix)
+    in
+    {
+        assert(fileSettings is null, "Attempted to reconfigure file sharing");
+    }
+    do
+    {
+
+        fileSettings = new HTTPFileServerSettings();
+        fileSettings.serverPathPrefix = webPrefix;
+        router.get(format!"%s/*"(webPrefix), serveStaticFiles(inputDirectory, fileSettings));
     }
 
 private:

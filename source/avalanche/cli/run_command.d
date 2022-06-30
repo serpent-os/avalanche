@@ -38,6 +38,7 @@ public struct RunCommand
         auto server = new Server();
         server.addInterface(new Controller());
         server.addWeb(new WebApp());
+        server.configureFileSharing("public", "/static");
         return runEventLoop();
     }
 }
