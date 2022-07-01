@@ -18,7 +18,7 @@ module avalanche.auth;
 import jwt = jwtd.jwt;
 import std.datetime : SysTime, UTC, Clock;
 import std.exception : assumeUnique;
-import std.json : JSONValue;
+import std.json : JSONValue, toJSON;
 import std.stdint : uint8_t, uint64_t;
 import std.string : startsWith, strip;
 import std.sumtype;
@@ -89,13 +89,19 @@ public struct Token
      */
     SysTime expiresAt;
 
+    invariant ()
+    {
+        assert(issuedAt.toUnixTime > 0);
+        assert(expiresAt.toUnixTime > 0);
+    }
+
     /**
      * True if this token has expired by UTC time
      */
     @property bool expiredUTC() @safe nothrow
     {
         auto tnow = Clock.currTime(UTC());
-        return tnow > expiresAt;
+        return tnow > this.expiresAt;
     }
 }
 
@@ -156,6 +162,19 @@ public class TokenAuthenticator
             return TokenReturn(TokenError(TokenErrorType.InvalidJSON, cast(string) ex.message));
         }
         return TokenReturn(tok);
+    }
+
+    /**
+     * Encode a Token into a proper JWT
+     */
+    TokenString encode(in Token token, jwt.JWTAlgorithm algorithm = jwt.JWTAlgorithm.HS512)
+    {
+        JSONValue payload;
+        payload["iss"] = JSONValue(token.issuer);
+        payload["subject"] = JSONValue(token.subject);
+        payload["iat"] = JSONValue(cast(uint64_t) token.issuedAt.toUnixTime);
+        payload["exp"] = JSONValue(cast(uint64_t) token.expiresAt.toUnixTime);
+        return cast(ubyte[]) jwt.encode(payload, cast(string) ourKey, algorithm);
     }
 
     /**
