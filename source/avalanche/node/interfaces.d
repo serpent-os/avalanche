@@ -15,7 +15,47 @@
 
 module avalanche.node.interfaces;
 
-public import vibe.d : path;
+public import vibe.d : path, method, HTTPMethod;
+
+/**
+ * `avalanche` only supports Git upstreams
+ */
+public enum OriginType : string
+{
+    /**
+     * Git origin - default
+     */
+    Git = "git",
+
+    /**
+     * S-O-L
+     */
+    Unsupported = ":error:",
+}
+
+/**
+ * What we define as being buildable.
+ */
+public struct BuildBundle
+{
+    /** Decided on by summit */
+    ulong remoteIdentifier;
+
+    /** Git or .. what? */
+    OriginType originType;
+
+    /** Relative recipe */
+    string recipePath;
+
+    /* Where do we get this? */
+    string originURI;
+
+    /** Git ref */
+    string originRef;
+
+    /** Architecture to build for */
+    string architecture;
+}
 
 /**
  * Our "v1" API for the Node
@@ -29,4 +69,11 @@ public import vibe.d : path;
      * Placeholder. :)
      */
     @property string versionIdentifier() @safe;
+
+    /**
+     * PUT /api/v1/node/build_bundle
+     *
+     * Request build of the given bundle
+     */
+    @method(HTTPMethod.PUT) void buildBundle(BuildBundle bundle) @safe;
 }
