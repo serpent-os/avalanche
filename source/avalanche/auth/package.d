@@ -89,12 +89,6 @@ public struct Token
      */
     SysTime expiresAt;
 
-    invariant ()
-    {
-        assert(issuedAt.toUnixTime > 0);
-        assert(expiresAt.toUnixTime > 0);
-    }
-
     /**
      * True if this token has expired by UTC time
      */
