@@ -16,31 +16,13 @@
 module avalanche.cli.run_command;
 
 import moss.core.cli;
-import std.experimental.logger;
-
-import avalanche.server;
-import avalanche.controller;
-import avalanche.node;
-import avalanche.web;
-import vibe.d;
 
 /**
  * Handle the `avalanche run` subcommand
  */
-@CommandName("run") @CommandHelp("run the avalanche daemon", "Run Avalanche Daemon locally")
+@CommandName("run") @CommandHelp("run avalanche daemon", "Run avalanche daemons")
 public struct RunCommand
 {
     BaseCommand pt;
     alias pt this;
-
-    @CommandEntry()
-    int run(ref string[] args)
-    {
-        auto server = new Server();
-        server.addInterface(new NodeApp());
-        //server.addInterface(new Controller());
-        //server.addWeb(new WebApp());
-        //server.configureFileSharing("public", "/static");
-        return runEventLoop();
-    }
 }

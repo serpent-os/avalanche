@@ -24,6 +24,7 @@ int main(string[] args)
 
     /* Everything can happen via CLI execution */
     auto cli = cliProcessor!AvalancheCLI(args);
-    cli.addCommand!RunCommand;
+    auto run = cli.addCommand!RunCommand;
+    run.addCommand!RunNodeCommand;
     return cli.process(args);
 }
