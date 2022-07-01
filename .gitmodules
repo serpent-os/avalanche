@@ -1,6 +1,3 @@
 [submodule "serpent-style"]
 	path = serpent-style
 	url = https://gitlab.com/serpent-os/core/serpent-style.git
-[submodule "vendor/jwtd"]
-	path = vendor/jwtd
-	url = https://github.com/symmetryinvestments/jwtd.git
