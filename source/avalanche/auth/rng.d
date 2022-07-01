@@ -35,7 +35,7 @@ shared static ~this()
 }
 
 /**
- * Lose abstraction around openssl rand behaviour
+ * Loose abstraction around openssl rand behaviour
  */
 public final class RandomNumberGenerator
 {
