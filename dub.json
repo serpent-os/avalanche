@@ -3,14 +3,19 @@
 		"Serpent OS Developers"
 	],
 	"copyright": "Copyright © 2022, Serpent OS Developers",
-	"versions": ["UseOpenSSL"],
+	"subConfigurations": {
+		"jwtd": "openssl",
+		"vibe-d:tls": "openssl",
+	},
 	"dependencies": {
-		"vibe-d": "~master",
+		"vibe-d": ">=0.9.5-beta.2",
+		"vibe-d:tls": ">=0.9.5-beta.2",
 		"moss-core": {
 			"path": "../moss-core"
         },
 		"jwtd": {
-			"path": "vendor/jwtd"
+			"repository": "git+https://gitlab.com/serpent-os/dlang/jwtd.git",
+			"version": "028fc4fc086b87108a2223ed489c3b502fd9c7f4"
         }
 	},
 	"description": "boulder as a service",
