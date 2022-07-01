@@ -5,11 +5,12 @@
 	"copyright": "Copyright © 2022, Serpent OS Developers",
 	"subConfigurations": {
 		"jwtd": "openssl",
-		"vibe-d:tls": "openssl",
+		"vibe-d:tls": "openssl"
 	},
 	"dependencies": {
 		"vibe-d": ">=0.9.5-beta.2",
 		"vibe-d:tls": ">=0.9.5-beta.2",
+		"openssl": "~>3.1",
 		"moss-core": {
 			"path": "../moss-core"
         },
