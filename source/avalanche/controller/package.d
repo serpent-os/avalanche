@@ -19,7 +19,7 @@ public import avalanche.controller.interfaces;
 /**
  * Implementation of a controller for builder nodes
  */
-public final class Controller : ControllerAPIV1
+public final class Controller : ControllerAPIv1
 {
     override @property string versionIdentifier() @safe
     {

@@ -20,7 +20,7 @@ public import vibe.d : path;
 /**
  * Our "v1" API for the Controller
  */
-@path("api/v1/controller") public interface ControllerAPIV1
+@path("api/v1/controller") public interface ControllerAPIv1
 {
 
     /**
