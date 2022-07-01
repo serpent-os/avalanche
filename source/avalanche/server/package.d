@@ -66,6 +66,14 @@ public final class Server
         router.get(format!"%s/*"(webPrefix), serveStaticFiles(inputDirectory, fileSettings));
     }
 
+    /**
+     * Get the server running
+     */
+    int run()
+    {
+        return runEventLoop();
+    }
+
 private:
 
     URLRouter router;
