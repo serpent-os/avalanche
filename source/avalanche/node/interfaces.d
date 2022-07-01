@@ -15,7 +15,8 @@
 
 module avalanche.node.interfaces;
 
-public import vibe.d : path, method, HTTPMethod, viaHeader;
+public import vibe.d : path, method, HTTPMethod;
+public import vibe.web.auth;
 
 /**
  * `avalanche` only supports Git upstreams
@@ -60,7 +61,7 @@ public struct BuildBundle
 /**
  * Our "v1" API for the Node
  */
-@path("api/v1/node") public interface NodeAPIv1
+@requiresAuth @path("api/v1/node") public interface NodeAPIv1
 {
 
     /**
@@ -68,13 +69,12 @@ public struct BuildBundle
      *
      * Placeholder. :)
      */
-    @property string versionIdentifier() @safe;
+    @noAuth @property string versionIdentifier() @safe;
 
     /**
      * PUT /api/v1/node/build_bundle
      *
      * Request build of the given bundle
      */
-    @method(HTTPMethod.PUT) void buildBundle(
-            @viaHeader("Authorization") string authHeader, BuildBundle bundle)@system;
+    @anyAuth @method(HTTPMethod.PUT) void buildBundle(BuildBundle bundle) @system;
 }
