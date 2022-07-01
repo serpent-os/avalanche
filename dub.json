@@ -3,6 +3,7 @@
 		"Serpent OS Developers"
 	],
 	"copyright": "Copyright © 2022, Serpent OS Developers",
+	"versions": ["UseOpenSSL"],
 	"dependencies": {
 		"vibe-d": "~master",
 		"moss-core": {
