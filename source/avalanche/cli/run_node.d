@@ -36,6 +36,11 @@ public struct RunNodeCommand
     int run(ref string[] args)
     {
         auto server = new Server();
+        scope (exit)
+        {
+            server.stop();
+            server.destroy();
+        }
         server.addInterface(new NodeApp());
         return server.run();
     }

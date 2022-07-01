@@ -74,6 +74,14 @@ public final class Server
         return runEventLoop();
     }
 
+    /**
+     * Non-GC dependent stop helper
+     */
+    void stop()
+    {
+        listener.stopListening();
+    }
+
 private:
 
     URLRouter router;
