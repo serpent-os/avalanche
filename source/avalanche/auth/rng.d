@@ -67,7 +67,7 @@ public:
     /**
      * Generate a new key encoded as hex
      */
-    string generateHex() @safereturn
+    string generateHex() return @safe
     {
         ubyte[BitSize] buffer = generate();
         char[BitSize * 2] hexBuffer = toHexString!(LetterCase.lower)(buffer);
