@@ -30,6 +30,7 @@ public class Server
         settings = new HTTPServerSettings();
         settings.disableDistHost = true;
         settings.useCompressionIfPossible = true;
+        settings.errorPageHandler = &errorHandler;
         /* Force to localhost 8081 */
         settings.bindAddresses = ["127.0.0.1",];
         settings.port = 8081;
@@ -93,6 +94,12 @@ public class Server
     }
 
 private:
+
+    void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
+    {
+        auto site = this.site;
+        res.render!("error.dt", site, error);
+    }
 
     URLRouter router;
     HTTPServerSettings settings;

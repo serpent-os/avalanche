@@ -1,0 +1,16 @@
+extends root
+
+block title
+    title Oops!
+
+block content
+
+    div.container
+
+        div.row.justify-content-center
+            div.card.col-sm-4.col-4.col-lg-4
+                div.card-status-top.bg-warning
+                div.card-body
+                    h5.card-title Oops! We encountered an error
+                    p.card-text.text-muted While navigating we hit error #[strong #{error.code}] - #[code #{error.message}]
+                    a.btn(href="/") Go back to #{site.siteName}
