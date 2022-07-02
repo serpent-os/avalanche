@@ -35,13 +35,12 @@ public struct RunBuilderCommand
     @CommandEntry()
     int run(ref string[] args)
     {
-        auto server = new Server();
+        auto server = new BuilderServer();
         scope (exit)
         {
             server.stop();
             server.destroy();
         }
-        server.addInterface(new BuilderApp());
         return server.run();
     }
 }

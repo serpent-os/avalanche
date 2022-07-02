@@ -5,7 +5,7 @@
  */
 
 /**
- * avalanche.builder
+ * avalanche.builder.rest
  *
  * REST API for the builder mechanism
  *
@@ -13,7 +13,7 @@
  * License: Zlib
  */
 
-module avalanche.builder.interfaces;
+module avalanche.builder.rest.interfaces;
 
 public import vibe.d : path, method, HTTPMethod;
 public import vibe.web.auth;

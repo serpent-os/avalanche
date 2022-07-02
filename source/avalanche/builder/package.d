@@ -7,60 +7,27 @@
 /**
  * avalanche.builder
  *
- * REST API for the builder mechanism
+ * Builder Server
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
-
 module avalanche.builder;
 
-import avalanche.auth;
-import vibe.d;
-import vibe.web.auth;
-public import avalanche.builder.interfaces;
+public import avalanche.server;
+
+import avalanche.builder.rest;
 
 /**
- * Root RPC interface
+ * Extend general server for Builder use
  */
-public final class BuilderApp : BuilderAPIv1
+final class BuilderServer : Server
 {
-    @noRoute this()
-    {
-        /* TODO: Obviously initialise from somewhere safe. */
-        tokens = new TokenAuthenticator(cast(ubyte[]) "password");
-    }
-
     /**
-     * Handle authentication via JWT
+     * Construct a new BuilderServer
      */
-    @noRoute ApplicationAuthentication authenticate(HTTPServerRequest req, HTTPServerResponse res)
+    this()
     {
-        return ApplicationAuthentication(tokens, req);
+        addInterface(new Builder());
     }
-
-    override @property string versionIdentifier() @safe
-    {
-        return "0.0.0";
-    }
-
-    /**
-     * Requested build of a given bundle.
-     */
-    override void buildBundle(BuildBundle bundle) @system
-    {
-        logInfo("BUNDLE BUILD: %s", bundle);
-    }
-
-    /**
-     * Handle a CER
-     */
-    override void enrol(ControllerEnrolmentRequest cer) @system
-    {
-        logInfo("Got an enrolment request: %s", cer);
-    }
-
-private:
-
-    TokenAuthenticator tokens;
 }
