@@ -14,7 +14,6 @@
  */
 module avalanche.controller.web;
 
-public import avalanche.controller.rest.interfaces;
 import vibe.d;
 
 /**

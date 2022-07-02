@@ -14,7 +14,7 @@
  */
 module avalanche.controller.rest;
 
-public import avalanche.controller.rest.interfaces;
+public import avalanche.interfaces.v1.controller;
 
 /**
  * Implementation of a controller for builders

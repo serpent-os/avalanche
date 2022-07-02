@@ -18,7 +18,7 @@ module avalanche.builder.rest;
 import avalanche.auth;
 import vibe.d;
 import vibe.web.auth;
-public import avalanche.builder.rest.interfaces;
+public import avalanche.interfaces.v1.builder;
 
 /**
  * Root RPC interface
