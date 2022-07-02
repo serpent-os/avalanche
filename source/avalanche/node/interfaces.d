@@ -59,6 +59,30 @@ public struct BuildBundle
 }
 
 /**
+ * A Controller can send a request for the node to enrol.
+ *
+ * Note, it is not automatically accepted - rather, it is
+ * reviewed by a human.
+ */
+public struct ControllerEnrolmentRequest
+{
+    /**
+     * Controllers host/IP
+     */
+    string host;
+
+    /**
+     * Controllers port number
+     */
+    uint port;
+
+    /**
+     * Assigned JWT for us
+     */
+    string token;
+}
+
+/**
  * Our "v1" API for the Node
  */
 @requiresAuth @path("api/v1/node") public interface NodeAPIv1
@@ -77,4 +101,9 @@ public struct BuildBundle
      * Request build of the given bundle
      */
     @anyAuth @method(HTTPMethod.PUT) void buildBundle(BuildBundle bundle) @system;
+
+    /**
+     * PUT /api/v1/node/enroll
+     */
+    @noAuth @method(HTTPMethod.PUT) void enrol(ControllerEnrolmentRequest cer) @system;
 }

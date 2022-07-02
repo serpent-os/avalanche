@@ -83,6 +83,14 @@ public final class NodeApp : NodeAPIv1
         logInfo("BUNDLE BUILD: %s", bundle);
     }
 
+    /**
+     * Handle a CER
+     */
+    override void enrol(ControllerEnrolmentRequest cer) @system
+    {
+        logInfo("Got an enrolment request: %s", cer);
+    }
+
 private:
 
     TokenAuthenticator tokens;
