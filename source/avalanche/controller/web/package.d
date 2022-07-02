@@ -20,7 +20,7 @@ import vibe.d;
 /**
  * Implementation of a controller for builders
  */
-public final class WebApp
+public final class ControllerWeb
 {
     /**
      * Return the index page

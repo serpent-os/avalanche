@@ -30,7 +30,7 @@ final class ControllerServer : Server
     this()
     {
         addInterface(new Controller());
-        addWeb(new WebApp());
+        addWeb(new ControllerWeb());
         configureFileSharing("public", "/static/");
     }
 }
