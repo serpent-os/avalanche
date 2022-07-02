@@ -17,6 +17,7 @@ module avalanche.builder;
 public import avalanche.server;
 
 import avalanche.builder.rest;
+import avalanche.builder.web;
 
 /**
  * Extend general server for Builder use
@@ -29,5 +30,7 @@ final class BuilderServer : Server
     this()
     {
         addInterface(new Builder());
+        addWeb(new BuilderWeb());
+        configureFileSharing("public", "/static");
     }
 }

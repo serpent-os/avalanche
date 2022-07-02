@@ -1,0 +1,9 @@
+extends root
+
+block title
+    title Avalanche Builder - Home
+
+block content
+
+    div.container
+        h3 Add content.
