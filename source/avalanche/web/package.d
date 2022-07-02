@@ -27,6 +27,6 @@ public final class WebApp
      */
     void index() @safe
     {
-        render!"index.dt";
+        render!"controller/index.dt";
     }
 }
