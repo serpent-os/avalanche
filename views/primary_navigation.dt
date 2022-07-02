@@ -2,9 +2,9 @@ nav.navbar.navbar-expand-lg.bg-dark.navbar-dark.shadow
     div.container-fluid
         // Logo
         a.navbar-brand.logo.text-white(href="/")
-            svg.tabler-dashboard.logo(width="32px", height="32px")
-                use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-dashboard")
-            span.logo.px-2 Avalanche
+            svg.primaryLogo.logo(width="#{site.iconSize}px", height="#{site.iconSize}px")
+                use(xlink:href="/static/tabler/tabler-sprite.svg\##{site.iconName}")
+            span.logo.px-2 #[span.subtitle.text-muted Avalanche] #{site.siteName}
         button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#primaryNavigation", aria-controls="primaryNavigation", aria-expanded="false")
             span.navbar-toggler-icon.text-white
         div.collapse.navbar-collapse(id="primaryNavigation")

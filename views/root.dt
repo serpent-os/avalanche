@@ -5,7 +5,7 @@ html
         meta(charset="utf-8")
         meta(name="viewport", content="width=device-width, initial-scale=1")
         block title
-            title Undefined title...
+            title Avalanche - #{site.siteName}
 
         // TODO: Use a site refix
         link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")

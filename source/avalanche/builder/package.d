@@ -32,5 +32,6 @@ final class BuilderServer : Server
         addInterface(new Builder());
         addWeb(new BuilderWeb());
         configureFileSharing("public", "/static");
+        this.siteConfig = site;
     }
 }

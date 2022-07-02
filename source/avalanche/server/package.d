@@ -41,7 +41,7 @@ public class Server
      */
     pure @property void siteConfig(SiteConfiguration config) @safe @nogc nothrow
     {
-        siteConfig = config;
+        this.site = config;
     }
 
     /**

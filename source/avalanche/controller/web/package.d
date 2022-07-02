@@ -16,6 +16,10 @@ module avalanche.controller.web;
 
 import vibe.d;
 
+public import avalanche.server.site_config;
+
+public static SiteConfiguration site = SiteConfiguration("Controller");
+
 /**
  * Implementation of a controller for builders
  */
@@ -26,6 +30,6 @@ public final class ControllerWeb
      */
     void index() @safe
     {
-        render!"controller/index.dt";
+        render!("controller/index.dt", site);
     }
 }

@@ -15,6 +15,12 @@
 module avalanche.builder.web;
 
 import vibe.d;
+public import avalanche.server.site_config;
+
+/**
+ * Web configuration for Builder
+ */
+public static SiteConfiguration site = SiteConfiguration("Builder", "tabler-bulldozer");
 
 /**
  * Builder UI
@@ -26,6 +32,6 @@ public final class BuilderWeb
      */
     void index() @safe
     {
-        render!"builder/index.dt";
+        render!("builder/index.dt", site);
     }
 }

@@ -26,7 +26,7 @@ public struct SiteConfiguration
     /**
      * Icon name to use
      */
-    string iconName = "error-404";
+    string iconName = "tabler-error-404";
 
     /**
      * Icon size, in pixels

@@ -1,8 +1,5 @@
 extends root
 
-block title
-    title Avalanche - Home
-
 block content
 
     div.container
