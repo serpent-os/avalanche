@@ -17,6 +17,8 @@ module avalanche.server;
 
 import vibe.d;
 
+import avalanche.server.site_config;
+
 /**
  * Implements the core server.
  */
@@ -32,6 +34,14 @@ public class Server
         settings.bindAddresses = ["127.0.0.1",];
         settings.port = 8081;
         listener = listenHTTP(settings, router);
+    }
+
+    /**
+     * Without the site config we can't handle error pages. :)
+     */
+    pure @property void siteConfig(SiteConfiguration config) @safe @nogc nothrow
+    {
+        siteConfig = config;
     }
 
     /**
@@ -88,4 +98,5 @@ private:
     HTTPServerSettings settings;
     HTTPFileServerSettings fileSettings;
     HTTPListener listener;
+    SiteConfiguration site;
 }
