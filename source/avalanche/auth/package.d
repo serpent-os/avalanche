@@ -25,7 +25,7 @@ import std.sumtype;
 import vibe.d : HTTPStatusException, HTTPStatus, logError, HTTPServerRequest;
 
 /**
- * Add "free" JWT based authentication for APIs.
+ * Add "free" JWT based authentication for REST APIs.
  *
  * Currently this just requires that a JWT is valid, and doesn't do
  * any kind of role checks. They will be added through an abstract API
