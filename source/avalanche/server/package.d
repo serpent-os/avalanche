@@ -20,7 +20,7 @@ import vibe.d;
 /**
  * Implements the core server.
  */
-public final class Server
+public class Server
 {
     this()
     {
@@ -37,7 +37,7 @@ public final class Server
     /**
      * Add a REST interface by its own @path attribute.
      */
-    void addInterface(T)(T iface) if (is(T == class))
+    final void addInterface(T)(T iface) if (is(T == class))
     {
         router.registerRestInterface(iface);
     }
@@ -45,7 +45,7 @@ public final class Server
     /**
      * Add a web interface
      */
-    void addWeb(T)(T web) if (is(T == class))
+    final void addWeb(T)(T web) if (is(T == class))
     {
         router.registerWebInterface(web);
     }
@@ -53,7 +53,7 @@ public final class Server
     /**
      * Configure publically accessible file sharing
      */
-    void configureFileSharing(const(string) inputDirectory, const(string) webPrefix)
+    final void configureFileSharing(const(string) inputDirectory, const(string) webPrefix)
     in
     {
         assert(fileSettings is null, "Attempted to reconfigure file sharing");
@@ -69,7 +69,7 @@ public final class Server
     /**
      * Get the server running
      */
-    int run()
+    final int run()
     {
         return runEventLoop();
     }
@@ -77,7 +77,7 @@ public final class Server
     /**
      * Non-GC dependent stop helper
      */
-    void stop()
+    final void stop()
     {
         listener.stopListening();
     }

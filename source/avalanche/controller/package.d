@@ -14,15 +14,23 @@
  */
 module avalanche.controller;
 
-public import avalanche.controller.interfaces;
+public import avalanche.server;
+
+import avalanche.controller.rest;
+import avalanche.controller.web;
 
 /**
- * Implementation of a controller for builders
+ * Extend general server for Controller use
  */
-public final class Controller : ControllerAPIv1
+final class ControllerServer : Server
 {
-    override @property string versionIdentifier() @safe
+    /**
+     * Construct a new ControllerServer
+     */
+    this()
     {
-        return "someVersionID";
+        addInterface(new Controller());
+        addWeb(new WebApp());
+        configureFileSharing("public", "/static/");
     }
 }

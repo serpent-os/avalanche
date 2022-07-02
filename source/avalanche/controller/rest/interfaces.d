@@ -5,7 +5,7 @@
  */
 
 /**
- * avalanche.controller
+ * avalanche.controller.rest
  *
  * REST API for the controller mechanism
  *
@@ -13,7 +13,7 @@
  * License: Zlib
  */
 
-module avalanche.controller.interfaces;
+module avalanche.controller.rest.interfaces;
 
 public import vibe.d : path;
 

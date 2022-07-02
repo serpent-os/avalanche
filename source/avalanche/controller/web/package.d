@@ -5,16 +5,16 @@
  */
 
 /**
- * avalanche.web
+ * avalanche.controller.web
  *
- * Web interface for the controller and builders
+ * Web interface for the controller
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
-module avalanche.web;
+module avalanche.controller.web;
 
-public import avalanche.controller.interfaces;
+public import avalanche.controller.rest.interfaces;
 import vibe.d;
 
 /**
