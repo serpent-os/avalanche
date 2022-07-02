@@ -37,7 +37,7 @@ public class Server
     /**
      * Add a REST interface by its own @path attribute.
      */
-    final void addInterface(T)(T iface) if (is(T == class))
+    void addInterface(T)(T iface) if (is(T == class))
     {
         router.registerRestInterface(iface);
     }
@@ -45,7 +45,7 @@ public class Server
     /**
      * Add a web interface
      */
-    final void addWeb(T)(T web) if (is(T == class))
+    void addWeb(T)(T web) if (is(T == class))
     {
         router.registerWebInterface(web);
     }
