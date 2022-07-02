@@ -18,7 +18,7 @@ import vibe.d;
 
 public import avalanche.server.site_config;
 
-public static SiteConfiguration site = SiteConfiguration("Controller");
+public static SiteConfiguration site = SiteConfiguration("Controller", "tabler-compass");
 
 /**
  * Implementation of a controller for builders
