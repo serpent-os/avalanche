@@ -22,7 +22,36 @@ import std.json : JSONValue, toJSON;
 import std.stdint : uint8_t, uint64_t;
 import std.string : startsWith, strip;
 import std.sumtype;
-import vibe.d : HTTPStatusException, HTTPStatus, logError;
+import vibe.d : HTTPStatusException, HTTPStatus, logError, HTTPServerRequest;
+
+/**
+ * Add "free" JWT based authentication for APIs.
+ *
+ * Currently this just requires that a JWT is valid, and doesn't do
+ * any kind of role checks. They will be added through an abstract API
+ * in future.
+ */
+public struct ApplicationAuthentication
+{
+    /**
+     * Construct ApplicationAuthentication from a request and authenticator
+     */
+    this(scope TokenAuthenticator tokens, scope HTTPServerRequest request)
+    {
+        auto header = request.headers.get("Authorization");
+        if (header is null)
+        {
+            logError("Refusing connection that lacks Authorization header");
+            throw new HTTPStatusException(HTTPStatus.forbidden);
+        }
+        auto token = tokens.checkTokenHeader(header);
+        if (token.expiredUTC)
+        {
+            logError("Refusing expired credentials: %s", token);
+            throw new HTTPStatusException(HTTPStatus.forbidden, "Expired credentials");
+        }
+    }
+}
 
 /**
  * A token key is just a sequence of bytes.

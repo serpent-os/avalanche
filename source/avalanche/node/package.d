@@ -21,37 +21,6 @@ import vibe.web.auth;
 public import avalanche.node.interfaces;
 
 /**
- * Implements our JWT-based authentication to guard our
- * resources.
- */
-public struct NodeAuthentication
-{
-
-    /**
-     * Construct new authenticator from request
-     */
-    this(scope TokenAuthenticator tokens, scope HTTPServerRequest request)
-    {
-        auto header = request.headers.get("Authorization");
-        if (header is null)
-        {
-            logError("Refusing connection that lacks Authorization header");
-            throw new HTTPStatusException(HTTPStatus.forbidden);
-        }
-        auto token = tokens.checkTokenHeader(header);
-        if (token.expiredUTC)
-        {
-            logError("Refusing expired credentials: %s", token);
-            throw new HTTPStatusException(HTTPStatus.forbidden, "Expired credentials");
-        }
-    }
-
-private:
-
-    bool active;
-}
-
-/**
  * Root RPC interface
  */
 public final class NodeApp : NodeAPIv1
@@ -65,9 +34,9 @@ public final class NodeApp : NodeAPIv1
     /**
      * Handle authentication via JWT
      */
-    @noRoute NodeAuthentication authenticate(HTTPServerRequest req, HTTPServerResponse res)
+    @noRoute ApplicationAuthentication authenticate(HTTPServerRequest req, HTTPServerResponse res)
     {
-        return NodeAuthentication(tokens, req);
+        return ApplicationAuthentication(tokens, req);
     }
 
     override @property string versionIdentifier() @safe
