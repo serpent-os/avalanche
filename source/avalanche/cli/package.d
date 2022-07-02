@@ -17,7 +17,7 @@ module avalanche.cli;
 
 public import moss.core.cli;
 public import avalanche.cli.run_command;
-public import avalanche.cli.run_node;
+public import avalanche.cli.run_builder;
 
 /**
  * Core CLI for avalanche

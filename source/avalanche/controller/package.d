@@ -17,7 +17,7 @@ module avalanche.controller;
 public import avalanche.controller.interfaces;
 
 /**
- * Implementation of a controller for builder nodes
+ * Implementation of a controller for builders
  */
 public final class Controller : ControllerAPIv1
 {

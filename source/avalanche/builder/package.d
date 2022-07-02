@@ -5,25 +5,25 @@
  */
 
 /**
- * avalanche.node
+ * avalanche.builder
  *
- * REST API for the node mechanism
+ * REST API for the builder mechanism
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
 
-module avalanche.node;
+module avalanche.builder;
 
 import avalanche.auth;
 import vibe.d;
 import vibe.web.auth;
-public import avalanche.node.interfaces;
+public import avalanche.builder.interfaces;
 
 /**
  * Root RPC interface
  */
-public final class NodeApp : NodeAPIv1
+public final class BuilderApp : BuilderAPIv1
 {
     @noRoute this()
     {

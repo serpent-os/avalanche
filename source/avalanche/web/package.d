@@ -7,7 +7,7 @@
 /**
  * avalanche.web
  *
- * Web interface for the controller and nodes
+ * Web interface for the controller and builders
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
@@ -18,7 +18,7 @@ public import avalanche.controller.interfaces;
 import vibe.d;
 
 /**
- * Implementation of a controller for builder nodes
+ * Implementation of a controller for builders
  */
 public final class WebApp
 {

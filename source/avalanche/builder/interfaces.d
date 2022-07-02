@@ -5,15 +5,15 @@
  */
 
 /**
- * avalanche.node
+ * avalanche.builder
  *
- * REST API for the node mechanism
+ * REST API for the builder mechanism
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
 
-module avalanche.node.interfaces;
+module avalanche.builder.interfaces;
 
 public import vibe.d : path, method, HTTPMethod;
 public import vibe.web.auth;
@@ -59,7 +59,7 @@ public struct BuildBundle
 }
 
 /**
- * A Controller can send a request for the node to enrol.
+ * A Controller can send a request for the builder to enrol.
  *
  * Note, it is not automatically accepted - rather, it is
  * reviewed by a human.
@@ -83,27 +83,27 @@ public struct ControllerEnrolmentRequest
 }
 
 /**
- * Our "v1" API for the Node
+ * Our "v1" API for the Builder
  */
-@requiresAuth @path("api/v1/node") public interface NodeAPIv1
+@requiresAuth @path("api/v1/builder") public interface BuilderAPIv1
 {
 
     /**
-     * GET /api/v1/node/version_identifier
+     * GET /api/v1/builder/version_identifier
      *
      * Placeholder. :)
      */
     @noAuth @property string versionIdentifier() @safe;
 
     /**
-     * PUT /api/v1/node/build_bundle
+     * PUT /api/v1/builder/build_bundle
      *
      * Request build of the given bundle
      */
     @anyAuth @method(HTTPMethod.PUT) void buildBundle(BuildBundle bundle) @system;
 
     /**
-     * PUT /api/v1/node/enroll
+     * PUT /api/v1/builder/enroll
      */
     @noAuth @method(HTTPMethod.PUT) void enrol(ControllerEnrolmentRequest cer) @system;
 }

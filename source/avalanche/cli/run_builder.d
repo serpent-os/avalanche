@@ -13,24 +13,24 @@
  * License: Zlib
  */
 
-module avalanche.cli.run_node;
+module avalanche.cli.run_builder;
 
 import moss.core.cli;
 
 import avalanche.server;
-import avalanche.node;
+import avalanche.builder;
 
 /**
- * Handle the `avalanche run node` subcommand
+ * Handle the `avalanche run builder` subcommand
  */
-@CommandName("node") @CommandHelp("start avalanche node", "Run Avalanche Node")
-public struct RunNodeCommand
+@CommandName("builder") @CommandHelp("start avalanche builder", "Run Avalanche Builder")
+public struct RunBuilderCommand
 {
     BaseCommand pt;
     alias pt this;
 
     /**
-     * Start a node
+     * Start a builder
      */
     @CommandEntry()
     int run(ref string[] args)
@@ -41,7 +41,7 @@ public struct RunNodeCommand
             server.stop();
             server.destroy();
         }
-        server.addInterface(new NodeApp());
+        server.addInterface(new BuilderApp());
         return server.run();
     }
 }
