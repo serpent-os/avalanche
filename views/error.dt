@@ -5,10 +5,10 @@ block title
 
 block content
 
-    div.container
+    div.main-view.justify-content-center
 
         div.row.justify-content-center
-            div.card.col-sm-6.col-lg-6
+            div.card.col-sm-4.col-lg-4
                 div.card-status-top.bg-warning
                 div.card-body
                     h5.card-title Oops! We encountered an error

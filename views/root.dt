@@ -9,6 +9,7 @@ html
 
         // TODO: Use a site refix
         link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
+        link(rel="stylesheet", href="/static/custom.css")
 
     body.d-flex.flex-column.min-vh-100
         include primary_navigation
