@@ -98,7 +98,7 @@ private:
     void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
     {
         auto site = this.site;
-        res.render!("error.dt", site, error);
+        res.render!("error.dt", site, error, req);
     }
 
     URLRouter router;
