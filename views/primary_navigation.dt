@@ -9,5 +9,9 @@ nav.navbar.navbar-expand-lg.bg-dark.navbar-dark.shadow
             span.navbar-toggler-icon.text-white
         div.collapse.navbar-collapse(id="primaryNavigation")
             ul.navbar-nav
-                li.nav-item
-                    a.nav-link.active(aria-current="page", href="/") Home
+                - import std.string : startsWith;
+                - foreach (menuItem; site.primaryMenu) {
+                    - string className = (req.path == menuItem.pathPrefix || menuItem.pathPrefix.startsWith(req.path ~ "/")) ? "nav-link active" : "nav-link";
+                    li.nav-item
+                        a(class="#{className}", aria-current="page", href="#{menuItem.pathPrefix}") #{menuItem.label}
+                - }
