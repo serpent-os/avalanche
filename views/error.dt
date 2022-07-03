@@ -8,9 +8,17 @@ block content
     div.main-view.justify-content-center
 
         div.row.justify-content-center
-            div.card.col-sm-4.col-lg-4
+            div.card.col-sm-3.col-lg-3
                 div.card-status-top.bg-warning
                 div.card-body
                     h5.card-title Oops! We encountered an error
-                    p.card-text.text-muted While navigating we hit error #[strong #{error.code}] - #[code #{error.message}]
-                    a.btn(href="/") Go back to #{site.siteName}
+                    p.card-text.text-muted While navigating the website we encountered an error.
+                    div.row.mb-2
+                        div.col Resource Path
+                        div.col: code #{req.path}
+                    div.row.mb-2
+                        div.col Error (#{error.code})
+                        div.col: code #{error.message}
+                    div.row.mt-4: center: a.btn(href="/")
+                        svg.icon.text-dark: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-arrow-narrow-left")
+                        | Go back to #{site.siteName}
