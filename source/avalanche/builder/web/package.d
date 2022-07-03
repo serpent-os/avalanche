@@ -32,6 +32,6 @@ public final class BuilderWeb
      */
     void index() @safe
     {
-        render!("builder/index.dt", site);
+        render!("builder/first_run.dt", site);
     }
 }
