@@ -40,7 +40,7 @@ public final class BuilderWeb
             redirect("/setup");
             return;
         }
-        render!("builder/first_run.dt", site);
+        render!("builder/index.dt", site);
     }
 
     /**
@@ -49,12 +49,19 @@ public final class BuilderWeb
     @path("/setup") @method(HTTPMethod.GET)
     void presentSetup()
     {
-        /* We're not in setup mode. Gtfo */
-        if (builderApp.stage != AppStage.AwaitingSetup)
-        {
-            redirect("/");
-            return;
-        }
+        enforceHTTP(builderApp.stage == AppStage.AwaitingSetup,
+                HTTPStatus.internalServerError, "Server already configured");
         render!("builder/first_run.dt", site);
+    }
+
+    /**
+     * Up and running!
+     */
+    @path("/setup") @method(HTTPMethod.POST)
+    void handleSetup(string password, Confirm!"password" passwordCheck, string buildProfile)
+    {
+        logWarn("We're now up and running");
+        builderApp.stage = AppStage.AwaitingEnrolment;
+        redirect("/");
     }
 }

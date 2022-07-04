@@ -12,19 +12,16 @@ block content
                 div.card-body
                     p.text-muted We need some information first to complete the setup of your new Builder instance.
                     p.text-muted As soon as this is done you'll be able to enrol this builder from a controller!
-                    form.form
-                        div.mb-3
-                            label.form-label-plain Hostname
-                            input.form-control(type="text", placeholder="What is our public hostname/IP?")
+                    form.form(action="/setup", method="post")
                         div.mb-3
                             label.form-label-plain Create a new password
-                            input.form-control(type="password", placeholder="Password to access this dashboard")
+                            input.form-control(name="password", type="password", placeholder="Password to access this dashboard")
                         div.mb-3
                             label.form-label-plain Repeat password
-                            input.form-control(type="password")
+                            input.form-control(name="passwordCheck", type="password")
                         div.mb-3
                             label.form-label Build profile
-                            select.form-select(aria-label="Name of the build profile to use")
+                            select.form-select(name="buildProfile", aria-label="Name of the build profile to use")
                                 option.selected None
                                 option x86_64 
-                        button.btn.form-control.btn-ghost-primary(type="submit", method="post", action="#") Let's go
+                        button.btn.form-control.btn-ghost-primary(type="submit") Let's go
