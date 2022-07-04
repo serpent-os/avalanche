@@ -49,17 +49,33 @@ public final class BuilderWeb
     @path("/setup") @method(HTTPMethod.GET)
     void presentSetup()
     {
+        string[] problems = null;
         enforceHTTP(builderApp.stage == AppStage.AwaitingSetup,
                 HTTPStatus.internalServerError, "Server already configured");
-        render!("builder/first_run.dt", site);
+        render!("builder/first_run.dt", site, problems);
     }
 
     /**
      * Up and running!
      */
     @path("/setup") @method(HTTPMethod.POST)
-    void handleSetup(string password, Confirm!"password" passwordCheck, string buildProfile)
+    void handleSetup(string password, string passwordCheck, string buildProfile)
     {
+        string[] problems;
+        if (password != passwordCheck)
+        {
+            problems = ["Your passwords do not match"];
+        }
+        if (password.length < 4)
+        {
+            problems ~= ["Password length too short"];
+        }
+
+        if (problems.length > 0)
+        {
+            render!("builder/first_run.dt", site, problems);
+            return;
+        }
         logWarn("We're now up and running");
         builderApp.stage = AppStage.AwaitingEnrolment;
         redirect("/");

@@ -24,4 +24,10 @@ block content
                             select.form-select(name="buildProfile", aria-label="Name of the build profile to use")
                                 option.selected None
                                 option x86_64 
+                        div.mb-3
+                            ul
+                                - foreach (problem; problems)
+                                - {
+                                    li: label.text-red= problem
+                                - }
                         button.btn.form-control.btn-ghost-primary(type="submit") Let's go
