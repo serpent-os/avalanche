@@ -17,6 +17,8 @@ module avalanche.builder.web;
 import vibe.d;
 public import avalanche.server.site_config;
 
+import avalanche.builder.app;
+
 /**
  * Web configuration for Builder
  */
@@ -32,6 +34,27 @@ public final class BuilderWeb
      */
     void index() @safe
     {
+        /* We can't do anything unless we're setup! */
+        if (builderApp.stage == AppStage.AwaitingSetup)
+        {
+            redirect("/setup");
+            return;
+        }
+        render!("builder/first_run.dt", site);
+    }
+
+    /**
+     * Present the user with a setup screen
+     */
+    @path("/setup") @method(HTTPMethod.GET)
+    void presentSetup()
+    {
+        /* We're not in setup mode. Gtfo */
+        if (builderApp.stage != AppStage.AwaitingSetup)
+        {
+            redirect("/");
+            return;
+        }
         render!("builder/first_run.dt", site);
     }
 }
