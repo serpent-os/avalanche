@@ -19,8 +19,8 @@ import std.algorithm : each;
 import std.concurrency : initOnce;
 import std.exception : assumeWontThrow;
 import std.file : mkdir;
-import moss.db.keyvalue;
-import moss.db.keyvalue.interfaces;
+import avalanche.auth.users;
+import std.exception : enforce;
 
 private __gshared BuilderApp __appInstance = null;
 
@@ -51,6 +51,11 @@ public static BuilderApp builderApp() @safe nothrow
 public final class BuilderApp
 {
 
+    this()
+    {
+        users = new UserManager("lmdb://db/userDB");
+    }
+
     /**
      * Start the application proper - prior to web serve.
      */
@@ -58,17 +63,19 @@ public final class BuilderApp
     {
         immutable requiredDirs = ["db",];
         requiredDirs.each!((d) => d.mkdir());
-        db = Database.open("lmdb://db/builderDB",
-                DatabaseFlags.CreateIfNotExists).tryMatch!((Database db) => db);
+
+        /* Connect user db */
+        auto result = users.connect();
+        enforce(result.isNull, "Cannot establish connection to UserDB");
     }
 
     void shutdown() @safe
     {
-        db.close();
+        users.close();
     }
 
 package:
 
     AppStage stage = AppStage.AwaitingSetup;
-    Database db;
+    UserManager users;
 }

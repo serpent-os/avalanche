@@ -15,87 +15,58 @@
 
 module avalanche.auth.users;
 
-import std.experimental.typecons : wrap;
-import std.typecons : Nullable;
-import std.traits : getSymbolsByUDA;
-import std.traits : OriginalType;
+import moss.db.keyvalue;
+import moss.db.keyvalue.interfaces;
 
 /**
- * UDA: Usually applies to the username field.
+ * The UserManager is initialised from a writeable database
+ * and is responsible for managing it. It contains only the
+ * absolute basics of authentication - and is in no way
+ * related to profile metadata (separate use case)
  */
-public struct UserIdentifier
+public final class UserManager
 {
-}
-
-/**
- * Specialist contract for Users
- * Note that *user properties* are metadata and outside the
- * scope of a user implementation.
- */
-public interface User
-{
-    /**
-     * Attempt to authenticate the user with the given hash
-     */
-    bool authenticate(in ubyte[] hash);
+    @disable this();
 
     /**
-     * Update the password
+     * Construct a new UserManager
+     *
+     * Params:
+     *      databaseURI = moss-db key-value compatible URI
      */
-    void updatePassword(in ubyte[] newPassword);
-}
-
-/**
- * If the type is a class and implements User interface,
- * or if the type is a struct and *conforms* to User interface, yes.
- */
-static bool isUserType(U)()
-{
-    /* Ensure this conforms to the User interface */
-    static if (is(U == struct) && is(typeof({ U val; val.wrap!User; return; }()) == void))
+    this(const(string) databaseURI) @safe
     {
-        return true;
+        this.databaseURI = databaseURI;
     }
-    else
+
+    /**
+     * Connect the UserManager to the underlying database
+     */
+    DatabaseResult connect() @safe
     {
-        /* Class based, does it implement User? */
-        static if (is(U == class) && is(U == User))
+        DatabaseResult error;
+        Database.open(this.databaseURI, DatabaseFlags.CreateIfNotExists).match!((Database db) {
+            this.db = db;
+        }, (DatabaseError err) { error = err; });
+        /* Couldn't connect. :sadface: */
+        if (!error.isNull)
         {
-            return true;
+            return error;
         }
-        else
-        {
-            return false;
-        }
+        /* All good. */
+        return NoDatabaseError;
     }
-}
-
-/**
- * Helper mixin to determine the User struct's identifier **type**
- */
-static template identifierType(U)
-{
-    static assert(getSymbolsByUDA!(U, UserIdentifier).length == 1,
-            U.stringof ~ " must provide ONE field marked with UserIdentifier");
-    const char[] identifierType = "typeof(getSymbolsByUDA!(U, UserIdentifier)[0])";
-}
-
-/**
- * UserManager is responsible for storing all Users
- */
-public final class UserManager(U)
-{
-    static assert(isUserType!U, "UserManager must be used with a valid User implementation");
-    alias UserType = U;
-
-    alias NullableUser = Nullable!(UserType, UserType.init);
-    alias ID = mixin(identifierType!U);
 
     /**
-     * Return a user object by the identifier
+     * Cleanup on aisle 3.
      */
-    NullableUser getUser(in ID search)
+    void close() @safe
     {
-        return NullableUser(UserType.init);
+        db.close();
     }
+
+private:
+
+    string databaseURI;
+    Database db;
 }
