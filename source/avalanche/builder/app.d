@@ -15,8 +15,12 @@
 
 module avalanche.builder.app;
 
+import std.algorithm : each;
 import std.concurrency : initOnce;
 import std.exception : assumeWontThrow;
+import std.file : mkdir;
+import moss.db.keyvalue;
+import moss.db.keyvalue.interfaces;
 
 private __gshared BuilderApp __appInstance = null;
 
@@ -47,7 +51,24 @@ public static BuilderApp builderApp() @safe nothrow
 public final class BuilderApp
 {
 
+    /**
+     * Start the application proper - prior to web serve.
+     */
+    public void startup() @safe
+    {
+        immutable requiredDirs = ["db",];
+        requiredDirs.each!((d) => d.mkdir());
+        db = Database.open("lmdb://db/builderDB",
+                DatabaseFlags.CreateIfNotExists).tryMatch!((Database db) => db);
+    }
+
+    void shutdown() @safe
+    {
+        db.close();
+    }
+
 package:
 
     AppStage stage = AppStage.AwaitingSetup;
+    Database db;
 }

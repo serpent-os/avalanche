@@ -16,6 +16,7 @@ module avalanche.builder;
 
 public import avalanche.server;
 
+import avalanche.builder.app;
 import avalanche.builder.rest;
 import avalanche.builder.web;
 
@@ -33,5 +34,12 @@ final class BuilderServer : Server
         addWeb(new BuilderWeb());
         configureFileSharing("public", "/static");
         this.siteConfig = site;
+
+        builderApp.startup();
+    }
+
+    ~this() @safe
+    {
+        builderApp.shutdown();
     }
 }
