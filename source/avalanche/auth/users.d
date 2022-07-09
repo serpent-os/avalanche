@@ -17,6 +17,38 @@ module avalanche.auth.users;
 
 import moss.db.keyvalue;
 import moss.db.keyvalue.interfaces;
+public import std.stdint : uint64_t;
+
+/**
+ * We never recycle these in Avalanche because
+ * we would never exceed this value ...
+ */
+public alias UserIdentifier = uint64_t;
+
+/**
+ * So we want different password hashing, for now we
+ * store plain text but we'll likely hook up argon2
+ * or similar.
+ */
+public enum PasswordHashing
+{
+    None = 0
+}
+
+/**
+ * A User is a composition of a a minimal number of
+ * data fields. We don't actually *care* for information,
+ * only the whole "user can access services" notion"
+ */
+public struct User
+{
+    UserIdentifier uid;
+    string username;
+
+    /* We need to know what hash its stored with in case
+       of security issue montioring */
+    PasswordHashing hash;
+}
 
 /**
  * The UserManager is initialised from a writeable database
@@ -65,8 +97,17 @@ public final class UserManager
         db.close();
     }
 
+    /**
+     * Hashing style
+     */
+    pure @property auto passwordHashing() @safe @nogc nothrow inout
+    {
+        return hashStyle;
+    }
+
 private:
 
     string databaseURI;
     Database db;
+    PasswordHashing hashStyle = PasswordHashing.None;
 }
