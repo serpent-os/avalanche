@@ -14,6 +14,9 @@
 		"moss-core": {
 			"path": "../moss-core"
         },
+        "moss-db": {
+			"path": "../moss-db"
+        },
 		"jwtd": {
 			"repository": "git+https://gitlab.com/serpent-os/dlang/jwtd.git",
 			"version": "028fc4fc086b87108a2223ed489c3b502fd9c7f4"
