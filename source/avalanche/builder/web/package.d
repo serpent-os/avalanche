@@ -36,4 +36,13 @@ public final class BuilderWeb
     {
         render!("builder/index.dt", site);
     }
+
+    /**
+     * Return the login form
+     */
+    @method(HTTPMethod.GET) @path("/login")
+    void login() @safe
+    {
+        render!("builder/login.dt", site);
+    }
 }

@@ -15,3 +15,6 @@ nav.navbar.navbar-expand-lg.bg-dark.navbar-dark.shadow
                     li.nav-item
                         a(class="#{className}", aria-current="page", href="#{menuItem.pathPrefix}") #{menuItem.label}
                 - }
+        div.d-flex
+            // login form
+            a.btn.btn-outline-info.text-white(href="/login") Login
