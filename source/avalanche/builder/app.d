@@ -15,10 +15,10 @@
 
 module avalanche.builder.app;
 
-import std.algorithm : each;
+import std.algorithm : each, filter;
 import std.concurrency : initOnce;
 import std.exception : assumeWontThrow;
-import std.file : mkdir;
+import std.file : mkdir, exists;
 import avalanche.auth.users;
 import std.exception : enforce;
 
@@ -52,7 +52,7 @@ public final class BuilderApp
     public void startup() @safe
     {
         immutable requiredDirs = ["db",];
-        requiredDirs.each!((d) => d.mkdir());
+        requiredDirs.filter!((p) => !p.exists).each!((d) => d.mkdir());
 
         /* Connect user db */
         auto result = users.connect();
