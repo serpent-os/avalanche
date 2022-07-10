@@ -1,4 +1,4 @@
-nav.navbar.navbar-expand-lg.bg-dark.navbar-dark.shadow
+nav.navbar.navbar-expand-lg.bg-dark.navbar-dark
     div.container-fluid
         // Logo
         a.navbar-brand.logo.text-white(href="/")
