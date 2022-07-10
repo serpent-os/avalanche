@@ -24,7 +24,10 @@ import avalanche.server.site_config;
  */
 public class Server
 {
-    this()
+    /**
+     * Lazy - require super constructor for initialisation
+     */
+    this(ushort portNumber = 8081)
     {
         router = new URLRouter();
         settings = new HTTPServerSettings();
@@ -33,7 +36,7 @@ public class Server
         settings.errorPageHandler = &errorHandler;
         /* Force to localhost 8081 */
         settings.bindAddresses = ["127.0.0.1",];
-        settings.port = 8081;
+        settings.port = portNumber;
         listener = listenHTTP(settings, router);
     }
 
