@@ -40,7 +40,7 @@ public final class BuilderWeb
     /**
      * Return the login form
      */
-    @method(HTTPMethod.GET) @path("/login")
+    @method(HTTPMethod.GET) @path("login")
     void login() @safe
     {
         if (loggedIn)
@@ -54,7 +54,7 @@ public final class BuilderWeb
     /**
      * User requested a logout so kill the session
      */
-    @method(HTTPMethod.GET) @path("/logout")
+    @method(HTTPMethod.GET) @path("logout")
     void logout() @safe
     {
         if (loggedIn)
@@ -65,6 +65,9 @@ public final class BuilderWeb
         redirect("/");
     }
 
+    /**
+     * Looking to log in.
+     */
     @method(HTTPMethod.POST) @path("login")
     void handleLogin(string username, string password) @safe
     {
@@ -72,6 +75,21 @@ public final class BuilderWeb
         logWarn("HUR DUR WE DIDNT AUTHENTICATE %s", username);
         loggedIn = true;
         redirect("/");
+    }
+
+    /**
+     * Handle user registration
+     */
+    @method(HTTPMethod.GET) @path("register")
+    void register()
+    {
+        /* Already logged in why are you registering. */
+        if (loggedIn)
+        {
+            redirect("/");
+            return;
+        }
+        render!("builder/register.dt", site);
     }
 
 private:
