@@ -34,50 +34,6 @@ public final class BuilderWeb
      */
     void index() @safe
     {
-        /* We can't do anything unless we're setup! */
-        if (builderApp.stage == AppStage.AwaitingSetup)
-        {
-            redirect("/setup");
-            return;
-        }
         render!("builder/index.dt", site);
-    }
-
-    /**
-     * Present the user with a setup screen
-     */
-    @path("/setup") @method(HTTPMethod.GET)
-    void presentSetup()
-    {
-        string[] problems = null;
-        enforceHTTP(builderApp.stage == AppStage.AwaitingSetup,
-                HTTPStatus.internalServerError, "Server already configured");
-        render!("builder/first_run.dt", site, problems);
-    }
-
-    /**
-     * Up and running!
-     */
-    @path("/setup") @method(HTTPMethod.POST)
-    void handleSetup(string password, string passwordCheck, string buildProfile)
-    {
-        string[] problems;
-        if (password != passwordCheck)
-        {
-            problems = ["Your passwords do not match"];
-        }
-        if (password.length < 4)
-        {
-            problems ~= ["Password length too short"];
-        }
-
-        if (problems.length > 0)
-        {
-            render!("builder/first_run.dt", site, problems);
-            return;
-        }
-        logWarn("We're now up and running");
-        builderApp.stage = AppStage.AwaitingEnrolment;
-        redirect("/");
     }
 }

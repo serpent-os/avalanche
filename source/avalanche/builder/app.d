@@ -25,16 +25,6 @@ import std.exception : enforce;
 private __gshared BuilderApp __appInstance = null;
 
 /**
- * Simple state tracking.
- */
-public enum AppStage
-{
-    AwaitingSetup,
-    AwaitingEnrolment,
-    Active,
-}
-
-/**
  * Return a shared instance builder app
  */
 public static BuilderApp builderApp() @safe nothrow
@@ -76,6 +66,5 @@ public final class BuilderApp
 
 package:
 
-    AppStage stage = AppStage.AwaitingSetup;
     UserManager users;
 }
