@@ -43,6 +43,39 @@ public final class BuilderWeb
     @method(HTTPMethod.GET) @path("/login")
     void login() @safe
     {
+        if (loggedIn)
+        {
+            redirect("/");
+            return;
+        }
         render!("builder/login.dt", site);
     }
+
+    /**
+     * User requested a logout so kill the session
+     */
+    @method(HTTPMethod.GET) @path("/logout")
+    void logout() @safe
+    {
+        if (loggedIn)
+        {
+            loggedIn = false;
+            terminateSession();
+        }
+        redirect("/");
+    }
+
+    @method(HTTPMethod.POST) @path("login")
+    void handleLogin(string username, string password) @safe
+    {
+        /* TODO: Auth them! */
+        logWarn("HUR DUR WE DIDNT AUTHENTICATE %s", username);
+        loggedIn = true;
+        redirect("/");
+    }
+
+private:
+
+    /* True if they're logged in. All we really care for */
+    SessionVar!(bool, "loggedIn") loggedIn;
 }

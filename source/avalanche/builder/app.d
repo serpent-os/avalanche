@@ -52,7 +52,8 @@ public final class BuilderApp
     public void startup() @safe
     {
         immutable requiredDirs = ["db",];
-        requiredDirs.filter!((p) => !p.exists).each!((d) => d.mkdir());
+        requiredDirs.filter!((p) => !p.exists)
+            .each!((d) => d.mkdir());
 
         /* Connect user db */
         auto result = users.connect();

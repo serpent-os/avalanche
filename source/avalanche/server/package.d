@@ -37,6 +37,9 @@ public class Server
         /* Force to localhost 8081 */
         settings.bindAddresses = ["127.0.0.1",];
         settings.port = portNumber;
+        /* TODO: Incorporate component into this, i.e. ".builder." */
+        settings.sessionIdCookie = "avalanche.session_id";
+        settings.sessionStore = new MemorySessionStore();
         listener = listenHTTP(settings, router);
     }
 
