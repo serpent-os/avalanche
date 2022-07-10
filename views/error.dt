@@ -1,24 +1,44 @@
-extends root
+doctype html
 
-block title
-    title Oops!
+html
+    head
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        block title
+            title Avalanche - #{site.siteName}
+
+        // TODO: Use a site refix
+        link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
+        link(rel="stylesheet", href="/static/custom.css")
+
+    body.d-flex.flex-column.min-vh-100
+        main
+            div.container-fluid.py-0.px-0.my-0.mx-0
+                div.container-fluid.py-5
+
+                div.main-view.justify-content-center
+
+                    div.row.justify-content-center
+                        div.card.col-sm-3.col-lg-3
+                            div.card-status-top.bg-warning
+                            div.card-body
+                                h5.card-title Oops! We encountered an error
+                                p.card-text.text-muted While navigating the website we encountered an error.
+                                div.row.mb-2
+                                    div.col Resource Path
+                                    div.col: code #{req.path}
+                                div.row.mb-2
+                                    div.col Error (#{error.code})
+                                    div.col: code #{error.message}
+                                div.row.mt-4: center: a.btn(href="/")
+                                    svg.icon.text-dark: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-arrow-narrow-left")
+                                    | Go back to #{site.siteName}
+
+
+        include footer
+
+    // TODO: Use a site prefix
+    script(src="/static/tabler/js/tabler.min.js")
 
 block content
 
-    div.main-view.justify-content-center
-
-        div.row.justify-content-center
-            div.card.col-sm-3.col-lg-3
-                div.card-status-top.bg-warning
-                div.card-body
-                    h5.card-title Oops! We encountered an error
-                    p.card-text.text-muted While navigating the website we encountered an error.
-                    div.row.mb-2
-                        div.col Resource Path
-                        div.col: code #{req.path}
-                    div.row.mb-2
-                        div.col Error (#{error.code})
-                        div.col: code #{error.message}
-                    div.row.mt-4: center: a.btn(href="/")
-                        svg.icon.text-dark: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-arrow-narrow-left")
-                        | Go back to #{site.siteName}
