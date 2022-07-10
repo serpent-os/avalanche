@@ -17,7 +17,8 @@ module avalanche.server;
 
 import vibe.d;
 
-import avalanche.server.site_config;
+public import avalanche.server.site_config;
+public import avalanche.server.context;
 
 /**
  * Implements the core server.

@@ -17,6 +17,7 @@ module avalanche.controller.web;
 import vibe.d;
 
 public import avalanche.server.site_config;
+import avalanche.server.context;
 
 public static SiteConfiguration site = SiteConfiguration("Controller", "tabler-compass");
 
@@ -30,6 +31,8 @@ public final class ControllerWeb
      */
     void index() @safe
     {
-        render!("controller/index.dt", site);
+        render!("controller/index.dt", context, site);
     }
+
+    WebContext context;
 }

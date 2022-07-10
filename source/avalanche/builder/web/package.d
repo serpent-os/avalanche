@@ -18,6 +18,7 @@ import vibe.d;
 public import avalanche.server.site_config;
 
 import avalanche.builder.app;
+import avalanche.server.context;
 
 /**
  * Web configuration for Builder
@@ -34,7 +35,7 @@ public final class BuilderWeb
      */
     void index() @safe
     {
-        render!("builder/index.dt", site);
+        render!("builder/index.dt", context, site);
     }
 
     /**
@@ -43,12 +44,12 @@ public final class BuilderWeb
     @method(HTTPMethod.GET) @path("login")
     void login() @safe
     {
-        if (loggedIn)
+        if (context.loggedIn)
         {
             redirect("/");
             return;
         }
-        render!("builder/login.dt", site);
+        render!("builder/login.dt", context, site);
     }
 
     /**
@@ -57,9 +58,9 @@ public final class BuilderWeb
     @method(HTTPMethod.GET) @path("logout")
     void logout() @safe
     {
-        if (loggedIn)
+        if (context.loggedIn)
         {
-            loggedIn = false;
+            context.loggedIn = false;
             terminateSession();
         }
         redirect("/");
@@ -73,7 +74,7 @@ public final class BuilderWeb
     {
         /* TODO: Auth them! */
         logWarn("HUR DUR WE DIDNT AUTHENTICATE %s", username);
-        loggedIn = true;
+        context.loggedIn = true;
         redirect("/");
     }
 
@@ -84,16 +85,13 @@ public final class BuilderWeb
     void register()
     {
         /* Already logged in why are you registering. */
-        if (loggedIn)
+        if (context.loggedIn)
         {
             redirect("/");
             return;
         }
-        render!("builder/register.dt", site);
+        render!("builder/register.dt", context, site);
     }
 
-private:
-
-    /* True if they're logged in. All we really care for */
-    SessionVar!(bool, "loggedIn") loggedIn;
+    WebContext context;
 }

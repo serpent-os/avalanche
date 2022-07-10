@@ -17,4 +17,9 @@ nav.navbar.navbar-expand-lg.bg-dark.navbar-dark.shadow
                 - }
         div.d-flex
             // login form
-            a.btn.btn-outline-info.text-white(href="/login") Login
+            - if (context.loggedIn)
+            - {
+                a.btn.btn-outline-info.text-white(href="/logout") Log out
+            - } else {
+                a.btn.btn-outline-info.text-white(href="/login") Login
+            - }
