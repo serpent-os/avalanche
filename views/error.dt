@@ -14,7 +14,7 @@ html
     body.d-flex.flex-column.min-vh-100
         main
             div.container-fluid.py-0.px-0.my-0.mx-0
-                div.container-fluid.py-5
+                include static_primary_header
 
                 div.main-view.justify-content-center
 
