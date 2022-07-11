@@ -9,7 +9,7 @@ block content
                 div.card-status-top.bg-info
                 div.card-body.justify-content-center
                     div.row.mb-3.py-2:
-                        p.text-muted If the administrator allows it, you may also #[a(href="/register") sign up] for a new account on this instance.
+                        p.text-muted If the configuration permits, you may also #[a(href="/register") sign up] for a new account on this instance.
                     div.row.pb-1
                         div.col.pb-3
                             label.form-label-plain User name
