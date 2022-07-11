@@ -30,9 +30,9 @@ public struct SessionAuthentication
 }
 
 /**
- * Session management APIs under /session/ PATH
+ * Session management APIs under /ac/ PATH
  */
-@requiresAuth @path("session") public final class SessionManagement
+@requiresAuth @path("ac") public final class SessionManagement
 {
 
     this(SiteConfiguration site, WebContext context)

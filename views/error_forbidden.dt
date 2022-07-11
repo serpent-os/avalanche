@@ -26,8 +26,8 @@ html
                                 p.text-muted Please login or register to gain access to the dashboard
                             div.card-footer
                                 div.row
-                                    div.col: a.btn.form-control(href="/session/login") Login
-                                    div.col: a.btn.form-control(href="/session/register") Register
+                                    div.col: a.btn.form-control(href="/ac/login") Login
+                                    div.col: a.btn.form-control(href="/ac/register") Register
 
 
         include footer
