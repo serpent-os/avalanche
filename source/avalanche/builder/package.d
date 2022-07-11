@@ -19,6 +19,7 @@ public import avalanche.server;
 import avalanche.builder.app;
 import avalanche.builder.rest;
 import avalanche.builder.web;
+import avalanche.auth.session;
 
 /**
  * Extend general server for Builder use
@@ -31,7 +32,10 @@ final class BuilderServer : Server
     this()
     {
         addInterface(new Builder());
-        addWeb(new BuilderWeb());
+        auto web = new BuilderWeb();
+        auto session = new SessionManagement(site, web.context);
+        addWeb(web);
+        addWeb(session);
         configureFileSharing("public", "/static");
         this.siteConfig = site;
 
