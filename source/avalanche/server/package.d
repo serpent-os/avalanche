@@ -105,7 +105,14 @@ private:
     void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
     {
         auto site = this.site;
-        res.render!("error.dt", site, error, req);
+        if (error.code == HTTPStatus.forbidden)
+        {
+            res.render!("error_forbidden.dt", site, error, req);
+        }
+        else
+        {
+            res.render!("error.dt", site, error, req);
+        }
     }
 
     URLRouter router;
