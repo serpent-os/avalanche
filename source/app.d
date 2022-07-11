@@ -26,5 +26,6 @@ int main(string[] args)
     auto cli = cliProcessor!AvalancheCLI(args);
     auto run = cli.addCommand!RunCommand;
     run.addCommand!RunBuilderCommand;
+    run.addCommand!RunControllerCommand;
     return cli.process(args);
 }
