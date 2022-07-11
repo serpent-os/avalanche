@@ -19,16 +19,9 @@ import vibe.web.auth;
 
 public import avalanche.server.site_config;
 import avalanche.server.context;
+import avalanche.auth.session;
 
 public static SiteConfiguration site = SiteConfiguration("Controller", "tabler-compass");
-
-/**
- * Placeholder for real authentication.
- */
-public struct ControllerAuth
-{
-
-}
 
 /**
  * Implementation of a controller for builders
@@ -38,10 +31,10 @@ public struct ControllerAuth
     /**
      * Gate web access behind a session token
      */
-    @noRoute ControllerAuth authenticate(HTTPServerRequest req, HTTPServerResponse res)
+    @noRoute SessionAuthentication authenticate(HTTPServerRequest req, HTTPServerResponse res)
     {
         enforceHTTP(context.loggedIn, HTTPStatus.forbidden);
-        return ControllerAuth();
+        return SessionAuthentication();
     }
 
     /**

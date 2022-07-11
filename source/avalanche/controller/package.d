@@ -18,6 +18,7 @@ public import avalanche.server;
 
 import avalanche.controller.rest;
 import avalanche.controller.web;
+import avalanche.auth.session;
 
 /**
  * Extend general server for Controller use
@@ -30,7 +31,10 @@ final class ControllerServer : Server
     this()
     {
         addInterface(new Controller());
-        addWeb(new ControllerWeb());
+        auto web = new ControllerWeb();
+        auto session = new SessionManagement(site, web.context);
+        addWeb(web);
+        addWeb(session);
         configureFileSharing("public", "/static/");
         siteConfig = site;
     }

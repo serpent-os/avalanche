@@ -40,7 +40,7 @@ public class Server
         settings.port = portNumber;
         /* TODO: Incorporate component into this, i.e. ".builder." */
         settings.sessionIdCookie = "avalanche.session_id";
-        settings.sessionOptions = SessionOption.httpOnly|SessionOption.secure;
+        settings.sessionOptions = SessionOption.httpOnly | SessionOption.secure;
         settings.sessionStore = new MemorySessionStore();
         listener = listenHTTP(settings, router);
     }

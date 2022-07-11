@@ -21,7 +21,7 @@ nav.navbar.navbar-expand-lg.bg-dark.navbar-dark
             // login form
             - if (context.loggedIn)
             - {
-                a.btn.btn-outline-info.text-white(href="/logout") Log out
+                a.btn.btn-outline-info.text-white(href="/session/logout") Log out
             - } else {
-                a.btn.btn-outline-info.text-white(href="/login") Login
+                a.btn.btn-outline-info.text-white(href="/session/login") Login
             - }

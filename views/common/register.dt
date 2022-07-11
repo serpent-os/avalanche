@@ -1,0 +1,27 @@
+extends root
+
+block content
+    div.main-view.justify-content-center
+
+        div.row.justify-content-center.mt-3
+            form.card.shadow-sm.col-sm-3.col-lg-3.mb-6(action="/session/register", method="post")
+                div.card-header: h5.card-title Sign up
+                div.card-status-top.bg-info
+                div.card-body.justify-content-center
+                    div.row.mb-3.py-2:
+                        p.text-muted Sign up for a local account on this instance of #{site.siteName}
+                    div.row.pb-1
+                        div.col.pb-3
+                            label.form-label-plain User name
+                            input.form-control(name="username")
+                    div.row
+                        div.col.pb-3
+                            label.form-label-plain Password
+                            input.form-control.password(name="password", type="password")
+                    div.row
+                        div.col.pb-3
+                            label.form-label-plain Repeat password
+                            input.form-control.password(name="passwordRepeat", type="password")
+                    div.row
+                        div.col
+                            button.btn.form-control.btn-primary(type="submit") Sign up
