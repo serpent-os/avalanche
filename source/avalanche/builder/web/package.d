@@ -15,6 +15,7 @@
 module avalanche.builder.web;
 
 import vibe.d;
+import vibe.web.auth;
 public import avalanche.server.site_config;
 
 import avalanche.builder.app;
@@ -26,14 +27,33 @@ import avalanche.server.context;
 public static SiteConfiguration site = SiteConfiguration("Builder", "tabler-bulldozer");
 
 /**
+ * Placeholder for roles
+ */
+public struct Auth
+{
+}
+/**
  * Builder UI
  */
-public final class BuilderWeb
+@requiresAuth() public final class BuilderWeb
 {
+
+    /**
+     * You're not coming in :3
+     */
+    @noRoute Auth authenticate(HTTPServerRequest req, HTTPServerResponse res)
+    {
+        if (!context.loggedIn)
+        {
+            throw new HTTPStatusException(HTTPStatus.forbidden);
+        }
+        return Auth();
+    }
+
     /**
      * Return the index page
      */
-    void index() @safe
+    @anyAuth void index() @safe
     {
         render!("builder/index.dt", context, site);
     }
@@ -41,7 +61,7 @@ public final class BuilderWeb
     /**
      * Return the login form
      */
-    @method(HTTPMethod.GET) @path("login")
+    @noAuth @method(HTTPMethod.GET) @path("login")
     void login() @safe
     {
         if (context.loggedIn)
@@ -55,7 +75,7 @@ public final class BuilderWeb
     /**
      * User requested a logout so kill the session
      */
-    @method(HTTPMethod.GET) @path("logout")
+    @anyAuth @method(HTTPMethod.GET) @path("logout")
     void logout() @safe
     {
         if (context.loggedIn)
@@ -69,7 +89,7 @@ public final class BuilderWeb
     /**
      * Looking to log in.
      */
-    @method(HTTPMethod.POST) @path("login")
+    @noAuth @method(HTTPMethod.POST) @path("login")
     void handleLogin(string username, string password) @safe
     {
         /* TODO: Auth them! */
@@ -81,7 +101,7 @@ public final class BuilderWeb
     /**
      * Handle user registration
      */
-    @method(HTTPMethod.GET) @path("register")
+    @noAuth @method(HTTPMethod.GET) @path("register")
     void register()
     {
         /* Already logged in why are you registering. */
