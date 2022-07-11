@@ -33,8 +33,9 @@ public static SiteConfiguration site = SiteConfiguration("Controller", "tabler-c
      */
     @noRoute SessionAuthentication authenticate(HTTPServerRequest req, HTTPServerResponse res)
     {
-        enforceHTTP(context.loggedIn, HTTPStatus.forbidden);
-        return SessionAuthentication();
+        auto session = SessionAuthentication();
+        enforceHTTP(session.loggedIn, HTTPStatus.forbidden);
+        return session;
     }
 
     /**
@@ -42,8 +43,7 @@ public static SiteConfiguration site = SiteConfiguration("Controller", "tabler-c
      */
     @anyAuth void index() @safe
     {
-        render!("controller/index.dt", context, site);
+        auto session = SessionAuthentication();
+        render!("controller/index.dt", site, session);
     }
-
-    WebContext context;
 }

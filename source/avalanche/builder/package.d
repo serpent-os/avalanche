@@ -32,10 +32,8 @@ final class BuilderServer : Server
     this()
     {
         addInterface(new Builder());
-        auto web = new BuilderWeb();
-        auto session = new SessionManagement(site, web.context);
-        addWeb(web);
-        addWeb(session);
+        addWeb(new BuilderWeb());
+        addWeb(new SessionManagement(site));
         configureFileSharing("public", "/static");
         this.siteConfig = site;
 

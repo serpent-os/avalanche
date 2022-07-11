@@ -31,10 +31,8 @@ final class ControllerServer : Server
     this()
     {
         addInterface(new Controller());
-        auto web = new ControllerWeb();
-        auto session = new SessionManagement(site, web.context);
-        addWeb(web);
-        addWeb(session);
+        addWeb(new ControllerWeb());
+        addWeb(new SessionManagement(site));
         configureFileSharing("public", "/static/");
         siteConfig = site;
     }

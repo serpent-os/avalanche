@@ -20,18 +20,13 @@ public import avalanche.server.site_config;
 
 import avalanche.builder.app;
 import avalanche.server.context;
+import avalanche.auth.session;
 
 /**
  * Web configuration for Builder
  */
 public static SiteConfiguration site = SiteConfiguration("Builder", "tabler-bulldozer");
 
-/**
- * Placeholder for roles
- */
-public struct Auth
-{
-}
 /**
  * Builder UI
  */
@@ -41,13 +36,11 @@ public struct Auth
     /**
      * You're not coming in :3
      */
-    @noRoute Auth authenticate(HTTPServerRequest req, HTTPServerResponse res)
+    @noRoute auto authenticate(HTTPServerRequest req, HTTPServerResponse res)
     {
-        if (!context.loggedIn)
-        {
-            throw new HTTPStatusException(HTTPStatus.forbidden);
-        }
-        return Auth();
+        auto session = SessionAuthentication();
+        enforceHTTP(session.loggedIn, HTTPStatus.forbidden);
+        return session;
     }
 
     /**
@@ -55,8 +48,7 @@ public struct Auth
      */
     @anyAuth void index() @safe
     {
-        render!("builder/index.dt", context, site);
+        auto session = SessionAuthentication();
+        render!("builder/index.dt", site, session);
     }
-
-    WebContext context;
 }

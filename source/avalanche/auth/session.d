@@ -19,14 +19,27 @@ import vibe.d;
 import vibe.web.auth;
 
 import avalanche.server.site_config;
-import avalanche.server.context;
+import avalanche.auth.users : UserIdentifier;
 
 /**
- * Placeholder.
+ * SessionAuthentication is required for HTTP web sessions, not for API use.
  */
 public struct SessionAuthentication
 {
+    /**
+     * Are we currently logged in?
+     */
+    SessionVar!(bool, "loggedIn") loggedIn;
 
+    /**
+     * What UID are we authed as? - volatile
+     */
+    SessionVar!(UserIdentifier, "uid") uid;
+
+    /**
+     * The visible username - volatile
+     */
+    SessionVar!(string, "visibleUsername") visibleUsername;
 }
 
 /**
@@ -35,7 +48,7 @@ public struct SessionAuthentication
 @requiresAuth @path("ac") public final class SessionManagement
 {
 
-    this(SiteConfiguration site, WebContext context)
+    this(SiteConfiguration site)
     {
         this.site = site;
     }
@@ -46,8 +59,9 @@ public struct SessionAuthentication
     @noRoute SessionAuthentication authenticate(HTTPServerRequest req, HTTPServerResponse res) @safe
     {
         /* Is .loggedIn set? */
-        enforceHTTP(context.loggedIn, HTTPStatus.forbidden);
-        return SessionAuthentication();
+        auto session = SessionAuthentication();
+        enforceHTTP(session.loggedIn, HTTPStatus.forbidden);
+        return session;
     }
 
     /**
@@ -55,7 +69,8 @@ public struct SessionAuthentication
      */
     @noAuth @path("login") @method(HTTPMethod.GET) void login()
     {
-        render!("common/login.dt", site, context);
+        auto session = SessionAuthentication();
+        render!("common/login.dt", site, session);
     }
 
     /**
@@ -64,7 +79,8 @@ public struct SessionAuthentication
     @noAuth @path("login") @method(HTTPMethod.POST) void processLogin()
     {
         logWarn("NOT HANDLING LOGINS :p");
-        context.loggedIn = true;
+        auto session = SessionAuthentication();
+        session.loggedIn = true;
         redirect("/");
     }
 
@@ -73,7 +89,8 @@ public struct SessionAuthentication
      */
     @anyAuth @path("logout") @method(HTTPMethod.GET) void logout()
     {
-        context.loggedIn = false;
+        auto session = SessionAuthentication();
+        session.loggedIn = false;
         terminateSession();
         redirect("/");
     }
@@ -83,7 +100,8 @@ public struct SessionAuthentication
      */
     @noAuth @path("register") @method(HTTPMethod.GET) void register()
     {
-        render!("common/register.dt", site, context);
+        auto session = SessionAuthentication();
+        render!("common/register.dt", site, session);
     }
 
     /**
@@ -96,5 +114,4 @@ public struct SessionAuthentication
     }
 
     SiteConfiguration site;
-    WebContext context;
 }

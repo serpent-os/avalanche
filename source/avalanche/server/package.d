@@ -19,6 +19,7 @@ import vibe.d;
 
 public import avalanche.server.site_config;
 public import avalanche.server.context;
+import avalanche.auth.session;
 
 /**
  * Implements the core server.
@@ -106,13 +107,15 @@ private:
     void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
     {
         auto site = this.site;
+        auto session = SessionAuthentication();
+
         if (error.code == HTTPStatus.forbidden)
         {
-            res.render!("error_forbidden.dt", site, error, req);
+            res.render!("error_forbidden.dt", site, session, error, req);
         }
         else
         {
-            res.render!("error.dt", site, error, req);
+            res.render!("error.dt", site, session, error, req);
         }
     }
 
