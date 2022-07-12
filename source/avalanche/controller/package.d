@@ -33,7 +33,7 @@ final class ControllerServer : Server
         addInterface(new Controller());
         addWeb(new ControllerWeb());
         addWeb(new SessionManagement(site));
-        configureFileSharing("public", "/static/");
+        configureFileSharing("public", "/static");
         siteConfig = site;
     }
 }
