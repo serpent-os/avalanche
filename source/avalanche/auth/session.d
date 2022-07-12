@@ -76,9 +76,10 @@ public struct SessionAuthentication
     /**
      * Provide the login validation
      */
-    @noAuth @path("login") @method(HTTPMethod.POST) void processLogin()
+    @noAuth @path("login") @method(HTTPMethod.POST) void processLogin(string username,
+            string password) @safe
     {
-        logWarn("NOT HANDLING LOGINS :p");
+        logWarn("NOT HANDLING LOGINS for %s: %s", username, password);
         auto session = SessionAuthentication();
         session.loggedIn = true;
         redirect("/");

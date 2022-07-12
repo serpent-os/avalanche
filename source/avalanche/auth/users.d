@@ -51,6 +51,39 @@ public struct User
 }
 
 /**
+ * Identification of the user error
+ */
+public enum UserErrorCode
+{
+    AlreadyRegistered,
+    DatabaseError,
+    NoSuchUsername,
+}
+
+/**
+ * A user error has a distinct code and message
+ */
+public struct UserError
+{
+    UserErrorCode code;
+
+    string message;
+
+    /**
+     * Handle toString conversion
+     */
+    auto toString() @safe const
+    {
+        return message;
+    }
+}
+
+/**
+ * Either a User or a result - assignment of UID already handled
+ */
+public alias UserResult = SumType!(User, UserError);
+
+/**
  * The UserManager is initialised from a writeable database
  * and is responsible for managing it. It contains only the
  * absolute basics of authentication - and is in no way
@@ -87,6 +120,30 @@ public final class UserManager
         }
         /* All good. */
         return NoDatabaseError;
+    }
+
+    /**
+     * Registration failed
+     */
+    UserResult registerUser(in string username, in ubyte[] credentials) @safe
+    {
+        return UserResult(UserError(UserErrorCode.DatabaseError, "DERP NO REGISTER"));
+    }
+
+    /**
+     * Attempt to lookup the user by their username
+     */
+    UserResult byUsername(in string username) @safe
+    {
+        return UserResult(UserError(UserErrorCode.NoSuchUsername, "DERP NO USER"));
+    }
+
+    /**
+     * Sorry - not coming in
+     */
+    bool authenticate(in User user, in ubyte[] credentials) @safe
+    {
+        return false;
     }
 
     /**
