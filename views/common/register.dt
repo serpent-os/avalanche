@@ -1,6 +1,7 @@
 extends root
 
 block content
+    - import avalanche.auth.session : FormProblem;
     div.main-view.justify-content-center
 
         div.row.justify-content-center.mt-3
@@ -13,15 +14,40 @@ block content
                     div.row.pb-1
                         div.col.pb-3
                             label.form-label-plain User name
-                            input.form-control(name="username")
+                            - if ((problems & FormProblem.MissingUsername) == FormProblem.MissingUsername)
+                            - {
+                                input.form-control.is-invalid(name="username", value=suggestedUsername)
+                                div.invalid-feedback Missing username
+                            - } else if ((problems & FormProblem.UsernameTooShort) == FormProblem.UsernameTooShort)
+                            - {
+                                input.form-control.is-invalid(name="username", value=suggestedUsername)
+                                div.invalid-feedback Username is too short
+                            - } else {
+                                input.form-control(name="username", value=suggestedUsername)
+                            - }
                     div.row
                         div.col.pb-3
                             label.form-label-plain Password
-                            input.form-control.password(name="password", type="password")
+                            - if ((problems & FormProblem.MissingPassword) == FormProblem.MissingPassword)
+                            - {
+                                input.form-control.is-invalid.password(name="password", type="password")
+                                div.invalid-feedback Missing password
+                            - } else if ((problems & FormProblem.PasswordTooShort) == FormProblem.PasswordTooShort) {
+                                input.form-control.is-invalid.password(name="password", type="password")
+                                div.invalid-feedback Password is too short
+                            - } else {
+                                input.form-control.password(name="password", type="password")
+                            - }
                     div.row
                         div.col.pb-3
                             label.form-label-plain Repeat password
-                            input.form-control.password(name="passwordRepeat", type="password")
+                            - if ((problems & FormProblem.PasswordMismatch) == FormProblem.PasswordMismatch)
+                            - {
+                                input.form-control.is-invalid.password(name="passwordRepeat", type="password")
+                                div.invalid-feedback Passwords do not match
+                            - } else {
+                                input.form-control.password(name="passwordRepeat", type="password")
+                            - }
                     div.row
                         div.col
                             button.btn.form-control.btn-primary(type="submit") Sign up

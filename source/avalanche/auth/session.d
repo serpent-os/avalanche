@@ -29,6 +29,7 @@ public enum FormProblem
     MissingPassword = 1 << 2,
     PasswordTooShort = 1 << 3,
     UnknownAccount = 1 << 4,
+    PasswordMismatch = 1 << 5,
 }
 
 /**
@@ -122,17 +123,34 @@ public struct SessionAuthentication
      */
     @noAuth @path("register") @method(HTTPMethod.GET) void register()
     {
+        auto problems = FormProblem.None;
         auto session = SessionAuthentication();
-        render!("common/register.dt", site, session);
+        auto suggestedUsername = "";
+        render!("common/register.dt", site, session, problems, suggestedUsername);
     }
 
     /**
      * POST register form
      */
-    @noAuth @path("register") @method(HTTPMethod.POST) void processRegister()
+    @noAuth @path("register") @method(HTTPMethod.POST) void processRegister(
+            string username, string password, string passwordRepeat)
     {
-        logWarn("NOT HANDLING REGISTER");
-        redirect("/");
+        auto problems = FormProblem.None;
+        auto suggestedUsername = username;
+        if (username == "")
+        {
+            problems |= FormProblem.MissingUsername;
+        }
+        if (password == "")
+        {
+            problems |= FormProblem.MissingPassword;
+        }
+        if (passwordRepeat != password)
+        {
+            problems |= FormProblem.PasswordMismatch;
+        }
+        auto session = SessionAuthentication();
+        render!("common/register.dt", site, session, problems, suggestedUsername);
     }
 
     SiteConfiguration site;
