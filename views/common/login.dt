@@ -1,6 +1,8 @@
 extends root
 
+
 block content
+    - import avalanche.auth.session : FormProblem;
     div.main-view.justify-content-center
 
         div.row.justify-content-center.mt-3
@@ -13,11 +15,27 @@ block content
                     div.row.pb-1
                         div.col.pb-3
                             label.form-label-plain User name
-                            input.form-control(name="username")
+                            - if ((problems & FormProblem.MissingUsername) == FormProblem.MissingUsername)
+                            - {
+                                input.form-control.is-invalid(name="username")
+                                div.invalid-feedback Missing username
+                            - } else {
+                                input.form-control(name="username")
+                            - }
                     div.row
                         div.col.pb-3
                             label.form-label-plain Password
-                            input.form-control.password(name="password", type="password")
+                            - if ((problems & FormProblem.MissingPassword) == FormProblem.MissingPassword)
+                            - {
+                                input.form-control.is-invalid(name="password", type="password")
+                                div.invalid-feedback Missing password
+                            - } else {
+                                input.form-control.password(name="password", type="password")
+                            - }
                     div.row
+                        - if ((problems & FormProblem.UnknownAccount) == FormProblem.UnknownAccount)
+                        - {
+                            strong.mb-3 Invalid username or password
+                        - }
                         div.col
                             button.btn.form-control.btn-primary(type="submit") Sign in

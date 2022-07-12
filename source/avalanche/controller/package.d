@@ -19,6 +19,9 @@ public import avalanche.server;
 import avalanche.controller.rest;
 import avalanche.controller.web;
 import avalanche.auth.session;
+import avalanche.auth.users;
+import std.exception : enforce;
+import std.file : mkdirRecurse;
 
 /**
  * Extend general server for Controller use
@@ -30,10 +33,24 @@ final class ControllerServer : Server
      */
     this()
     {
+        "db/controller/users".mkdirRecurse();
+        users = new UserManager("lmdb://db/controller/users");
         addInterface(new Controller());
         addWeb(new ControllerWeb());
-        addWeb(new SessionManagement(site));
+        addWeb(new SessionManagement(site, users));
         configureFileSharing("public", "/static");
         siteConfig = site;
+
+        auto result = users.connect();
+        enforce(result.isNull);
     }
+
+    ~this()
+    {
+        users.close();
+    }
+
+private:
+
+    UserManager users;
 }

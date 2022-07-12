@@ -19,7 +19,17 @@ import vibe.d;
 import vibe.web.auth;
 
 import avalanche.server.site_config;
-import avalanche.auth.users : UserIdentifier;
+import avalanche.auth.users;
+
+public enum FormProblem
+{
+    None = 0,
+    MissingUsername = 1 << 0,
+    UsernameTooShort = 1 << 1,
+    MissingPassword = 1 << 2,
+    PasswordTooShort = 1 << 3,
+    UnknownAccount = 1 << 4,
+}
 
 /**
  * SessionAuthentication is required for HTTP web sessions, not for API use.
@@ -48,9 +58,10 @@ public struct SessionAuthentication
 @requiresAuth @path("ac") public final class SessionManagement
 {
 
-    this(SiteConfiguration site)
+    this(SiteConfiguration site, UserManager users)
     {
         this.site = site;
+        this.users = users;
     }
 
     /**
@@ -70,7 +81,8 @@ public struct SessionAuthentication
     @noAuth @path("login") @method(HTTPMethod.GET) void login()
     {
         auto session = SessionAuthentication();
-        render!("common/login.dt", site, session);
+        FormProblem problems = FormProblem.None;
+        render!("common/login.dt", site, session, problems);
     }
 
     /**
@@ -79,10 +91,19 @@ public struct SessionAuthentication
     @noAuth @path("login") @method(HTTPMethod.POST) void processLogin(string username,
             string password) @safe
     {
-        logWarn("NOT HANDLING LOGINS for %s: %s", username, password);
+        auto problems = FormProblem.None;
+        if (username == "")
+        {
+            problems |= FormProblem.MissingUsername;
+        }
+        if (password == "")
+        {
+            problems |= FormProblem.MissingPassword;
+        }
+
+        problems |= FormProblem.UnknownAccount;
         auto session = SessionAuthentication();
-        session.loggedIn = true;
-        redirect("/");
+        render!("common/login.dt", site, session, problems);
     }
 
     /**
@@ -115,4 +136,8 @@ public struct SessionAuthentication
     }
 
     SiteConfiguration site;
+
+private:
+
+    UserManager users;
 }

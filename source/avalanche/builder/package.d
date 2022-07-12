@@ -33,7 +33,7 @@ final class BuilderServer : Server
     {
         addInterface(new Builder());
         addWeb(new BuilderWeb());
-        addWeb(new SessionManagement(site));
+        addWeb(new SessionManagement(site, null));
         configureFileSharing("public", "/static");
         this.siteConfig = site;
 
