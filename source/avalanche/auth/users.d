@@ -118,6 +118,17 @@ public final class UserManager
         {
             return error;
         }
+
+        /* Ensure we haz buckets */
+        db.update((scope tx) @safe {
+            foreach (bucket; [".meta"])
+            {
+                auto bkR = tx.createBucketIfNotExists(bucket);
+                bkR.tryMatch!((Bucket b) {});
+            }
+            return NoDatabaseError;
+        });
+
         /* All good. */
         return NoDatabaseError;
     }
@@ -163,6 +174,34 @@ public final class UserManager
     }
 
 private:
+
+    /**
+     * Allocate a new user identity - doesn't mean its *valid*
+     */
+    SumType!(UserIdentifier, DatabaseError) nextUserIdentifier() @safe
+    {
+        UserIdentifier next = 0;
+        auto err = db.update((scope tx) @safe {
+            auto bucket = tx.bucket(".meta");
+            assert(!bucket.isNull);
+
+            /* Got an existing one? */
+            auto existing = tx.get!UserIdentifier(bucket, "nextUserIdentifier");
+            if (existing.isNull)
+            {
+                next = existing + 1;
+            }
+
+            return tx.set(bucket, "nextUserIdentifier", next);
+        });
+        if (!err.isNull)
+        {
+            return SumType!(UserIdentifier, DatabaseError)(err);
+        }
+
+        /* Got a new user ID */
+        return SumType!(UserIdentifier, DatabaseError)(next);
+    }
 
     string databaseURI;
     Database db;
