@@ -22,6 +22,10 @@ block content
                             - {
                                 input.form-control.is-invalid(name="username", value=suggestedUsername)
                                 div.invalid-feedback Username is too short
+                            - } else if ((problems & FormProblem.UsernameRegistered) == FormProblem.UsernameRegistered)
+                            - {
+                                input.form-control.is-invalid(name="username", value=suggestedUsername)
+                                div.invalid-feedback This username is not available
                             - } else {
                                 input.form-control(name="username", value=suggestedUsername)
                             - }

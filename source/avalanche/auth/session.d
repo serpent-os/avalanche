@@ -30,6 +30,7 @@ public enum FormProblem
     PasswordTooShort = 1 << 3,
     UnknownAccount = 1 << 4,
     PasswordMismatch = 1 << 5,
+    UsernameRegistered = 1 << 6,
 }
 
 /**
