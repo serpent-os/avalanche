@@ -22,7 +22,7 @@ import std.json : JSONValue, toJSON;
 import std.stdint : uint8_t, uint64_t;
 import std.string : startsWith, strip;
 import std.sumtype;
-import vibe.d : HTTPStatusException, HTTPStatus, logError, HTTPServerRequest;
+import vibe.d : HTTPStatusException, HTTPStatus, logError, HTTPServerRequest, enforceHTTP;
 
 /**
  * Add "free" JWT based authentication for REST APIs.
@@ -39,17 +39,9 @@ public struct ApplicationAuthentication
     this(scope TokenAuthenticator tokens, scope HTTPServerRequest request)
     {
         auto header = request.headers.get("Authorization");
-        if (header is null)
-        {
-            logError("Refusing connection that lacks Authorization header");
-            throw new HTTPStatusException(HTTPStatus.forbidden);
-        }
+        enforceHTTP(header !is null, HTTPStatus.forbidden, "Forbidden - No Authorization Header");
         auto token = tokens.checkTokenHeader(header);
-        if (token.expiredUTC)
-        {
-            logError("Refusing expired credentials: %s", token);
-            throw new HTTPStatusException(HTTPStatus.forbidden, "Expired credentials");
-        }
+        enforceHTTP(!token.expiredUTC, HTTPStatus.forbidden, "Forbidden - Expired credentials");
     }
 }
 
