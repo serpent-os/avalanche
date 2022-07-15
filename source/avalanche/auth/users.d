@@ -176,6 +176,14 @@ public final class UserManager
         return hashStyle;
     }
 
+    /**
+     * Grab all users.
+     */
+    User[] users() @safe
+    {
+        return null;
+    }
+
 private:
 
     /**
@@ -213,6 +221,8 @@ private:
 
 @("Test basic functionality for UserManagement") @safe unittest
 {
+    import std.array : array;
+
     auto db = new UserManager("lmdb://TESTUSERS");
     db.connect();
     scope (exit)
@@ -222,4 +232,27 @@ private:
         db.close();
         rmdirRecurse("TESTUSERS");
     }
+
+    /* Make sure we have no users */
+    assert(db.users.array.length == 0);
+
+    /* Ensure we can register the "root" user */
+    auto result = db.registerUser("root", "uncomplexPassword");
+    auto user = result.tryMatch!((User u) => u);
+
+    /* Lets authenticate with the right password */
+    assert(db.authenticate(user, "uncomplexPassword"), "Password auth failed");
+    assert(!db.authenticate(user, "uncomplexPassw0rd"), "Password should NOT work");
+
+    assert(db.users.array.length == 1);
+
+    /* Ensure we can find *only* the root user */
+    auto root = db.byUsername("root");
+    auto ud = root.tryMatch!((User u) => u);
+    auto non = db.byUsername("bob");
+    auto ud2 = non.tryMatch!((UserError e) => e);
+
+    auto result2 = db.registerUser("root", "notagainsurely");
+    auto err = result2.tryMatch!((UserError e) => e);
+    assert(err.code == UserErrorCode.AlreadyRegistered);
 }
