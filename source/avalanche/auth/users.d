@@ -162,7 +162,10 @@ public final class UserManager
      */
     void close() @safe
     {
-        db.close();
+        if (db !is null)
+        {
+            db.close();
+        }
     }
 
     /**
@@ -206,4 +209,17 @@ private:
     string databaseURI;
     Database db;
     PasswordHashing hashStyle = PasswordHashing.None;
+}
+
+@("Test basic functionality for UserManagement") @safe unittest
+{
+    auto db = new UserManager("lmdb://TESTUSERS");
+    db.connect();
+    scope (exit)
+    {
+        import std.file : rmdirRecurse;
+
+        db.close();
+        rmdirRecurse("TESTUSERS");
+    }
 }
