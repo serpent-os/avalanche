@@ -151,7 +151,17 @@ public struct SessionAuthentication
             problems |= FormProblem.PasswordMismatch;
         }
         auto session = SessionAuthentication();
-        render!("common/register.dt", site, session, problems, suggestedUsername);
+
+        /* Got problems - but a regsitration aint one */
+        if (problems != FormProblem.None)
+        {
+            render!("common/register.dt", site, session, problems, suggestedUsername);
+            return;
+        }
+
+        /* Welcome capt'n */
+        logInfo("Derpy: Need to register a user");
+        redirect("/");
     }
 
     SiteConfiguration site;
