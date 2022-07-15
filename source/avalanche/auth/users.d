@@ -17,6 +17,8 @@ module avalanche.auth.users;
 
 import moss.db.keyvalue;
 import moss.db.keyvalue.interfaces;
+import std.string : format;
+
 public import std.stdint : uint64_t;
 
 /**
@@ -121,7 +123,7 @@ public final class UserManager
 
         /* Ensure we haz buckets */
         db.update((scope tx) @safe {
-            foreach (bucket; [".meta"])
+            foreach (bucket; [".meta", ".users"])
             {
                 auto bkR = tx.createBucketIfNotExists(bucket);
                 bkR.tryMatch!((Bucket b) {});
@@ -138,7 +140,73 @@ public final class UserManager
      */
     UserResult registerUser(in string username, in string credentials) @safe
     {
-        return UserResult(UserError(UserErrorCode.DatabaseError, "DERP NO REGISTER"));
+        UserError err;
+        /* TODO: Assign uid */
+        User newUser = User(0, username, passwordHashing);
+
+        /* Atomically locked operation */
+        db.update((scope tx) @safe {
+            auto userTable = tx.bucket(".users");
+            assert(!userTable.isNull);
+
+            /* Can't replace old identity, sorry */
+            auto oldIdent = tx.get!UserIdentifier(userTable, username);
+            if (!oldIdent.isNull)
+            {
+                err = UserError(UserErrorCode.AlreadyRegistered, "That username is already taken");
+                return NoDatabaseError;
+            }
+
+            /* Grab a UID please. */
+            auto result = nextUserIdentifier(tx);
+            result.match!((UserIdentifier id) { newUser.uid = id; }, (DatabaseError uErr) {
+                err.code = UserErrorCode.DatabaseError;
+                err.message = uErr.message;
+            });
+
+            if (err != UserError.init)
+            {
+                return NoDatabaseError;
+            }
+
+            /* try to assign the usernames and account */
+            auto e = tx.set(userTable, username, newUser.uid);
+            if (!e.isNull)
+            {
+                return e;
+            }
+
+            /* Now we need a per-user bucket */
+            auto bucketID = () @trusted {
+                return format!"account.%d"(newUser.uid);
+            }();
+
+            /* Technically we crash if the account bucket exists, but
+               absofuckinglutely it should not exist. */
+            Bucket userBucket = tx.createBucket(bucketID).tryMatch!((Bucket b) => b);
+
+            auto e2 = tx.set(userBucket, "hashMethod", newUser.hash);
+            if (!e2.isNull)
+            {
+                return e2;
+            }
+
+            auto e3 = tx.set(userBucket, "username", newUser.username);
+            if (!e3.isNull)
+            {
+                return e3;
+            }
+
+            /* TODO: Encrypt the damn credentials! */
+            return tx.set(userBucket, "hash", credentials);
+        });
+
+        if (err != UserError.init)
+        {
+            return UserResult(err);
+        }
+
+        return UserResult(newUser);
     }
 
     /**
@@ -146,7 +214,25 @@ public final class UserManager
      */
     UserResult byUsername(in string username) @safe
     {
-        return UserResult(UserError(UserErrorCode.NoSuchUsername, "DERP NO USER"));
+        User lookup;
+        UserError err = UserError.init;
+        db.view((in tx) @safe {
+            auto bk = tx.bucket(".users");
+            auto identity = tx.get!UserIdentifier(bk, username);
+            if (identity.isNull)
+            {
+                err = UserError(UserErrorCode.NoSuchUsername, "Unknown username");
+                return NoDatabaseError;
+            }
+            lookup.username = username;
+            lookup.uid = identity;
+            return NoDatabaseError;
+        });
+        if (err != UserError.init)
+        {
+            return UserResult(err);
+        }
+        return UserResult(lookup);
     }
 
     /**
@@ -154,7 +240,29 @@ public final class UserManager
      */
     bool authenticate(in User user, in string credentials) @safe
     {
-        return false;
+        bool didAuth = false;
+
+        /* Now we need a per-user bucket */
+        auto bucketID = () @trusted { return format!"account.%d"(user.uid); }();
+
+        db.view((in tx) @safe {
+            auto result = tx.bucket(bucketID);
+            if (result.isNull)
+            {
+                return NoDatabaseError;
+            }
+            auto authMethod = tx.get!PasswordHashing(result, "hashMethod");
+            auto authHash = tx.get!string(result, "hash");
+            if (authHash.isNull)
+            {
+                return NoDatabaseError;
+            }
+
+            /* TODO: Proper hash method based checks */
+            didAuth = credentials == authHash.get;
+            return NoDatabaseError;
+        });
+        return didAuth;
     }
 
     /**
@@ -179,9 +287,20 @@ public final class UserManager
     /**
      * Grab all users.
      */
-    User[] users() @safe
+    auto users() @safe
     {
-        return null;
+        User[] users;
+        import std.algorithm : map;
+        import std.array : array;
+
+        db.view((in tx) @safe {
+            auto bk = tx.bucket(".users");
+            users = tx.iterator!(string, UserIdentifier)(bk).map!((t) @safe {
+                return User(t.value, t.key, PasswordHashing.None);
+            }).array;
+            return NoDatabaseError;
+        });
+        return users;
     }
 
 private:
@@ -189,28 +308,25 @@ private:
     /**
      * Allocate a new user identity - doesn't mean its *valid*
      */
-    SumType!(UserIdentifier, DatabaseError) nextUserIdentifier() @safe
+    auto nextUserIdentifier(scope Transaction tx) @safereturn
     {
-        UserIdentifier next = 0;
-        auto err = db.update((scope tx) @safe {
-            auto bucket = tx.bucket(".meta");
-            assert(!bucket.isNull);
+        /* Start at 1, 0 is invalid */
+        UserIdentifier next = 1;
+        auto bucket = tx.bucket(".meta");
+        assert(!bucket.isNull);
 
-            /* Got an existing one? */
-            auto existing = tx.get!UserIdentifier(bucket, "nextUserIdentifier");
-            if (existing.isNull)
-            {
-                next = existing + 1;
-            }
-
-            return tx.set(bucket, "nextUserIdentifier", next);
-        });
-        if (!err.isNull)
+        /* Got an existing one? */
+        auto existing = tx.get!UserIdentifier(bucket, "nextUserIdentifier");
+        if (!existing.isNull)
         {
-            return SumType!(UserIdentifier, DatabaseError)(err);
+            next = existing + 1;
         }
 
-        /* Got a new user ID */
+        auto ret = tx.set(bucket, "nextUserIdentifier", next);
+        if (!ret.isNull)
+        {
+            return SumType!(UserIdentifier, DatabaseError)(ret);
+        }
         return SumType!(UserIdentifier, DatabaseError)(next);
     }
 
@@ -221,8 +337,6 @@ private:
 
 @("Test basic functionality for UserManagement") @safe unittest
 {
-    import std.array : array;
-
     auto db = new UserManager("lmdb://TESTUSERS");
     db.connect();
     scope (exit)
@@ -234,7 +348,7 @@ private:
     }
 
     /* Make sure we have no users */
-    assert(db.users.array.length == 0);
+    assert(db.users.length == 0);
 
     /* Ensure we can register the "root" user */
     auto result = db.registerUser("root", "uncomplexPassword");
@@ -244,7 +358,7 @@ private:
     assert(db.authenticate(user, "uncomplexPassword"), "Password auth failed");
     assert(!db.authenticate(user, "uncomplexPassw0rd"), "Password should NOT work");
 
-    assert(db.users.array.length == 1);
+    assert(db.users.length == 1);
 
     /* Ensure we can find *only* the root user */
     auto root = db.byUsername("root");
@@ -255,4 +369,12 @@ private:
     auto result2 = db.registerUser("root", "notagainsurely");
     auto err = result2.tryMatch!((UserError e) => e);
     assert(err.code == UserErrorCode.AlreadyRegistered);
+
+    /* Now try registering another user - ensure uid is 2 */
+    auto bob = db.registerUser("bob", "chickendippers");
+    User b = bob.tryMatch!((User u) => u);
+    assert(b.uid == 2, "UID progression broken");
+
+    assert(!db.authenticate(b, "uncomplexPassword"), "Ehhh");
+    assert(db.authenticate(b, "chickendippers"), "Something is fucked");
 }
