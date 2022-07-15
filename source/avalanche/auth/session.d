@@ -152,7 +152,7 @@ public struct SessionAuthentication
         }
         auto session = SessionAuthentication();
 
-        /* Got problems - but a regsitration aint one */
+        /* Got problems - but a registration aint one */
         if (problems != FormProblem.None)
         {
             render!("common/register.dt", site, session, problems, suggestedUsername);
