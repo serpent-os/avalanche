@@ -136,7 +136,7 @@ public final class UserManager
     /**
      * Registration failed
      */
-    UserResult registerUser(in string username, in ubyte[] credentials) @safe
+    UserResult registerUser(in string username, in string credentials) @safe
     {
         return UserResult(UserError(UserErrorCode.DatabaseError, "DERP NO REGISTER"));
     }
@@ -152,7 +152,7 @@ public final class UserManager
     /**
      * Sorry - not coming in
      */
-    bool authenticate(in User user, in ubyte[] credentials) @safe
+    bool authenticate(in User user, in string credentials) @safe
     {
         return false;
     }
