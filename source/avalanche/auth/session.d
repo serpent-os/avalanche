@@ -95,6 +95,8 @@ public struct SessionAuthentication
             string password) @safe
     {
         auto problems = FormProblem.None;
+        auto session = SessionAuthentication();
+
         if (username == "")
         {
             problems |= FormProblem.MissingUsername;
@@ -104,9 +106,41 @@ public struct SessionAuthentication
             problems |= FormProblem.MissingPassword;
         }
 
-        problems |= FormProblem.UnknownAccount;
-        auto session = SessionAuthentication();
-        render!("common/login.dt", site, session, problems);
+        /* u fail */
+        if (problems != FormProblem.None)
+        {
+            render!("common/login.dt", site, session, problems);
+            return;
+        }
+
+        /* See if the user exists.. */
+        User user;
+        UserError err;
+        users.byUsername(username).match!((u) { user = u; }, (e) { err = e; });
+        if (err != UserError.init)
+        {
+            problems |= FormProblem.UnknownAccount;
+        }
+        else
+        {
+            if (!users.authenticate(user, password))
+            {
+                problems |= FormProblem.UnknownAccount;
+            }
+        }
+
+        /* Shucks, you still didn't get in */
+        if (problems != FormProblem.None)
+        {
+            render!("common/login.dt", site, session, problems);
+            return;
+        }
+
+        /* Hey this guy knows us */
+        session.uid = user.uid;
+        session.visibleUsername = user.username;
+        session.loggedIn = true;
+        redirect("/");
     }
 
     /**
