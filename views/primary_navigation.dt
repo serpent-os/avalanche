@@ -5,18 +5,16 @@ nav.navbar.navbar-expand-lg.bg-dark.navbar-dark
             svg.primaryLogo.logo(width="#{site.iconSize}px", height="#{site.iconSize}px")
                 use(xlink:href="/static/tabler/tabler-sprite.svg\##{site.iconName}")
             span.logo.px-2 #[span.subtitle.text-muted Avalanche] #{site.siteName}
-        - if (session.loggedIn) {
-            button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#primaryNavigation", aria-controls="primaryNavigation", aria-expanded="false")
-                span.navbar-toggler-icon.text-white
-            div.collapse.navbar-collapse(id="primaryNavigation")
-                ul.navbar-nav
-                    - import std.string : startsWith;
-                    - foreach (menuItem; site.primaryMenu) {
-                        - string className = (req.path == menuItem.pathPrefix || menuItem.pathPrefix.startsWith(req.path ~ "/")) ? "nav-link active" : "nav-link";
-                        li.nav-item
-                            a(class="#{className}", aria-current="page", href="#{menuItem.pathPrefix}") #{menuItem.label}
-                    - }
-        - }
+        button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#primaryNavigation", aria-controls="primaryNavigation", aria-expanded="false")
+            span.navbar-toggler-icon.text-white
+        div.collapse.navbar-collapse(id="primaryNavigation")
+            ul.navbar-nav
+                - import std.string : startsWith;
+                - foreach (menuItem; site.primaryMenu) {
+                    - string className = (req.path == menuItem.pathPrefix || menuItem.pathPrefix.startsWith(req.path ~ "/")) ? "nav-link active" : "nav-link";
+                    li.nav-item
+                        a(class="#{className}", aria-current="page", href="#{menuItem.pathPrefix}") #{menuItem.label}
+                - }
         div.d-flex
             // login form
             - if (session.loggedIn)

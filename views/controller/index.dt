@@ -4,36 +4,25 @@ block content
 
     div.container
 
+        h3 Recent activity
+
         div.row.p-3
-            // Nodes view
+
+            // Builds view
             div.card.shadow-sm.p-0.m-0
                 div.card-body.p-0.m-0
                     table.table.table-hover.table-responsive.table-vcenter.p-0.m-0
                         thead
                             tr
-                                th Endpoint
-                                th Uptime
+                                th Build ID
+                                th Package
+                                th Developer
                                 th Status
-                                th Load
+                                th Last Update
                         tbody
-                            - foreach (i; 0..5)
-                            - {
-                                tr
-                                    td #[span.status-dot.status-dot-animated.status-purple.mx-2] #[a.text-dark(href="#") Endpoint #{i}]
-                                    td 00:00:00
-                                    td #[span.status.status-azure Idle]
-                                    th.text-muted 50%
-                            - }
-
-        div.row.p-3
-            // Activity view
-            div.card.shadow-sm.p-0.m-0
-                div.card-header
-                    h3.card-title Event log
-                div.card-body.p-0.m-0
-                    div.list-group.list-group-flush
-                        - foreach (i; 0..20)
-                        - {
-                            div.list-group-item.list-group-action
-                                p.text-muted a thing happened
-                        - }
+                            tr
+                                td #323232
+                                td #[a(href="/") bob-pkg] (someRef)
+                                td #[a(href="/") Bob]
+                                td Going
+                                td 3 minutes ago

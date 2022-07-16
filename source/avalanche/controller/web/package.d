@@ -21,7 +21,11 @@ public import avalanche.server.site_config;
 import avalanche.server.context;
 import avalanche.auth.session;
 
-public static SiteConfiguration site = SiteConfiguration("Controller", "tabler-compass");
+public static SiteConfiguration site = SiteConfiguration("Controller",
+        "tabler-compass", 32, [
+            PrimaryMenuItem("/", "Builds"), PrimaryMenuItem("/hosts", "Hosts"),
+            PrimaryMenuItem("/targets", "Targets"),
+        ]);
 
 /**
  * Implementation of a controller for builders
@@ -41,7 +45,7 @@ public static SiteConfiguration site = SiteConfiguration("Controller", "tabler-c
     /**
      * Return the index page
      */
-    @anyAuth void index() @safe
+    @noAuth void index() @safe
     {
         auto session = SessionAuthentication();
         render!("controller/index.dt", site, session);
