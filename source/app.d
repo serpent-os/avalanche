@@ -16,11 +16,17 @@
 module main;
 
 import avalanche.cli;
+import libsodium;
 import moss.core.logger;
+import std.exception : enforce;
+import std.experimental.logger;
 
 int main(string[] args)
 {
     configureLogger();
+
+    info("Initialising libsodium...");
+    enforce(sodium_init() == 0, "Failed to initialise libsodium");
 
     /* Everything can happen via CLI execution */
     auto cli = cliProcessor!AvalancheCLI(args);
