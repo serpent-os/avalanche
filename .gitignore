@@ -14,3 +14,4 @@ avalanche-test-*
 *.obj
 *.lst
 dub.selections.json
+/db
