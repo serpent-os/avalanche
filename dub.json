@@ -20,7 +20,11 @@
 		"jwtd": {
 			"repository": "git+https://gitlab.com/serpent-os/dlang/jwtd.git",
 			"version": "028fc4fc086b87108a2223ed489c3b502fd9c7f4"
-        }
+        },
+		"libsodiumd": {
+			"repository": "git+https://github.com/Geod24/libsodiumd.git",
+			"version": "8bc62db965ce3da0fb5652b024f66bfacd9b8cb6"
+		}
 	},
 	"description": "boulder as a service",
 	"license": "Zlib",
