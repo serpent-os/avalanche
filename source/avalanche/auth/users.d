@@ -29,16 +29,6 @@ public import std.stdint : uint64_t;
 public alias UserIdentifier = uint64_t;
 
 /**
- * So we want different password hashing, for now we
- * store plain text but we'll likely hook up argon2
- * or similar.
- */
-public enum PasswordHashing
-{
-    None = 0
-}
-
-/**
  * A User is a composition of a a minimal number of
  * data fields. We don't actually *care* for information,
  * only the whole "user can access services" notion"
@@ -47,10 +37,6 @@ public struct User
 {
     UserIdentifier uid;
     string username;
-
-    /* We need to know what hash its stored with in case
-       of security issue montioring */
-    PasswordHashing hash;
 }
 
 /**
@@ -143,7 +129,7 @@ public final class UserManager
     {
         UserError err;
         /* TODO: Assign uid */
-        User newUser = User(0, username, passwordHashing);
+        User newUser = User(0, username);
 
         /* Atomically locked operation */
         db.update((scope tx) @safe {
@@ -185,21 +171,15 @@ public final class UserManager
             /* Technically we crash if the account bucket exists, but
                absofuckinglutely it should not exist. */
             Bucket userBucket = tx.createBucket(bucketID).tryMatch!((Bucket b) => b);
-
-            auto e2 = tx.set(userBucket, "hashMethod", newUser.hash);
+            auto e2 = tx.set(userBucket, "username", newUser.username);
             if (!e2.isNull)
             {
                 return e2;
             }
 
-            auto e3 = tx.set(userBucket, "username", newUser.username);
-            if (!e3.isNull)
-            {
-                return e3;
-            }
-
-            /* TODO: Encrypt the damn credentials! */
-            return tx.set(userBucket, "hash", credentials);
+            auto hashed = generateSodiumHash(credentials);
+            assert(hashed !is null);
+            return tx.set(userBucket, "hash", hashed);
         });
 
         if (err != UserError.init)
@@ -252,15 +232,13 @@ public final class UserManager
             {
                 return NoDatabaseError;
             }
-            auto authMethod = tx.get!PasswordHashing(result, "hashMethod");
             auto authHash = tx.get!string(result, "hash");
             if (authHash.isNull)
             {
                 return NoDatabaseError;
             }
 
-            /* TODO: Proper hash method based checks */
-            didAuth = credentials == authHash.get;
+            didAuth = sodiumHashMatch(authHash.get, credentials);
             return NoDatabaseError;
         });
         return didAuth;
@@ -278,14 +256,6 @@ public final class UserManager
     }
 
     /**
-     * Hashing style
-     */
-    pure @property auto passwordHashing() @safe @nogc nothrow inout
-    {
-        return hashStyle;
-    }
-
-    /**
      * Grab all users.
      */
     auto users() @safe
@@ -297,7 +267,7 @@ public final class UserManager
         db.view((in tx) @safe {
             auto bk = tx.bucket(".users");
             users = tx.iterator!(string, UserIdentifier)(bk).map!((t) @safe {
-                return User(t.value, t.key, PasswordHashing.None);
+                return User(t.value, t.key);
             }).array;
             return NoDatabaseError;
         });
@@ -333,7 +303,6 @@ private:
 
     string databaseURI;
     Database db;
-    PasswordHashing hashStyle = PasswordHashing.None;
 }
 
 /**
