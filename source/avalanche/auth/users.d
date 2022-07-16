@@ -308,7 +308,7 @@ private:
     /**
      * Allocate a new user identity - doesn't mean its *valid*
      */
-    auto nextUserIdentifier(scope Transaction tx) @safereturn
+    auto nextUserIdentifier(scope Transaction tx) return @safe
     {
         /* Start at 1, 0 is invalid */
         UserIdentifier next = 1;

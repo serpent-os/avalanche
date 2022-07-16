@@ -20,6 +20,7 @@ import vibe.web.auth;
 
 import avalanche.server.site_config;
 import avalanche.auth.users;
+import std.sumtype;
 
 public enum FormProblem
 {
@@ -137,7 +138,12 @@ public struct SessionAuthentication
             string username, string password, string passwordRepeat)
     {
         auto problems = FormProblem.None;
+        auto session = SessionAuthentication();
         auto suggestedUsername = username;
+
+        /* Already logged in.. can't register mate */
+        enforceHTTP(!session.loggedIn, HTTPStatus.forbidden);
+
         if (username == "")
         {
             problems |= FormProblem.MissingUsername;
@@ -150,7 +156,6 @@ public struct SessionAuthentication
         {
             problems |= FormProblem.PasswordMismatch;
         }
-        auto session = SessionAuthentication();
 
         /* Got problems - but a registration aint one */
         if (problems != FormProblem.None)
@@ -159,8 +164,24 @@ public struct SessionAuthentication
             return;
         }
 
-        /* Welcome capt'n */
-        logInfo("Derpy: Need to register a user");
+        User newUser;
+        UserError newError;
+        users.registerUser(username, password).match!((User u) { newUser = u; }, (UserError e) {
+            newError = e;
+        });
+
+        if (newError != UserError.init)
+        {
+            if (newError.code == UserErrorCode.AlreadyRegistered)
+            {
+                problems |= FormProblem.UsernameRegistered;
+            }
+            render!("common/register.dt", site, session, problems, suggestedUsername);
+            return;
+        }
+
+        logInfo("New user registered: %s", username);
+        session.loggedIn = true;
         redirect("/");
     }
 
