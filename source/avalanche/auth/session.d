@@ -216,6 +216,8 @@ public struct SessionAuthentication
         }
 
         logInfo("New user registered: %s", username);
+        session.uid = newUser.uid;
+        session.visibleUsername = newUser.username;
         session.loggedIn = true;
         redirect("/");
     }
