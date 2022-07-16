@@ -115,6 +115,7 @@ public struct SessionAuthentication
     @anyAuth @path("logout") @method(HTTPMethod.GET) void logout()
     {
         auto session = SessionAuthentication();
+        enforceHTTP(session.loggedIn, HTTPStatus.forbidden);
         session.loggedIn = false;
         terminateSession();
         redirect("/");
