@@ -21,8 +21,8 @@ public import avalanche.server.site_config;
 import avalanche.server.context;
 import avalanche.auth.session;
 
-public static SiteConfiguration site = SiteConfiguration("Controller",
-        "tabler-compass", 32, [
+public static SiteConfiguration site = SiteConfiguration("Dashboard",
+        "tabler-dashboard", 32, [
             PrimaryMenuItem("/", "Builds"), PrimaryMenuItem("/hosts", "Hosts"),
             PrimaryMenuItem("/targets", "Targets"),
         ]);
