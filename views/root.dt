@@ -20,5 +20,9 @@ html
                         h1 undefined content
         include footer
 
+    block dialogs
+        // Add dialogs in this here
+    
+
     // TODO: Use a site prefix
     script(src="/static/tabler/js/tabler.min.js")

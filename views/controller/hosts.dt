@@ -1,0 +1,33 @@
+extends root
+
+block content
+
+    div.empty
+        p.empty-title Hmm. Nothing here
+        p.empty-subtitle.text-muted Once you add a builder, it'll show up here
+        - if (session.loggedIn) {
+            div.empty-action
+                a.btn.btn-primary(href="#", data-bs-toggle="modal", data-bs-target="#add-host-dialog") Add a host
+        - }
+
+block dialogs
+
+    // Dialog for adding a host
+    div.modal.modal-blur.fade#add-host-dialog(aria-hidden="true")
+        div.modal-dialog.modal-dialog-centered(role="document")
+            div.modal-content
+                div.modal-header
+                    h5.modal-title Add a build host
+                    button.btn-close(data-bs-dismiss="modal", aria-label="Close")
+                div.modal-body
+                    p.text-muted We'll attempt connection with the build host immediately - ensure it is already up and running!
+                    form
+                        div.input-group.mb-2
+                            span.input-group-text https://
+                            input.form-control#host(type="text", placeholder="builder uri")
+                        div.form-floating.mb-2
+                            input.form-control#port(type="text", value="8081")
+                            label(for="port") Port number
+                div.modal-footer
+                    button.btn.me-auto(data-bs-dismiss="modal") Cancel
+                    button.btn.btn-primary Add now

@@ -50,4 +50,14 @@ public static SiteConfiguration site = SiteConfiguration("Dashboard",
         auto session = SessionAuthentication();
         render!("controller/index.dt", site, session);
     }
+
+    /**
+     * Render the hosts page
+     */
+    @path("hosts") @method(HTTPMethod.GET)
+    @noAuth void hosts() @safe
+    {
+        auto session = SessionAuthentication();
+        render!("controller/hosts.dt", site, session);
+    }
 }
