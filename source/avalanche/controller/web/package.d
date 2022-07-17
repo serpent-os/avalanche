@@ -23,7 +23,7 @@ import avalanche.auth.session;
 
 public static SiteConfiguration site = SiteConfiguration("Dashboard",
         "tabler-dashboard", 32, [
-            PrimaryMenuItem("/", "Builds"), PrimaryMenuItem("/hosts", "Hosts"),
+            PrimaryMenuItem("/", "Home"), PrimaryMenuItem("/builders", "Builders"),
             PrimaryMenuItem("/targets", "Targets"),
         ]);
 
@@ -54,10 +54,10 @@ public static SiteConfiguration site = SiteConfiguration("Dashboard",
     /**
      * Render the hosts page
      */
-    @path("hosts") @method(HTTPMethod.GET)
+    @path("builders") @method(HTTPMethod.GET)
     @noAuth void hosts() @safe
     {
         auto session = SessionAuthentication();
-        render!("controller/hosts.dt", site, session);
+        render!("controller/builders.dt", site, session);
     }
 }
