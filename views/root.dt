@@ -26,3 +26,4 @@ html
 
     // TODO: Use a site prefix
     script(src="/static/tabler/js/tabler.min.js")
+    script(src="/static/accounts.js")

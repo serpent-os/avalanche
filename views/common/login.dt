@@ -6,7 +6,7 @@ block content
     div.main-view.justify-content-center
 
         div.row.justify-content-center.mt-3
-            form.card.shadow-sm.col-sm-3.col-lg-3.mb-6(action="/ac/login", method="post")
+            form#loginForm.card.shadow-sm.col-sm-3.col-lg-3.mb-6(action="/ac/login", method="post")
                 div.card-header: h5.card-title Sign in
                 div.card-status-top.bg-info
                 div.card-body.justify-content-center
@@ -14,28 +14,14 @@ block content
                         p.text-muted If the configuration permits, you may also #[a(href="/ac/register") sign up] for a new account on this instance.
                     div.row.pb-1
                         div.col.pb-3
-                            label.form-label-plain User name
-                            - if ((problems & FormProblem.MissingUsername) == FormProblem.MissingUsername)
-                            - {
-                                input.form-control.is-invalid(name="username")
-                                div.invalid-feedback Missing username
-                            - } else {
-                                input.form-control(name="username")
-                            - }
+                            label.form-label-plain(for="username") User name
+                            input#username.form-control(name="username", required, minlength="6")
+                            div#usernameFeedback.invalid-feedback
                     div.row
                         div.col.pb-3
-                            label.form-label-plain Password
-                            - if ((problems & FormProblem.MissingPassword) == FormProblem.MissingPassword)
-                            - {
-                                input.form-control.is-invalid(name="password", type="password")
-                                div.invalid-feedback Missing password
-                            - } else {
-                                input.form-control.password(name="password", type="password")
-                            - }
+                            label.form-label-plain(for="password") Password
+                            input#password.form-control(name="password", type="password", required, minlength="6")
+                            div#passwordFeedback.invalid-feedback
                     div.row
-                        - if ((problems & FormProblem.UnknownAccount) == FormProblem.UnknownAccount)
-                        - {
-                            strong.mb-3 Invalid username or password
-                        - }
                         div.col
-                            button.btn.form-control.btn-primary(type="submit") Sign in
+                            button#loginButton.btn.form-control.btn-primary(type="submit") Sign in
