@@ -25,12 +25,46 @@ const accountEndpoints = {
 }
 
 /**
+ * As soon as DOM is available update the account button
+ * (Prevents flickering)
+ */
+document.addEventListener('DOMContentLoaded', function(ev)
+{
+    const accountButton = document.getElementById('accountButton');
+    if (accountButton == null)
+    {
+        return;
+    }
+    if (isLoggedIn())
+    {
+        accountButton.innerHTML = "Log out " + window.sessionStorage.getItem(AVALANCHE_USER_ID);
+    } else {
+        accountButton.innerHTML = "Log in";
+    }
+})
+
+/**
  * Ensure correct integration for avalanche website use
  */
 window.onload = function(ev)
 {
     integrateLoginForm();
     integrateRegisterForm();
+
+    console.log("Account logged in? " + isLoggedIn());
+    console.log("Logged in as: " + window.sessionStorage.getItem(AVALANCHE_USER_ID));
+
+    const accountButton = document.getElementById('accountButton');
+    accountButton.onclick = function(ev)
+    {
+        ev.preventDefault();
+        if (isLoggedIn())
+        {
+            return performLogout();
+        }
+        /* Go to login page */
+        window.location.href = "/ac/login";
+    }
 }
 
 /**
@@ -145,10 +179,11 @@ function performLogin(form)
         }
         return response.json();
     }).then(result => {
-        console.log("Logged in! " + result);
+        console.log("Logged in! " + JSON.stringify(result));
         window.sessionStorage.setItem(AVALANCHE_TOKEN_ID, result.token);
         window.sessionStorage.setItem(AVALANCHE_USER_ID, result.username);
         window.sessionStorage.setItem(AVALANCHE_USER_ROLE, result.role);
+        window.location.href = "/";
     }).catch(error => console.log("shit... " + error));
 
     return false;
@@ -162,7 +197,7 @@ function performLogout()
     fetch(accountEndpoints['logout'], {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer ' + token
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem(AVALANCHE_TOKEN_ID)
         }
     }).then(response => {
         if (!response.ok)
@@ -171,6 +206,7 @@ function performLogout()
         }
         console.log("Logged out");
         window.sessionStorage.clear();
+        window.location.reload(true);
     }).catch(error => console.log("shit... " + error));
 
     return false;

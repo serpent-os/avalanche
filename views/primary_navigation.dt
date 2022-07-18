@@ -17,9 +17,4 @@ nav.navbar.navbar-expand-lg.bg-dark.navbar-dark
                 - }
         div.d-flex
             // login form
-            - if (session.loggedIn)
-            - {
-                a.btn.btn-outline-info.text-white(href="/ac/logout") Log out #{session.visibleUsername.value}
-            - } else {
-                a.btn.btn-outline-info.text-white(href="/ac/login") Login
-            - }
+            button#accountButton.btn.btn-outline-info.text-white
