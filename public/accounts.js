@@ -33,7 +33,6 @@ function integrateLoginForm()
     {
         return;
     }
-    console.log("Integrating form...");
     /* Hook up the username + password validity checks (min length, required) */
     const username = document.getElementById('username');
     const usernameFeedback = document.getElementById('usernameFeedback');
@@ -69,11 +68,6 @@ function inputValidator(ev, feedback)
  */
 function performLogin(form)
 {
-    if (!form.validity.valid)
-    {
-        console.log("not valid");
-        return false;
-    }
     let fe = new FormData(form);
     const request = {
         "username": fe.get('username'),
