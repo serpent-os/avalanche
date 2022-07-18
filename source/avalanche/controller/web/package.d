@@ -23,8 +23,8 @@ import avalanche.auth.session;
 
 public static SiteConfiguration site = SiteConfiguration("Dashboard",
         "tabler-dashboard", 32, [
-            PrimaryMenuItem("/", "Home"), PrimaryMenuItem("/builders", "Builders"),
-            PrimaryMenuItem("/targets", "Targets"),
+            PrimaryMenuItem("/", "Home"), PrimaryMenuItem("/builders",
+                "Builders"), PrimaryMenuItem("/targets", "Targets"),
         ]);
 
 /**
