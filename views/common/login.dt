@@ -1,8 +1,6 @@
 extends root
 
-
 block content
-    - import avalanche.auth.session : FormProblem;
     div.main-view.justify-content-center
 
         div.row.justify-content-center.mt-3
