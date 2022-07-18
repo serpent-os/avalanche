@@ -1,11 +1,10 @@
 extends root
 
 block content
-    - import avalanche.auth.session : FormProblem;
     div.main-view.justify-content-center
 
         div.row.justify-content-center.mt-3
-            form.card.shadow-sm.col-sm-3.col-lg-3.mb-6(action="/ac/register", method="post")
+            form#registerForm.card.shadow-sm.col-sm-3.col-lg-3.mb-6
                 div.card-header: h5.card-title Sign up
                 div.card-status-top.bg-info
                 div.card-body.justify-content-center
@@ -13,45 +12,19 @@ block content
                         p.text-muted Sign up for a local account on this instance of #{site.siteName}
                     div.row.pb-1
                         div.col.pb-3
-                            label.form-label-plain User name
-                            - if ((problems & FormProblem.MissingUsername) == FormProblem.MissingUsername)
-                            - {
-                                input.form-control.is-invalid(name="username", value=suggestedUsername)
-                                div.invalid-feedback Missing username
-                            - } else if ((problems & FormProblem.UsernameTooShort) == FormProblem.UsernameTooShort)
-                            - {
-                                input.form-control.is-invalid(name="username", value=suggestedUsername)
-                                div.invalid-feedback Username is too short
-                            - } else if ((problems & FormProblem.UsernameRegistered) == FormProblem.UsernameRegistered)
-                            - {
-                                input.form-control.is-invalid(name="username", value=suggestedUsername)
-                                div.invalid-feedback This username is not available
-                            - } else {
-                                input.form-control(name="username", value=suggestedUsername)
-                            - }
+                            label.form-label-plain(for="username") User name
+                            input#username.form-control(name="username", required, minlength="6")
+                            div#usernameFeedback.invalid-feedback
                     div.row
                         div.col.pb-3
-                            label.form-label-plain Password
-                            - if ((problems & FormProblem.MissingPassword) == FormProblem.MissingPassword)
-                            - {
-                                input.form-control.is-invalid.password(name="password", type="password")
-                                div.invalid-feedback Missing password
-                            - } else if ((problems & FormProblem.PasswordTooShort) == FormProblem.PasswordTooShort) {
-                                input.form-control.is-invalid.password(name="password", type="password")
-                                div.invalid-feedback Password is too short
-                            - } else {
-                                input.form-control.password(name="password", type="password")
-                            - }
+                            label.form-label-plain(for="password") Password
+                            input#password.form-control(name="password", type="password", required, minlength="6")
+                            div#passwordFeedback.invalid-feedback
                     div.row
                         div.col.pb-3
-                            label.form-label-plain Repeat password
-                            - if ((problems & FormProblem.PasswordMismatch) == FormProblem.PasswordMismatch)
-                            - {
-                                input.form-control.is-invalid.password(name="passwordRepeat", type="password")
-                                div.invalid-feedback Passwords do not match
-                            - } else {
-                                input.form-control.password(name="passwordRepeat", type="password")
-                            - }
+                            label.form-label-plain(for="passwordRepeat") Repeat password
+                            input#passwordRepeat.form-control(name="passwordRepeat", type="password", required, minlength="6")
+                            div#passwordRepeatFeedback.invalid-feedback
                     div.row
                         div.col
-                            button.btn.form-control.btn-primary(type="submit") Sign up
+                            button#registerButton.btn.form-control.btn-primary(type="submit") Sign up

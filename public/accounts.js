@@ -21,6 +21,7 @@ const AVALANCHE_USER_ROLE = 'AVALANCHE_ROLE';
 window.onload = function(ev)
 {
     integrateLoginForm();
+    integrateRegisterForm();
 }
 
 /**
@@ -49,6 +50,36 @@ function integrateLoginForm()
 }
 
 /**
+ * Registration form integration
+ */
+function integrateRegisterForm()
+{
+    let registerForm = document.getElementById('registerForm');
+    if (registerForm == null)
+    {
+        return;
+    }
+
+    registerForm.onsubmit = ev => {
+        ev.preventDefault();
+        return false;
+    }
+
+    /* Get validation working */
+    const username = document.getElementById('username');
+    const usernameFeedback = document.getElementById('usernameFeedback');
+    const password = document.getElementById('password');
+    const passwordFeedback = document.getElementById('passwordFeedback');
+    const passwordRepeat = document.getElementById('passwordRepeat');
+    const passwordRepeatFeedback = document.getElementById('passwordRepeatFeedback');
+
+    username.addEventListener('input', ev => inputValidator(ev, usernameFeedback));
+    password.addEventListener('input', ev => inputValidator(ev, passwordFeedback));
+    password.addEventListener('input', ev => passwordValidator(password, passwordRepeat, passwordRepeatFeedback));
+    passwordRepeat.addEventListener('input', ev => passwordValidator(password, passwordRepeat, passwordRepeatFeedback));
+}
+
+/**
  * Handle validation of basic constraints
  */
 function inputValidator(ev, feedback)
@@ -59,6 +90,18 @@ function inputValidator(ev, feedback)
         feedback.innerHTML = ev.target.validationMessage;
     } else {
         ev.target.classList.remove('is-invalid');
+        feedback.innerHTML = '';
+    }
+}
+
+function passwordValidator(real, repeat, feedback)
+{
+    if (real.value != repeat.value && repeat.value.length > 0)
+    {
+        repeat.classList.add('is-invalid');
+        feedback.innerHTML = 'Passwords do not match';
+    } else {
+        repeat.classList.remove('is-invalid');
         feedback.innerHTML = '';
     }
 }
