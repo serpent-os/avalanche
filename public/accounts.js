@@ -16,6 +16,15 @@ const AVALANCHE_USER_ID  = 'AVALANCHE_USER';
 const AVALANCHE_USER_ROLE = 'AVALANCHE_ROLE';
 
 /**
+ * Endpoints for the authentication API
+ */
+const accountEndpoints = {
+    'register': '/api/v1/auth/register',
+    'login': '/api/v1/auth/login',
+    'logout': '/api/v1/auth/logout',
+}
+
+/**
  * Ensure correct integration for avalanche website use
  */
 window.onload = function(ev)
@@ -122,7 +131,7 @@ function performLogin(form)
     const button = document.getElementById('loginButton');
     button.disabled = true;
 
-    fetch('/api/v1/auth/login', {
+    fetch(accountEndpoints['login'], {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -150,7 +159,7 @@ function performLogin(form)
  */
 function performLogout()
 {
-    fetch('/api/v1/auth/logout', {
+    fetch(accountEndpoints['logout'], {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token
