@@ -22,18 +22,6 @@ import avalanche.server.site_config;
 import avalanche.auth.users;
 import std.sumtype;
 
-public enum FormProblem
-{
-    None = 0,
-    MissingUsername = 1 << 0,
-    UsernameTooShort = 1 << 1,
-    MissingPassword = 1 << 2,
-    PasswordTooShort = 1 << 3,
-    UnknownAccount = 1 << 4,
-    PasswordMismatch = 1 << 5,
-    UsernameRegistered = 1 << 6,
-}
-
 /**
  * SessionAuthentication is required for HTTP web sessions, not for API use.
  */
@@ -53,6 +41,11 @@ public struct SessionAuthentication
      * The visible username - volatile
      */
     SessionVar!(string, "visibleUsername") visibleUsername;
+
+    /**
+     * The last error that the user caused
+     */
+    SessionVar!(string, "lastError") lastError;
 }
 
 /**
@@ -84,8 +77,7 @@ public struct SessionAuthentication
     @noAuth @path("login") @method(HTTPMethod.GET) void login()
     {
         auto session = SessionAuthentication();
-        FormProblem problems = FormProblem.None;
-        render!("common/login.dt", site, session, problems);
+        render!("common/login.dt", site, session);
     }
 
     /**
@@ -94,45 +86,31 @@ public struct SessionAuthentication
     @noAuth @path("login") @method(HTTPMethod.POST) void processLogin(string username,
             string password) @safe
     {
-        auto problems = FormProblem.None;
         auto session = SessionAuthentication();
-
-        if (username == "")
-        {
-            problems |= FormProblem.MissingUsername;
-        }
-        if (password == "")
-        {
-            problems |= FormProblem.MissingPassword;
-        }
-
-        /* u fail */
-        if (problems != FormProblem.None)
-        {
-            render!("common/login.dt", site, session, problems);
-            return;
-        }
 
         /* See if the user exists.. */
         User user;
         UserError err;
+        bool userError;
         users.byUsername(username).match!((u) { user = u; }, (e) { err = e; });
         if (err != UserError.init)
         {
-            problems |= FormProblem.UnknownAccount;
+            userError = true;
         }
         else
         {
+            /* invaid pass */
             if (!users.authenticate(user, password))
             {
-                problems |= FormProblem.UnknownAccount;
+                userError = true;
             }
         }
 
         /* Shucks, you still didn't get in */
-        if (problems != FormProblem.None)
+        if (userError)
         {
-            render!("common/login.dt", site, session, problems);
+            session.lastError = "Invalid username or password";
+            render!("common/login.dt", site, session);
             return;
         }
 
@@ -160,10 +138,9 @@ public struct SessionAuthentication
      */
     @noAuth @path("register") @method(HTTPMethod.GET) void register()
     {
-        auto problems = FormProblem.None;
         auto session = SessionAuthentication();
         auto suggestedUsername = "";
-        render!("common/register.dt", site, session, problems, suggestedUsername);
+        render!("common/register.dt", site, session, suggestedUsername);
     }
 
     /**
@@ -172,32 +149,11 @@ public struct SessionAuthentication
     @noAuth @path("register") @method(HTTPMethod.POST) void processRegister(
             string username, string password, string passwordRepeat)
     {
-        auto problems = FormProblem.None;
         auto session = SessionAuthentication();
         auto suggestedUsername = username;
 
         /* Already logged in.. can't register mate */
         enforceHTTP(!session.loggedIn, HTTPStatus.forbidden);
-
-        if (username == "")
-        {
-            problems |= FormProblem.MissingUsername;
-        }
-        if (password == "")
-        {
-            problems |= FormProblem.MissingPassword;
-        }
-        if (passwordRepeat != password)
-        {
-            problems |= FormProblem.PasswordMismatch;
-        }
-
-        /* Got problems - but a registration aint one */
-        if (problems != FormProblem.None)
-        {
-            render!("common/register.dt", site, session, problems, suggestedUsername);
-            return;
-        }
 
         User newUser;
         UserError newError;
@@ -209,9 +165,9 @@ public struct SessionAuthentication
         {
             if (newError.code == UserErrorCode.AlreadyRegistered)
             {
-                problems |= FormProblem.UsernameRegistered;
+                session.lastError = "The requested username is not available";
             }
-            render!("common/register.dt", site, session, problems, suggestedUsername);
+            render!("common/register.dt", site, session, suggestedUsername);
             return;
         }
 
