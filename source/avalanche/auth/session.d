@@ -17,6 +17,7 @@ module avalanche.auth.session;
 
 import vibe.d;
 import vibe.web.auth;
+import vibe.web.validation;
 
 import avalanche.server.site_config;
 import avalanche.auth.users;
@@ -83,8 +84,8 @@ public struct SessionAuthentication
     /**
      * Provide the login validation
      */
-    @noAuth @path("login") @method(HTTPMethod.POST) void processLogin(string username,
-            string password) @safe
+    @noAuth @path("login") @method(HTTPMethod.POST) void processLogin(
+            ValidUsername username, ValidPassword password) @safe
     {
         auto session = SessionAuthentication();
 
@@ -147,7 +148,7 @@ public struct SessionAuthentication
      * POST register form
      */
     @noAuth @path("register") @method(HTTPMethod.POST) void processRegister(
-            string username, string password, string passwordRepeat)
+            ValidUsername username, ValidPassword password, Confirm!"password" passwordRepeat)
     {
         auto session = SessionAuthentication();
         auto suggestedUsername = username;
