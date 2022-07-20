@@ -23,3 +23,6 @@ block content
                     div.row
                         div.col
                             button#loginButton.btn.form-control.btn-primary(type="submit") Sign in
+
+block scripts
+    script(src="/static/login.js", type="module")

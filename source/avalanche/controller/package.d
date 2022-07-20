@@ -18,7 +18,6 @@ public import avalanche.server;
 
 import avalanche.controller.rest;
 import avalanche.controller.web;
-import avalanche.auth.rpc;
 import avalanche.auth.session;
 import avalanche.auth.users;
 import std.exception : enforce;
@@ -37,7 +36,6 @@ final class ControllerServer : Server
         "db/controller/users".mkdirRecurse();
         users = new UserManager("lmdb://db/controller/users");
         addInterface(new Controller());
-        addInterface(new AuthServer());
         addWeb(new ControllerWeb());
         addWeb(new SessionManagement(site, users));
         configureFileSharing("public", "/static");
