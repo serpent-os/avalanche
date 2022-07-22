@@ -33,16 +33,56 @@ import vibe.d : HTTPStatusException, HTTPStatus, logError, HTTPServerRequest, en
  */
 public struct ApplicationAuthentication
 {
+
+    /**
+     * True if using cookie based authentication
+     */
+    pragma(inline, true) pure @property bool isWebClient() @safe @nogc nothrow
+    {
+        return webClient;
+    }
+
+    /**
+     * True if using header based authentication
+     */
+    pragma(inline, true) pure @property bool isAppClient() @safe @nogc nothrow
+    {
+        return !webClient;
+    }
+
     /**
      * Construct ApplicationAuthentication from a request and authenticator
      */
     this(scope TokenAuthenticator tokens, scope HTTPServerRequest request)
     {
+        Token tok;
+
+        auto cookie = request.cookies.get("avalanche.token");
         auto header = request.headers.get("Authorization");
-        enforceHTTP(header !is null, HTTPStatus.forbidden, "Forbidden - No Authorization Header");
-        auto token = tokens.checkTokenHeader(header);
-        enforceHTTP(!token.expiredUTC, HTTPStatus.forbidden, "Forbidden - Expired credentials");
+
+        if (cookie !is null)
+        {
+            webClient = true;
+            tok = tokens.checkCookie(cookie);
+        }
+        else if (header !is null)
+        {
+            tok = tokens.checkTokenHeader(header);
+        }
+        else
+        {
+            throw new HTTPStatusException(HTTPStatus.forbidden);
+        }
+
+        /* Is it actually valid? */
+        enforceHTTP(!tok.expiredUTC, HTTPStatus.forbidden, "Forbidden - Expired credentials");
+
+        /* TODO: Set up roles */
     }
+
+private:
+
+    bool webClient;
 }
 
 /**
@@ -202,12 +242,26 @@ public class TokenAuthenticator
             throw new HTTPStatusException(HTTPStatus.badRequest);
         }
         /* Strip the header down */
-        auto substr = authHeader["B earer".length .. $].strip();
+        auto substr = authHeader["Bearer".length .. $].strip();
         logError(substr);
         Token ret;
 
         /* Get it decoded. */
         this.decode(cast(TokenString) substr).match!((TokenError err) {
+            logError("Invalid token encountered: %s", err.toString);
+            throw new HTTPStatusException(HTTPStatus.expectationFailed, err.toString);
+        }, (Token t) { ret = t; });
+
+        /* Check expiry, subject, etc. */
+        return ret;
+    }
+
+    Token checkCookie(in string cookie)
+    {
+        Token ret;
+
+        /* Get it decoded. */
+        this.decode(cast(TokenString) cookie).match!((TokenError err) {
             logError("Invalid token encountered: %s", err.toString);
             throw new HTTPStatusException(HTTPStatus.expectationFailed, err.toString);
         }, (Token t) { ret = t; });

@@ -119,6 +119,7 @@ public struct SessionAuthentication
         session.uid = user.uid;
         session.visibleUsername = user.username;
         session.loggedIn = true;
+
         redirect("/");
     }
 
