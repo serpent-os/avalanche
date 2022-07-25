@@ -15,7 +15,7 @@ import * as validationModule from './common.js';
 /**
  * Hook up submit button for adding builders
  */
-window.onload = function(ev)
+window.addEventListener('load', function(ev)
 {
     const form = document.getElementById('addBuilderForm');
     const button = document.getElementById('addBuilderButton');
@@ -34,4 +34,4 @@ window.onload = function(ev)
         form.submit();
         return false;
     };
-}
+});

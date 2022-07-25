@@ -73,15 +73,6 @@ public struct SessionAuthentication
     }
 
     /**
-     * Provide the login form over GET
-     */
-    @noAuth @path("login") @method(HTTPMethod.GET) void login()
-    {
-        auto session = SessionAuthentication();
-        render!("common/login.dt", site, session);
-    }
-
-    /**
      * Provide the login validation
      */
     @noAuth @path("login") @method(HTTPMethod.POST) void processLogin(
@@ -111,7 +102,7 @@ public struct SessionAuthentication
         if (userError)
         {
             session.lastError = "Invalid username or password";
-            render!("common/login.dt", site, session);
+            redirect("/");
             return;
         }
 

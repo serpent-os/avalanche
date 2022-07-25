@@ -15,10 +15,10 @@ import * as validationModule from './common.js';
 /**
  * Ensure correct integration for avalanche website use
  */
-window.onload = function(ev)
+window.addEventListener('load', function(ev)
 {
     integrateLoginForm();
-}
+});
 
 /**
  * When required, integrate the login form.
@@ -32,7 +32,17 @@ function integrateLoginForm()
     const usernameFeedback = document.getElementById('usernameFeedback');
     const password = document.getElementById('password');
     const passwordFeedback = document.getElementById('passwordFeedback');
+    const form = document.getElementById('loginForm');
+    const button = document.getElementById('loginButton');
+
+    button.onclick = function(ev)
+    {
+        ev.preventDefault();
+        form.submit();
+        return false;
+    };
 
     username.addEventListener('input', ev => validationModule.inputValidator(ev, usernameFeedback));
     password.addEventListener('input', ev => validationModule.inputValidator(ev, passwordFeedback));
+
 }

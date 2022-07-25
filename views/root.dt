@@ -21,10 +21,14 @@ html
                         h1 undefined content
         include footer
 
-    block dialogs
-        // Add dialogs in this here
+        block dialogs
+            // Add dialogs in this here
     
+        include common/account_dialogs
 
     // TODO: Use a site prefix
     script(src="/static/tabler/js/tabler.min.js", defer, async)
+    script(src="/static/login.js", type="module")
+
     block scripts
+        // add scripts here

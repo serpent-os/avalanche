@@ -1,0 +1,27 @@
+// Dialog for login & registration
+div.modal.modal-blur.fade.shadow#accountsDialog(aria-hidden="true")
+    div.modal-dialog.modal-dialog-centered(role="document")
+        div.modal-content
+            div.modal-header
+                h5.modal-title Login to #{site.siteName}
+                button.btn-close(data-bs-dismiss="modal", aria-label="Close")
+            div.modal-body
+                form#loginForm(action="/ac/login", method="post")
+                    div.row.mb-3.py-2:
+                        p.text-muted If the configuration permits, you may also #[a(href="/ac/register") sign up] for a new account on this instance.
+                    div.row.pb-1
+                        div.col.pb-3
+                            div.form-floating
+                                input#username.form-control(name="username", required, minlength="6")
+                                label(for="username") Username
+                                div#usernameFeedback.invalid-feedback
+                    div.row
+                        div.col.pb-3
+                            div.form-floating
+                                input#password.form-control(name="password", type="password", required, minlength=6)
+                                label(for="password") Password
+                                div#passwordFeedback.invalid-feedback
+    
+            div.modal-footer
+                button.btn.me-auto(data-bs-dismiss="modal") Cancel
+                button#loginButton.btn.btn-primary Log in

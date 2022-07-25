@@ -21,5 +21,5 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
             - {
                 a#accountButton.btn(href="/ac/logout") Log out #{session.visibleUsername.value}
             - } else {
-                a#accountButton.btn(href="/ac/login") Log in
+                a#accountButton.btn(href="#", data-bs-toggle="modal", data-bs-target="#accountsDialog") Log in
             - }

@@ -15,10 +15,10 @@ import * as validationModule from './common.js';
 /**
  * Ensure correct integration for avalanche website use
  */
-window.onload = function(ev)
+window.addEventListener('load', function(ev)
 {
     integrateRegisterForm();
-}
+});
 
 /**
  * Registration form integration
