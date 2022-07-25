@@ -7,7 +7,7 @@ html
         block title
             title Avalanche - #{site.siteName}
 
-        // TODO: Use a site refix
+        // TODO: Use a site prefix
         link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
         link(rel="stylesheet", href="/static/custom.css")
 
