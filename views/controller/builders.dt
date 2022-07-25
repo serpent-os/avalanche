@@ -3,11 +3,15 @@ extends root
 block content
 
     div.empty
-        p.empty-title Hmm. Nothing here
-        p.empty-subtitle.text-muted Once you add a builder, it'll show up here
+        div.empty-icon 
+            svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-mood-suprised")
+        p.empty-title Ermagahd! Whar'd it go?
+        p.empty-subtitle.text-muted  No builders have been added yet, time to get started.
         - if (session.loggedIn) {
             div.empty-action
-                a.btn.btn-primary(href="#", data-bs-toggle="modal", data-bs-target="#add-host-dialog") Add a host
+                a.btn.btn-primary(href="#", data-bs-toggle="modal", data-bs-target="#add-host-dialog")
+                    svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
+                    | Connect a builder
         - }
 
 block dialogs
