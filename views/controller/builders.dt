@@ -21,10 +21,10 @@ block dialogs
         div.modal-dialog.modal-dialog-centered(role="document")
             div.modal-content
                 div.modal-header
-                    h5.modal-title Add a build host
+                    h5.modal-title Connect a new Builder
                     button.btn-close(data-bs-dismiss="modal", aria-label="Close")
                 div.modal-body
-                    p.text-muted We'll attempt connection with the build host immediately - ensure it is already up and running!
+                    p.text-muted Tell us where the builder is, and we'll do the rest.
                     form#addBuilderForm(action="/builders/add", method="post")
                         div.input-group.mb-2
                             span.input-group-text https://
@@ -35,7 +35,8 @@ block dialogs
                             label(for="port") Port number
                 div.modal-footer
                     button.btn.me-auto(data-bs-dismiss="modal") Cancel
-                    button#addBuilderButton.btn.btn-primary Add now
+                    button#addBuilderButton.btn.btn-primary Connect
     
 block scripts
-    script(src="/static/builders.js", type="module")
+    - if (session.loggedIn)
+        script(src="/static/builders.js", type="module")
