@@ -1,7 +1,7 @@
-nav.navbar.navbar-expand-lg.bg-dark.navbar-dark
-    div.container-fluid
+nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
+    div.container
         // Logo
         a.navbar-brand.logo.text-white(href="/")
-            svg.primaryLogo.logo(width="#{site.iconSize}px", height="#{site.iconSize}px")
+            svg.primaryLogo.logo.text-azure(width="#{site.iconSize}px", height="#{site.iconSize}px")
                 use(xlink:href="/static/tabler/tabler-sprite.svg\##{site.iconName}")
             span.logo.px-2 #[span.subtitle.text-muted Avalanche] #{site.siteName}

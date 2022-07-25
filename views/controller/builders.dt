@@ -13,7 +13,7 @@ block content
 block dialogs
 
     // Dialog for adding a host
-    div.modal.modal-blur.fade#add-host-dialog(aria-hidden="true")
+    div.modal.modal-blur.fade.shadow#add-host-dialog(aria-hidden="true")
         div.modal-dialog.modal-dialog-centered(role="document")
             div.modal-content
                 div.modal-header

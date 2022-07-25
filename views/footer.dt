@@ -2,7 +2,7 @@ div.container-fluid.mt-auto.col-12
     footer.py-3.px-3
         hr.text-muted.py-0.my-3
 
-        div.container-fluid.d-flex.justify-content-evenly
+        div.container.d-flex.justify-content-evenly
             div.col.d-inline-flex.justify-content-start
                 small.text-muted Copyright &copy; 2020-2022 #[a(href="https://serpentos.com") Serpent OS] Developers
             div.col.d-inline-flex.justify-content-center

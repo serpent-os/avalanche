@@ -11,7 +11,7 @@ html
         link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
         link(rel="stylesheet", href="/static/custom.css")
 
-    body.d-flex.flex-column.min-vh-100
+    body.d-flex.flex-column.min-vh-100.theme-dark-auto
         include primary_navigation
         main
             include notifications
