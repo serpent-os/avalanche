@@ -28,5 +28,8 @@
 	},
 	"description": "boulder as a service",
 	"license": "Zlib",
-	"name": "avalanche"
+	"name": "avalanche",
+	"dflags-ldc": [
+		"--link-defaultlib-shared=false"
+	]
 }
