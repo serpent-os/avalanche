@@ -16,6 +16,7 @@
 module avalanche.app;
 
 import vibe.d;
+import avalanche.rest;
 
 /**
  * Main entry point from the server side, storing our
@@ -37,7 +38,15 @@ public final class AvalancheApp
 
         /* Bring up our core routes */
         router = new URLRouter();
+        auto bAPI = new BaseAPI();
+        bAPI.configure(router);
         router.rebuild();
+        debug
+        {
+            import std.stdio : writeln;
+
+            writeln(router.getAllRoutes);
+        }
     }
 
     /**
