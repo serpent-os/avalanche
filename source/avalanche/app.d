@@ -38,7 +38,7 @@ public final class AvalancheApp
 
         /* Bring up our core routes */
         router = new URLRouter();
-        auto bAPI = new BaseAPI();
+        auto bAPI = new BuildAPI();
         bAPI.configure(router);
         router.rebuild();
         debug
