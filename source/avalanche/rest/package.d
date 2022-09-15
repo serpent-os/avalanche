@@ -17,6 +17,7 @@ module avalanche.rest;
 
 import vibe.d;
 import avalanche.build;
+import avalanche.build.job;
 
 /**
  * The BuildAPI
@@ -25,6 +26,12 @@ import avalanche.build;
 {
     @path("version")
     string versionIdentifier() @safe;
+
+    /**
+     * Request a build.
+     */
+    @path("build_package")
+    void buildPackage(PackageBuild request) @safe;
 }
 
 /**
@@ -46,4 +53,15 @@ public final class BuildAPI : BuildAPIv1
     {
         return "0.0.1";
     }
+
+    override void buildPackage(PackageBuild request) @safe
+    {
+        enforceHTTP(!working, HTTPStatus.serviceUnavailable, "Sorry, already building something");
+        working = true;
+        runTask({ auto b = new BuildJob(request); b.run(); working = false; });
+    }
+
+private:
+
+    bool working = false;
 }
