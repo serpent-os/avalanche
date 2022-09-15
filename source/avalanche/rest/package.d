@@ -16,6 +16,7 @@
 module avalanche.rest;
 
 import vibe.d;
+import std.stdint : uint64_t;
 
 /**
  * Collections to add to the profile
@@ -43,6 +44,11 @@ struct BinaryCollection
  */
 struct PackageBuild
 {
+    /**
+     * Remote build identifier
+     */
+    uint64_t buildID;
+
     /**
      * Upstream git URI
      */
