@@ -57,7 +57,6 @@ public final class AvalancheApp
     void stop() @safe
     {
         listener.stopListening();
-
     }
 
 private:
