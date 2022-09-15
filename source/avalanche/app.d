@@ -41,12 +41,6 @@ public final class AvalancheApp
         auto bAPI = new BuildAPI();
         bAPI.configure(router);
         router.rebuild();
-        debug
-        {
-            import std.stdio : writeln;
-
-            writeln(router.getAllRoutes);
-        }
     }
 
     /**
