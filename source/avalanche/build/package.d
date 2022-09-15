@@ -12,6 +12,7 @@
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
+module avalanche.build;
 
 import std.stdint : uint64_t;
 
