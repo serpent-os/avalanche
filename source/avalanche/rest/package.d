@@ -41,6 +41,16 @@ import avalanche.build.job;
 public final class BuildAPI : BuildAPIv1
 {
 
+    @disable this();
+
+    /**
+     * Construct new BuildAPI using the specified rootDir
+     */
+    this(string rootDir) @safe
+    {
+        this.rootDir = rootDir;
+    }
+
     /**
      * Configure BuildAPI for integration
      */
@@ -54,14 +64,19 @@ public final class BuildAPI : BuildAPIv1
         return "0.0.1";
     }
 
+    /**
+     * Go ahead and schedule build of the package on a separate fiber
+     */
     override void buildPackage(PackageBuild request) @safe
     {
         enforceHTTP(!working, HTTPStatus.serviceUnavailable, "Sorry, already building something");
+        enforceHTTP(request.collections.length > 0, HTTPStatus.badRequest, "Missing collections");
         working = true;
-        runTask({ auto b = new BuildJob(request); b.run(); working = false; });
+        runTask({ auto b = new BuildJob(rootDir, request); b.run(); working = false; });
     }
 
 private:
 
+    string rootDir;
     bool working = false;
 }

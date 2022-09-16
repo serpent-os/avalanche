@@ -27,7 +27,7 @@ public final class AvalancheApp
     /**
      * Construct a new SummitApp
      */
-    this() @safe
+    this(string rootDir) @safe
     {
         settings = new HTTPServerSettings();
         settings.disableDistHost = true;
@@ -38,7 +38,7 @@ public final class AvalancheApp
 
         /* Bring up our core routes */
         router = new URLRouter();
-        auto bAPI = new BuildAPI();
+        auto bAPI = new BuildAPI(rootDir);
         bAPI.configure(router);
         router.rebuild();
     }

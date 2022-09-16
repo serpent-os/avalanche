@@ -17,6 +17,9 @@ module main;
 
 import vibe.d;
 import avalanche.app;
+import std.path : absolutePath, asNormalizedPath;
+import std.string : format;
+import std.conv : to;
 
 /**
  * Gets our builder up and running
@@ -28,7 +31,9 @@ import avalanche.app;
 int main(string[] args)
 {
     logInfo("Starting Avalanche");
-    auto app = new AvalancheApp();
+    auto rootDir = absolutePath(".").asNormalizedPath.to!string;
+    logInfo(format!"Root dir: %s"(rootDir));
+    auto app = new AvalancheApp(rootDir);
     app.start();
     scope (exit)
     {
