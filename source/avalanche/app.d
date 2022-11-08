@@ -32,7 +32,6 @@ public final class AvalancheApp
         settings = new HTTPServerSettings();
         settings.disableDistHost = true;
         settings.useCompressionIfPossible = true;
-        settings.bindAddresses = ["127.0.0.1"];
         settings.port = 8082;
         settings.serverString = "avalanche/0.0.1";
 
