@@ -14,6 +14,9 @@
 		"moss-core": {
 			"path": "../moss-core"
         },
+		"moss-service": {
+			"path": "../moss-service"
+		},
 		"libsodiumd": {
 			"repository": "git+https://github.com/Geod24/libsodiumd.git",
 			"version": "8bc62db965ce3da0fb5652b024f66bfacd9b8cb6"
