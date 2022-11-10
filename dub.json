@@ -22,6 +22,12 @@
 			"version": "8bc62db965ce3da0fb5652b024f66bfacd9b8cb6"
 		}
 	},
+	"versions": [
+		"VibeIdleCollect",
+		"VibeDisableCommandLineParsing",
+		"VibeNoDefaultArgs",
+		"VibeOutputCompactHTML"
+	],
 	"description": "boulder as a service",
 	"license": "Zlib",
 	"name": "avalanche",
