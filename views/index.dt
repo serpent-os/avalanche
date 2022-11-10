@@ -10,8 +10,31 @@ block content
             div.col-8.col-sm-8.col-lg-8
                 h3 stuff
             div.col-4.col-sm-4.col-lg-4
+                - import avalanche.memoryinfo;
+                - import moss.core.sizing;
+                - import core.cpuid;
+                - import std.string : replace;
+                - import std.parallelism : totalCPUs;
+                - auto inf = new MemoryInfo();
                 div.card
                     div.card-header
                         h3.card-title System Information
                     div.card-body
-                        p add stuff here
+                        div.row.d-flex
+                            div.col.text-muted CPU
+                            div.col-auto!=processor().replace("(TM)", "&trade;").replace("(R)", "&reg;")
+                        div.row.d-flex
+                            div.col.text-muted Cores
+                            div.col-auto=totalCPUs()
+                        div.row.d-flex
+                            div.col.text-muted Total memory
+                            - auto memTotal = inf.total;
+                            div.col-auto=formattedSize(memTotal)
+                        div.row.d-flex
+                            div.col.text-muted Free memory
+                            - auto memFree = inf.free;
+                            div.col-auto=formattedSize(memFree)
+                        div.row.d-flex
+                            div.col.text-muted Available memory
+                            - auto memAvail = inf.available;
+                            div.col-auto=formattedSize(memAvail)
