@@ -38,3 +38,25 @@ block content
                             div.col.text-muted Available memory
                             - auto memAvail = inf.available;
                             div.col-auto=formattedSize(memAvail)
+                        - import std.file : getAvailableDiskSpace;
+                        div.row.d-flex
+                            div.col.text-muted Available disk cache
+                            - auto leftR = cast(double) getAvailableDiskSpace("/");
+                            div.col-auto=formattedSize(leftR)
+                        div.row.d-flex
+                            div.col.text-muted Available build cache
+                            - auto left = cast(double) getAvailableDiskSpace("/var/cache/boulder");
+                            div.col-auto=formattedSize(left)
+                        - string[] features;
+                        - if (avx()) features ~= "AVX";
+                        - if (avx2()) features ~= "AVX2";
+                        - if (sse41()) features ~= "SSE4.1";
+                        - if (sse42()) features ~= "SSE4.2";
+                        div.row.d-flex
+                            div.col.text-muted Features
+                        div.row.d-flex
+                            div.col
+                            div.col-auto
+                                - foreach (f; features) {
+                                    span.status.m-1 #{f}
+                                - }
