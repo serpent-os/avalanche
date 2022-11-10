@@ -1,12 +1,12 @@
 ## avalanche
 
-Expose [boulder](https://gitlab.com/serpent-os/core/boulder) as a service for the build infrastructure of Serpent OS. This software makes use of `vibe.d` to provide a sane RPC API for build management.
+Expose [boulder](https://github.com/serpent-os/boulder/) as a service for the build infrastructure of Serpent OS. This software makes use of `vibe.d` to provide a sane RPC API for build management.
 
 #### Design Notes
 
-An Avalanche instance is never directly interacted with. It is instead integrated into the infrastructure via [summit](https://gitlab.com/serpent-os/infra/summit/).
+An Avalanche instance is never directly interacted with. It is instead integrated into the infrastructure via [summit](https://github.com/serpent-os/summit/).
 
-Build artefacts are **never** uploaded into a privileged location. Instead `summit` will instruct the repository controller, [vesseld](https://gitlab.com/serpent-os/infra/vesseld/) to fetch and integrate the assets securely.
+Build artefacts are **never** uploaded into a privileged location. Instead `summit` will instruct the repository controller, [vessel](https://github.com/serpent-os/vessel/) to fetch and integrate the assets securely.
 
 #### License
 
