@@ -15,7 +15,7 @@ block content
                 - import core.cpuid;
                 - import std.string : replace;
                 - import std.parallelism : totalCPUs;
-                - auto inf = new MemoryInfo();
+                - scope auto inf = new MemoryInfo();
                 div.card
                     div.card-header
                         h3.card-title System Information
