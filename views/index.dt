@@ -1,0 +1,17 @@
+extends root
+
+block title
+    title Avalanche
+        
+block content
+    div.container
+
+        div.row
+            div.col-8.col-sm-8.col-lg-8
+                h3 stuff
+            div.col-4.col-sm-4.col-lg-4
+                div.card
+                    div.card-header
+                        h3.card-title System Information
+                    div.card-body
+                        p add stuff here

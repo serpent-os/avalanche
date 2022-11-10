@@ -15,8 +15,12 @@
 
 module avalanche.app;
 
-import vibe.d;
 import avalanche.rest;
+import avalanche.web;
+import moss.service.sessionstore;
+import std.file : mkdirRecurse;
+import std.path : buildPath;
+import vibe.d;
 
 /**
  * Main entry point from the server side, storing our
@@ -29,16 +33,39 @@ public final class AvalancheApp
      */
     this(string rootDir) @safe
     {
-        settings = new HTTPServerSettings();
-        settings.disableDistHost = true;
-        settings.useCompressionIfPossible = true;
-        settings.port = 8082;
-        settings.serverString = "avalanche/0.0.1";
+        immutable statePath = rootDir.buildPath("state");
+        immutable dbPath = statePath.buildPath("db");
+        dbPath.mkdirRecurse();
+
+        router = new URLRouter();
+
+        /* Set up the server */
+        serverSettings = new HTTPServerSettings();
+        serverSettings.disableDistHost = true;
+        serverSettings.useCompressionIfPossible = true;
+        serverSettings.port = 8082;
+        serverSettings.sessionOptions = SessionOption.secure | SessionOption.httpOnly;
+        serverSettings.serverString = "avalanche/0.0.1";
+        serverSettings.sessionIdCookie = "avalanche.session_id";
+
+        /* Session persistence */
+        sessionStore = new DBSessionStore(dbPath.buildPath("session"));
+        serverSettings.sessionStore = sessionStore;
+
+        /* File settings for /static/ serving */
+        fileSettings = new HTTPFileServerSettings();
+        fileSettings.serverPathPrefix = "/static";
+        //fileSettings.maxAge = 30.days;
+        fileSettings.options = HTTPFileServerOption.failIfNotFound;
+        router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
 
         /* Bring up our core routes */
-        router = new URLRouter();
         auto bAPI = new BuildAPI(rootDir);
         bAPI.configure(router);
+
+        auto web = new AvalancheWeb();
+        web.configure(router);
+
         router.rebuild();
     }
 
@@ -47,7 +74,7 @@ public final class AvalancheApp
      */
     void start() @safe
     {
-        listener = listenHTTP(settings, router);
+        listener = listenHTTP(serverSettings, router);
     }
 
     /**
@@ -61,6 +88,8 @@ public final class AvalancheApp
 private:
 
     URLRouter router;
-    HTTPServerSettings settings;
+    HTTPFileServerSettings fileSettings;
+    SessionStore sessionStore;
+    HTTPServerSettings serverSettings;
     HTTPListener listener;
 }
