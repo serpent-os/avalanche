@@ -20,6 +20,7 @@ import avalanche.app;
 import std.path : absolutePath, asNormalizedPath;
 import std.string : format;
 import std.conv : to;
+import libsodium;
 
 /**
  * Gets our builder up and running
@@ -30,6 +31,10 @@ import std.conv : to;
  */
 int main(string[] args)
 {
+    logInfo("Initialising libsodium");
+    immutable rc = () @trusted { return sodium_init(); }();
+    enforce(rc == 0, "Failed to initialise libsodium");
+
     logInfo("Starting Avalanche");
     auto rootDir = absolutePath(".").asNormalizedPath.to!string;
     logInfo(format!"Root dir: %s"(rootDir));
