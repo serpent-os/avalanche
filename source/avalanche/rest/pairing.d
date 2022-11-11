@@ -20,6 +20,7 @@ import vibe.d;
 import moss.service.interfaces;
 import moss.service.tokens;
 import moss.service.tokens.manager;
+import std.sumtype : tryMatch;
 
 /**
  * Implements the enrolment API for Avalanche
@@ -65,8 +66,11 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 
     override string refreshToken() @safe
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented,
-                "refreshToken(): Not yet implemented");
+        TokenPayload payload;
+        payload.iss = "avalanche";
+        payload.sub = "user";
+        Token token = tokenManager.createAPIToken(payload);
+        return tokenManager.signToken(token).tryMatch!((string s) => s);
     }
 
     override string refreshIssueToken() @safe
