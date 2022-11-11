@@ -15,7 +15,7 @@ block content
                         h5 To pair this builder with Summit, you'll need this public key
                         pre #{publicKey}
             div.col-4.col-sm-4.col-lg-4
-                - import avalanche.memoryinfo;
+                - import moss.core.memoryinfo;
                 - import moss.core.sizing;
                 - import core.cpuid;
                 - import std.string : replace;
