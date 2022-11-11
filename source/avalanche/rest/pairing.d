@@ -37,14 +37,22 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
         throw new HTTPStatusException(HTTPStatus.notImplemented, "enrol(): Not yet implemented");
     }
 
+    /**
+     * Noop: We don't accept enrolments locally
+     */
     override void accept(ServiceEnrolmentRequest request) @safe
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented, "accept(): Not yet implemented");
+        throw new HTTPStatusException(HTTPStatus.methodNotAllowed,
+                "accept(): Avalanche doesn't accept requests");
     }
 
+    /**
+     * Noop: We don't decline enrolments locally
+     */
     override void decline() @safe
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented, "decline(): Not yet implemented");
+        throw new HTTPStatusException(HTTPStatus.methodNotAllowed,
+                "decline(): Avalanche doesn't decline requests");
     }
 
     override void leave() @safe
