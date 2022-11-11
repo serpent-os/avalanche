@@ -29,7 +29,7 @@ import libsodium;
  *      args = CLI arguments
  * Returns: 0 if everything went to plan
  */
-int main(string[] args)
+int main(string[] args) @safe
 {
     logInfo("Initialising libsodium");
     immutable rc = () @trusted { return sodium_init(); }();
