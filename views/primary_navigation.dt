@@ -4,7 +4,7 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
         a.navbar-brand.logo(href="/")
             svg.primaryLogo.logo.text-azure(width="32px", height="32px")
                 use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-bulldozer")
-            span.logo.px-2 #[span.subtitle.text-muted Avalanche] Dashboard
+            span.logo.px-2 #[span.subtitle.text-muted Avalanche] Builder
         div.d-flex
             a.btn.btn-ghost-info.btn-icon#themeSwitcher
                 svg#themeSwitcherIcon(width="16px", height="16px")
