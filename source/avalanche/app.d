@@ -21,6 +21,8 @@ import moss.service.sessionstore;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import vibe.d;
+import moss.service.tokens;
+import moss.service.tokens.manager;
 
 /**
  * Main entry point from the server side, storing our
@@ -36,6 +38,9 @@ public final class AvalancheApp
         immutable statePath = rootDir.buildPath("state");
         immutable dbPath = statePath.buildPath("db");
         dbPath.mkdirRecurse();
+
+        tokenManager = new TokenManager(statePath);
+        logInfo(format!"Instance pubkey: %s"(tokenManager.publicKey));
 
         router = new URLRouter();
 
@@ -63,7 +68,7 @@ public final class AvalancheApp
         auto bAPI = new BuildAPI(rootDir);
         bAPI.configure(router);
 
-        auto web = new AvalancheWeb();
+        auto web = new AvalancheWeb(tokenManager);
         web.configure(router);
 
         router.rebuild();
@@ -92,4 +97,5 @@ private:
     SessionStore sessionStore;
     HTTPServerSettings serverSettings;
     HTTPListener listener;
+    TokenManager tokenManager;
 }

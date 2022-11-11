@@ -8,7 +8,12 @@ block content
 
         div.row
             div.col-8.col-sm-8.col-lg-8
-                h3 stuff
+                div.card
+                    div.card-header
+                        h3.card-title Connections
+                    div.card-body
+                        h5 To pair this builder with Summit, you'll need this public key
+                        pre #{publicKey}
             div.col-4.col-sm-4.col-lg-4
                 - import avalanche.memoryinfo;
                 - import moss.core.sizing;

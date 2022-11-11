@@ -17,11 +17,24 @@ module avalanche.web;
 
 import vibe.d;
 
+import moss.service.tokens.manager;
+
 /**
  * Core entry into the Avalanche Web UI
  */
 @path("/") public final class AvalancheWeb
 {
+
+    @disable this();
+
+    /**
+     * Construct new frontend with the given token manager
+     */
+    this(TokenManager tokenManager) @safe
+    {
+        this.tokenManager = tokenManager;
+    }
+
     /**
      * Integrate Avalanche web with the router
      */
@@ -35,6 +48,11 @@ import vibe.d;
      */
     void index() @safe
     {
-        render!"index.dt";
+        immutable publicKey = tokenManager.publicKey;
+        render!("index.dt", publicKey);
     }
+
+private:
+
+    TokenManager tokenManager;
 }
