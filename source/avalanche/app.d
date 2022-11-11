@@ -66,7 +66,7 @@ public final class AvalancheApp
 
         /* Bring up our core routes */
         auto bAPI = new BuildAPI(rootDir);
-        bAPI.configure(router);
+        bAPI.configure(tokenManager, router);
 
         auto web = new AvalancheWeb(tokenManager);
         web.configure(router);
