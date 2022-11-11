@@ -18,6 +18,7 @@ module avalanche.rest;
 import vibe.d;
 import avalanche.build;
 import avalanche.build.job;
+import avalanche.rest.pairing;
 
 /**
  * The BuildAPI
@@ -57,6 +58,8 @@ public final class BuildAPI : BuildAPIv1
     @noRoute void configure(URLRouter root) @safe
     {
         auto apiRoot = root.registerRestInterface(this);
+        auto pair = new AvalanchePairingAPI();
+        pair.configure(apiRoot);
     }
 
     override string versionIdentifier() @safe
