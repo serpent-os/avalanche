@@ -20,6 +20,7 @@ import avalanche.build;
 import avalanche.build.job;
 import avalanche.rest.pairing;
 import moss.service.tokens.manager;
+import moss.db.keyvalue;
 
 /**
  * The BuildAPI
@@ -56,11 +57,11 @@ public final class BuildAPI : BuildAPIv1
     /**
      * Configure BuildAPI for integration
      */
-    @noRoute void configure(TokenManager tokenManager, URLRouter root) @safe
+    @noRoute void configure(Database appDB, TokenManager tokenManager, URLRouter root) @safe
     {
         auto apiRoot = root.registerRestInterface(this);
         auto pair = new AvalanchePairingAPI();
-        pair.configure(tokenManager, apiRoot);
+        pair.configure(appDB, tokenManager, apiRoot);
     }
 
     override string versionIdentifier() @safe

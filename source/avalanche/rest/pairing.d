@@ -17,10 +17,12 @@ module avalanche.rest.pairing;
 
 import vibe.d;
 
+import moss.service.models.endpoints;
 import moss.service.interfaces;
 import moss.service.tokens;
 import moss.service.tokens.manager;
 import std.sumtype : tryMatch;
+import moss.db.keyvalue;
 
 /**
  * Implements the enrolment API for Avalanche
@@ -30,8 +32,9 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
     /**
      * Integrate pairing API
      */
-    @noRoute void configure(TokenManager tokenManager, URLRouter router) @safe
+    @noRoute void configure(Database appDB, TokenManager tokenManager, URLRouter router) @safe
     {
+        this.appDB = appDB;
         this.tokenManager = tokenManager;
         router.registerRestInterface(this);
     }
@@ -94,4 +97,5 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 private:
 
     TokenManager tokenManager;
+    Database appDB;
 }
