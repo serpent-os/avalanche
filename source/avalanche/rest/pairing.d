@@ -55,6 +55,8 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
         logInfo(format!"Got a pairing request: %s"(request));
         SummitEndpoint endpoint;
         endpoint.id = request.issuer.publicKey;
+        endpoint.hostAddress = request.issuer.url;
+        endpoint.publicKey = request.issuer.publicKey;
         immutable err = appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
