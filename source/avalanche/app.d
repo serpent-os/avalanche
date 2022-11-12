@@ -17,12 +17,16 @@ module avalanche.app;
 
 import avalanche.rest;
 import avalanche.web;
+import moss.db.keyvalue;
+import moss.db.keyvalue.errors;
+import moss.db.keyvalue.orm;
+import moss.service.models.endpoints;
 import moss.service.sessionstore;
+import moss.service.tokens;
+import moss.service.tokens.manager;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import vibe.d;
-import moss.service.tokens;
-import moss.service.tokens.manager;
 
 /**
  * Main entry point from the server side, storing our
@@ -38,6 +42,12 @@ public final class AvalancheApp
         immutable statePath = rootDir.buildPath("state");
         immutable dbPath = statePath.buildPath("db");
         dbPath.mkdirRecurse();
+
+        immutable driver = format!"lmdb://%s"(dbPath.buildPath("appDB"));
+        appDB = Database.open(driver, DatabaseFlags.CreateIfNotExists)
+            .tryMatch!((Database db) => db);
+        immutable dbErr = appDB.update((scope tx) => tx.createModel!(SummitEndpoint));
+        enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
         tokenManager = new TokenManager(statePath);
         logInfo(format!"Instance pubkey: %s"(tokenManager.publicKey));
@@ -88,6 +98,7 @@ public final class AvalancheApp
     void stop() @safe
     {
         listener.stopListening();
+        appDB.close();
     }
 
 private:
@@ -98,4 +109,5 @@ private:
     HTTPServerSettings serverSettings;
     HTTPListener listener;
     TokenManager tokenManager;
+    Database appDB;
 }
