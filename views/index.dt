@@ -6,6 +6,27 @@ block title
 block content
     div.container
 
+        div.row.pb-4
+
+            // Memory use
+            div.col-4.col-sm-4.col-lg-4
+                div.card
+                    div.card-body
+                        div.card-lg.chart(avalanche:data-source="memory")
+
+            // Disk usage
+            div.col-4.col-sm-4.col-lg-4
+                div.card
+                    div.card-body
+                        div.card-lg.chart(avalanche:data-source="disk")
+
+            // CPU usage
+            div.col-4.col-sm-4.col-lg-4
+                div.card
+                    div.card-body
+                        div.card-lg.chart(avalanche:data-source="cpu")
+
+
         div.row
             div.col-8.col-sm-8.col-lg-8
                 div.card
@@ -65,3 +86,7 @@ block content
                                 - foreach (f; features) {
                                     span.status.m-1 #{f}
                                 - }
+
+block scripts
+    script(src="https://cdn.jsdelivr.net/npm/apexcharts", module)
+    script(src="/static/charts.js", module)
