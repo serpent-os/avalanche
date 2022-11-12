@@ -38,6 +38,18 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 
     override void enrol(ServiceEnrolmentRequest request) @safe
     {
+        /* Grab the token itself. */
+        Token tk = Token.decode(request.issueToken).tryMatch!((Token tk) => tk);
+        enforceHTTP(tokenManager.verify(tk, request.issuer.publicKey),
+                HTTPStatus.forbidden, "Fraudulent packet");
+        enforceHTTP(request.role == EnrolmentRole.Builder,
+                HTTPStatus.methodNotAllowed, "Avalanche only supports Builder role");
+        enforceHTTP(request.issuer.role == EnrolmentRole.Hub,
+                HTTPStatus.methodNotAllowed, "Avalanche can only be paired with Summit");
+        enforceHTTP(tk.payload.purpose == TokenPurpose.Authorization,
+                HTTPStatus.forbidden, "enrol(): Require an Authorization token");
+
+        logInfo(format!"Got a pairing request: %s"(request));
         throw new HTTPStatusException(HTTPStatus.notImplemented, "enrol(): Not yet implemented");
     }
 
