@@ -53,7 +53,10 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
                 HTTPStatus.forbidden, "enrol(): Require an Authorization token");
 
         logInfo(format!"Got a pairing request: %s"(request));
-        throw new HTTPStatusException(HTTPStatus.notImplemented, "enrol(): Not yet implemented");
+        SummitEndpoint endpoint;
+        endpoint.id = request.issuer.publicKey;
+        immutable err = appDB.update((scope tx) => endpoint.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
     /**
