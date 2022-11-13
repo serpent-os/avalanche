@@ -1,4 +1,4 @@
-nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
+nav.navbar.navbar-expand-lg.navbar-light
     div.container
         // Logo
         a.navbar-brand.logo(href="/")
@@ -6,6 +6,6 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
                 use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-bulldozer")
             span.logo.px-2 #[span.subtitle.text-muted Avalanche] Builder
         div.d-flex
-            a.btn.btn-ghost-info.btn-icon#themeSwitcher
+            a.nav-link#themeSwitcher(href="#")
                 svg#themeSwitcherIcon(width="16px", height="16px")
                     use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")

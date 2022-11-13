@@ -39,7 +39,7 @@ block content
                     div.card-header
                         h3.card-title Connections
                     div.card-body
-                        h5 To pair this builder with Summit, you'll need this public key
+                        p To pair this builder with Summit, you'll need this public key
                         pre #{publicKey}
             div.col-4.col-sm-4.col-lg-4
                 - import moss.core.memoryinfo;
