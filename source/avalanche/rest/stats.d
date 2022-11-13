@@ -15,7 +15,8 @@
 
 module avalanche.rest.stats;
 
-public import avalanche.rest : StatsAPIv1, MemoryReport, TimeDatapoint, DataSeries, MemoryReportIndex;
+public import avalanche.rest : StatsAPIv1, MemoryReport, TimeDatapoint,
+    DataSeries, MemoryReportIndex;
 import vibe.d;
 import moss.core.memoryinfo;
 import vibe.utils.array;
@@ -57,9 +58,11 @@ public final class AvalancheStats : StatsAPIv1
     {
         MemoryReport mr;
         mr.maxy = minfo.total;
-        mr.series[MemoryReportIndex.Used] = DataSeries!TimeDatapoint("Free", events[0..numEvents]);
-        mr.series[MemoryReportIndex.Available] = DataSeries!TimeDatapoint("Available", availEvents[0..numEvents]);
-        mr.series[MemoryReportIndex.Free] = DataSeries!TimeDatapoint("Free", usedEvents[0..numEvents]);
+        mr.series[MemoryReportIndex.Free] = DataSeries!TimeDatapoint("Free", events[0 .. numEvents]);
+        mr.series[MemoryReportIndex.Available] = DataSeries!TimeDatapoint("Available",
+                availEvents[0 .. numEvents]);
+        mr.series[MemoryReportIndex.Used] = DataSeries!TimeDatapoint("Used",
+                usedEvents[0 .. numEvents]);
         return mr;
     }
 
