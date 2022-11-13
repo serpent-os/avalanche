@@ -18,8 +18,10 @@ module avalanche.rest.stats;
 public import avalanche.rest : StatsAPIv1, MemoryReport, TimeDatapoint;
 import vibe.d;
 import moss.core.memoryinfo;
-import vibe.utils.array : FixedRingBuffer;
+import vibe.utils.array;
 import std.array : array;
+import vibe.core.core : setTimer;
+import std.range : popFront;
 
 /**
  * Statistics API
@@ -33,6 +35,8 @@ public final class AvalancheStats : StatsAPIv1
     this() @safe
     {
         minfo = new MemoryInfo();
+        events.length = 100;
+        events.reserve(100);
         refresh();
     }
 
@@ -42,6 +46,7 @@ public final class AvalancheStats : StatsAPIv1
     void configure(URLRouter router) @safe
     {
         router.registerRestInterface(this);
+        () @trusted { setTimer(1.seconds, () => refresh(), true); }();
     }
 
     /**
@@ -49,10 +54,9 @@ public final class AvalancheStats : StatsAPIv1
      */
     override MemoryReport memory() @safe
     {
-        refresh();
         MemoryReport mr;
+        mr.used = events[0 .. numEvents];
         mr.total = minfo.total;
-        mr.used = () @trusted { return events[].array; }();
         return mr;
     }
 
@@ -65,14 +69,20 @@ private:
         auto event = TimeDatapoint();
         event.value = minfo.total - minfo.free;
         event.timestamp = Clock.currTime(UTC()).toUnixTime();
-        if (events.full)
+        if (numEvents + 1 >= 100)
         {
             events.popFront();
+            events ~= event;
         }
-        events.putBack(event);
+        else
+        {
+            events[numEvents] = event;
+            ++numEvents;
+        }
     }
 
     MemoryInfo minfo;
 
-    FixedRingBuffer!(TimeDatapoint, 100) events;
+    TimeDatapoint[] events;
+    ulong numEvents = 0;
 }
