@@ -73,7 +73,8 @@ private:
         minfo.refresh();
 
         auto event = TimeDatapoint();
-        event.x = Clock.currTime(UTC()).toUnixTime();
+        /* JS Conversion */
+        event.x = (Clock.currTime(UTC()).toUnixTime()) * 1000;
         event.y = minfo.free;
 
         auto availEvent = TimeDatapoint();
