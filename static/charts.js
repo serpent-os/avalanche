@@ -1,3 +1,21 @@
+/*
+ * SPDX-FileCopyrightText: Copyright © 2020-2022 Serpent OS Developers
+ *
+ * SPDX-License-Identifier: Zlib
+ */
+
+/**
+ * charts.js
+ *
+ * Simple system metrics for Avalanche landing page
+ *
+ * Authors: Copyright © 2020-2022 Serpent OS Developers
+ * License: Zlib
+ */
+
+/**
+ * 5-step labels just rendered as percentages
+ */
 const PercentLabels = Object.freeze(
     {
         0: 0.00,
@@ -8,6 +26,11 @@ const PercentLabels = Object.freeze(
     }
 );
 
+/**
+ * Initialise an auto-discovered chart element
+ *
+ * @param {Element} element Chart element
+ */
 function initialiseChartElement(element)
 {
     let context = element.getAttribute('avalanche:data-source');
@@ -83,6 +106,12 @@ function initialiseChartElement(element)
     }, 1000);
 }
 
+/**
+ * Update a chart using the Stats API
+ *
+ * @param {Element} element div for the chart
+ * @param {ApexChart} chart corresponding Chart object
+ */
 function updateChart(element, chart)
 {
     const uri = '/api/v1/stats/memory';
