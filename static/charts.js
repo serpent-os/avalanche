@@ -27,93 +27,103 @@ const PercentLabels = Object.freeze(
 );
 
 /**
+ * Our global options default to area view
+ */
+const globalOptions = {
+    chart: {
+        type: 'area',
+        parentHeightOffset: 0,
+        fontFamily: 'inherit',
+        height: 240,
+        toolbar: {
+            show: false
+        },
+        dataLabels: {
+            enabled: true
+        },
+        animations: {
+            enabled: true,
+            animateGradually: false,
+            easing: 'easein',
+            speed: 150,
+            dynamicAnimation: {
+                speed: 150
+            }
+        },
+        tooltip: {
+            theme: 'dark'
+        },
+    },
+    colors: [tabler.getColor("purple"), tabler.getColor("info"), tabler.getColor("primary")],
+    dataLabels: {
+        enabled: false
+    },
+    grid: {
+        show: false
+    },
+    legend: {
+        show: true
+    },
+    series: [],
+    stroke: {
+        width: 2,
+        curve: 'smooth',
+        lineCap: 'round'
+    },
+    fill: {
+        opacity: .16,
+        type: 'solid'
+    },
+    noData: {
+        text: 'Loading graph'
+    },
+    xaxis: {
+        type: 'datetime',
+        labels: {
+            show: false
+        }
+    },   
+}
+
+/**
  * Initialise an auto-discovered chart element
  *
  * @param {Element} element Chart element
  */
 function initialiseChartElement(element)
 {
-    let context = element.getAttribute('avalanche:data-source');
+    let dataSource = element.getAttribute('avalanche:data-source');
+    let dataForm = element.getAttribute('avalanche:data-form')
+    let dataFrequency = parseInt(element.getAttribute('avalanche:data-frequency'));
 
-    var options = {
-        chart: {
-            type: 'area',
-            parentHeightOffset: 0,
-            fontFamily: 'inherit',
-            height: 240,
-            toolbar: {
-                show: false
-            },
-            dataLabels: {
-                enabled: true
-            },
-            animations: {
-                enabled: true,
-                animateGradually: false,
-                easing: 'easein',
-                speed: 150,
-                dynamicAnimation: {
-                    speed: 150
-                }
-            },
-            tooltip: {
-                theme: 'dark'
-            },
-        },
-        colors: [tabler.getColor("purple"), tabler.getColor("info"), tabler.getColor("primary")],
-        dataLabels: {
-            enabled: false
-        },
-        grid: {
-            show: false
-        },
-        legend: {
-            show: true
-        },
-        series: [],
-        stroke: {
-            width: 2,
-            curve: 'smooth',
-            lineCap: 'round'
-        },
-        fill: {
-            opacity: .16,
-            type: 'solid'
-        },
-        noData: {
-            text: 'Loading graph'
-        },
-        xaxis: {
-            type: 'datetime',
-            labels: {
-                show: false
-            }
-        },
-    };
+    var options = globalOptions;
+    options.chart.type = dataForm;
+
     var chart = new ApexCharts(element, options);
     chart.render();
 
-    if (context !== 'memory')
+    switch (dataSource)
     {
-        return;
+        case 'memory':
+            updateMemoryChart(element, chart);
+            setInterval(() => {
+                updateMemoryChart(element, chart);
+                return true;
+            }, dataFrequency);
+            break;
+        default:
+            console.log('Unsupported chart');
+            break;
     }
-
-    updateChart(element, chart);
-
-    /* Update on interval */
-    setInterval(ev => {
-        updateChart(element, chart);
-        return true;
-    }, 1000);
 }
 
 /**
- * Update a chart using the Stats API
+ * Update memory chart using the Stats API
  *
  * @param {Element} element div for the chart
  * @param {ApexChart} chart corresponding Chart object
  */
-function updateChart(element, chart)
+function updateMemoryChart(element, chart)
 {
     const uri = '/api/v1/stats/memory';
     fetch(uri, {
