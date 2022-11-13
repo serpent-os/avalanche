@@ -26,7 +26,7 @@ block content
             div.col-4.col-sm-4.col-lg-4
                 div.card
                     div.card-body
-                        h5.card-title.opacity-75 CPU
+                        h5.card-title.opacity-75 Processor
                         div.card-lg.chart(avalanche:data-source="cpu")
 
 
@@ -49,43 +49,24 @@ block content
                     div.card-header
                         h3.card-title System Information
                     div.card-body
-                        div.row.d-flex
-                            div.col.text-muted CPU
-                            div.col-auto!=processor().replace("(TM)", "&trade;").replace("(R)", "&reg;")
-                        div.row.d-flex
-                            div.col.text-muted Cores
-                            div.col-auto=totalCPUs()
-                        div.row.d-flex
-                            div.col.text-muted Total memory
-                            - auto memTotal = inf.total;
-                            div.col-auto=formattedSize(memTotal)
-                        div.row.d-flex
-                            div.col.text-muted Free memory
-                            - auto memFree = inf.free;
-                            div.col-auto=formattedSize(memFree)
-                        div.row.d-flex
-                            div.col.text-muted Available memory
-                            - auto memAvail = inf.available;
-                            div.col-auto=formattedSize(memAvail)
-                        - import std.file : getAvailableDiskSpace;
-                        div.row.d-flex
-                            div.col.text-muted Available disk cache
-                            - auto leftR = cast(double) getAvailableDiskSpace("/");
-                            div.col-auto=formattedSize(leftR)
-                        div.row.d-flex
-                            div.col.text-muted Available build cache
-                            - auto left = cast(double) getAvailableDiskSpace("/var/cache/boulder");
-                            div.col-auto=formattedSize(left)
+                        div.datagrid-item.row.pb-2
+                            div.datagrid-title CPU
+                            div.datagrid-content!=processor().replace("(TM)", "&trade;").replace("(R)", "&reg;")
+                        div.datagrid-item.row.pb-2
+                            div.datagrid-title Cores
+                            div.datagrid-content=totalCPUs()
+                        div.datagrid-item.row.pb-2
+                            div.datagrid-title RAM
+                            - immutable ramTotal = inf.total;
+                            div.datagrid-content=formattedSize(ramTotal)
                         - string[] features;
                         - if (avx()) features ~= "AVX";
                         - if (avx2()) features ~= "AVX2";
                         - if (sse41()) features ~= "SSE4.1";
                         - if (sse42()) features ~= "SSE4.2";
-                        div.row.d-flex
-                            div.col.text-muted Features
-                        div.row.d-flex
-                            div.col
-                            div.col-auto
+                        div.datagrid-item.row.pb-2
+                            div.datagrid-title Features
+                            div.dagagrid-content
                                 - foreach (f; features) {
                                     span.status.m-1 #{f}
                                 - }
