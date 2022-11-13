@@ -121,6 +121,12 @@ function initialiseChartElement(element)
                 min: 0
             };
             break;
+        case 'disk':
+            options.colors = [tabler.getColor('primary'), tabler.getColor('warning', 0.7)];
+
+            delete options.fill;
+            options.chart.animations.enabled = false;
+            break;
         default:
             console.log('Unsupported chart');
             return;
@@ -163,7 +169,14 @@ function updateChart(element, chart, domain)
         }
         return response.json();
     }).then((obj) => {
-        chart.updateSeries(obj.series);
+        let options = {
+            series: obj.series
+        };
+        if (obj.hasOwnProperty('labels'))
+        {
+            options.labels = obj.labels;
+        }
+        chart.updateOptions(options);
     }).catch((err) => console.log(err));
 }
 

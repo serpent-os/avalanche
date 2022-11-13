@@ -74,6 +74,21 @@ public struct MemoryReport
     DataSeries!(TimeDatapoint)[3] series;
 }
 
+public enum DiskReportIndex : ulong
+{
+    Free = 0,
+    Used,
+}
+
+public struct DiskReport
+{
+    /**
+     * Snapshot data for disk usage
+     */
+    double[2] series;
+    string[2] labels;
+}
+
 /**
  * Simplistic API that powers our charts
  */
@@ -83,6 +98,11 @@ public struct MemoryReport
      * Current memory usage
      */
     @path("memory") @method(HTTPMethod.GET) MemoryReport memory() @safe;
+
+    /**
+     * Current disk usage
+     */
+    @path("disk") @method(HTTPMethod.GET) DiskReport disk() @safe;
 }
 
 /**
