@@ -54,8 +54,8 @@ public struct DataSeries(T)
 public enum MemoryReportIndex : ulong
 {
     Free = 0,
-    Used,
-    Available
+    Available,
+    Used
 }
 
 /**
