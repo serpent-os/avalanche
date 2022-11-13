@@ -23,7 +23,7 @@ import std.array : array;
 import vibe.core.core : setTimer;
 import std.range : popFront;
 
-const auto maxEvents = 100;
+const auto maxEvents = 60;
 
 /**
  * Statistics API
@@ -47,7 +47,7 @@ public final class AvalancheStats : StatsAPIv1
     void configure(URLRouter router) @safe
     {
         router.registerRestInterface(this);
-        () @trusted { setTimer(3.seconds, () => refresh(), true); }();
+        () @trusted { setTimer(1.seconds, () => refresh(), true); }();
     }
 
     /**

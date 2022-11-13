@@ -1,3 +1,13 @@
+const PercentLabels = Object.freeze(
+    {
+        0: 0.00,
+        1: 0.25,
+        2: 0.50,
+        3: 0.75,
+        4: 1.0,
+    }
+);
+
 function initialiseChartElement(element)
 {
     let context = element.getAttribute('avalanche:data-source');
@@ -15,7 +25,13 @@ function initialiseChartElement(element)
                 enabled: true
             },
             animations: {
-                enabled: true
+                enabled: true,
+                animateGradually: false,
+                easing: 'easein',
+                speed: 150,
+                dynamicAnimation: {
+                    speed: 150
+                }
             },
             tooltip: {
                 theme: 'dark'
@@ -82,51 +98,54 @@ function updateChart(element, chart)
         }
         return response.json();
     }).then((obj) => {
+        let series = [{
+            name: 'Free',
+            data: obj.free.map((o) => {
+                return {
+                    x: o.timestamp * 1000,
+                    y: o.value
+                }
+            })
+        },
+        {
+            name: 'Available',
+            data: obj.available.map((o) => {
+                return {
+                    x: o.timestamp * 1000,
+                    y: o.value
+                }
+            })
+        },
+        {
+            name: 'Used',
+            data: obj.used.map((o) => {
+                return {
+                    x: o.timestamp * 1000,
+                    y: o.value
+                }
+            })
+        }];
         let opts = {
+            series: series,
             yaxis: {
                 type: 'numeric',
-                logBase: 8,
+                tickAmount: 4,
                 labels: {
-                    formatter: function(val, idx) {
+                    formatter: function(val, idx)
+                    {
+                        /* If its not an index in the series, render as GiB, otherwise percent */
+                        if (!idx.hasOwnProperty('dataPointIndex'))
+                        {
+                            return Number(PercentLabels[idx]).toLocaleString(undefined, {style: 'percent', minimumFractionDigits: 0});
+                        }
                         return ((parseInt(val) / 1024 / 1024 / 1024).toFixed(1))  + "GiB";
-                    },
-                    show: true
+                    }
                 },
                 max: obj.total,
                 min: 0
             },
-            series: [
-                {
-                    name: 'Free',
-                    data: obj.free.map((o) => {
-                        return {
-                            x: o.timestamp * 1000,
-                            y: o.value
-                        }
-                    })
-                },
-                {
-                    name: 'Available',
-                    data: obj.available.map((o) => {
-                        return {
-                            x: o.timestamp * 1000,
-                            y: o.value
-                        }
-                    })
-                },
-                {
-                    name: 'Used',
-                    data: obj.used.map((o) => {
-                        return {
-                            x: o.timestamp * 1000,
-                            y: o.value
-                        }
-                    })
-                }
-            ]
         };
         chart.updateOptions(opts);
-        console.log(obj);
     }).catch((err) => console.log(err));
 }
 
