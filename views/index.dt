@@ -11,18 +11,24 @@ block content
             // Memory use
             div.col-4.col-sm-4.col-lg-4
                 div.card
+                    div.card-header
+                        h5.card-title Memory
                     div.card-body
                         div.card-lg.chart(avalanche:data-source="memory")
 
             // Disk usage
             div.col-4.col-sm-4.col-lg-4
                 div.card
+                    div.card-header
+                        h5.card-title Disk
                     div.card-body
                         div.card-lg.chart(avalanche:data-source="disk")
 
             // CPU usage
             div.col-4.col-sm-4.col-lg-4
                 div.card
+                    div.card-header
+                        h5.card-title CPU
                     div.card-body
                         div.card-lg.chart(avalanche:data-source="cpu")
 

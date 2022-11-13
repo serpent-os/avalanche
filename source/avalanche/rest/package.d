@@ -19,8 +19,50 @@ import vibe.d;
 import avalanche.build;
 import avalanche.build.job;
 import avalanche.rest.pairing;
+import avalanche.rest.stats;
 import moss.service.tokens.manager;
 import moss.db.keyvalue;
+
+/**
+ * Used in the statistics API
+ */
+public struct TimeDatapoint
+{
+    /**
+     * When the samople was taken
+     */
+    long timestamp;
+
+    /**
+     * Sample value
+     */
+    double value;
+}
+
+/**
+ * Simple format memory report
+ */
+public struct MemoryReport
+{
+    /**
+     * How much memory exists?
+     */
+    double total;
+
+    /* Used memory */
+    TimeDatapoint[] used;
+}
+
+/**
+ * Simplistic API that powers our charts
+ */
+@path("/api/v1/stats") public interface StatsAPIv1
+{
+    /**
+     * Current memory usage
+     */
+    @path("memory") @method(HTTPMethod.GET) MemoryReport memory() @safe;
+}
 
 /**
  * The BuildAPI
@@ -62,6 +104,8 @@ public final class BuildAPI : BuildAPIv1
         auto apiRoot = root.registerRestInterface(this);
         auto pair = new AvalanchePairingAPI();
         pair.configure(appDB, tokenManager, apiRoot);
+        auto stats = new AvalancheStats();
+        stats.configure(root);
     }
 
     override string versionIdentifier() @safe
