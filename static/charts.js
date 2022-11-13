@@ -74,9 +74,6 @@ const globalOptions = {
         opacity: .16,
         type: 'solid'
     },
-    noData: {
-        text: 'Loading graph'
-    },
     xaxis: {
         type: 'datetime',
         labels: {
