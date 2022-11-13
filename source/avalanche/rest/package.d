@@ -49,6 +49,12 @@ public struct MemoryReport
      */
     double total;
 
+    /* Free memory */
+    TimeDatapoint[] free;
+
+    /* Available memory */
+    TimeDatapoint[] available;
+
     /* Used memory */
     TimeDatapoint[] used;
 }

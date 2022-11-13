@@ -20,7 +20,6 @@ function initialiseChartElement(element)
             tooltip: {
                 theme: 'dark'
             },
-            stacked: true,
         },
         dataLabels: {
             enabled: false
@@ -29,22 +28,25 @@ function initialiseChartElement(element)
             show: false
         },
         legend: {
-            show: false
+            show: true
         },
-        series: [
-            {
-                name: 'Used',
-                data: []
-            },
-        ],
+        series: [],
+        stroke: {
+            width: 2,
+            curve: 'smooth',
+            lineCap: 'round'
+        },
+        fill: {
+            opacity: 0.2,
+            type: 'solid'
+        },
         noData: {
             text: 'Loading graph'
         },
         xaxis: {
             type: 'datetime',
             labels: {
-                format: 'HH:mm:ss',
-                show: true
+                show: false
             }
         },
     };
@@ -56,6 +58,9 @@ function initialiseChartElement(element)
         return;
     }
 
+    updateChart(element, chart);
+
+    /* Update on interval */
     setInterval(ev => {
         updateChart(element, chart);
         return true;
@@ -78,27 +83,44 @@ function updateChart(element, chart)
         return response.json();
     }).then((obj) => {
         let opts = {
-            stroke: {
-                curve: 'smooth'
-            },
             yaxis: {
                 type: 'numeric',
                 logBase: 8,
                 labels: {
                     formatter: function(val, idx) {
                         return ((parseInt(val) / 1024 / 1024 / 1024).toFixed(1))  + "GiB";
-                    }
+                    },
+                    show: true
                 },
                 max: obj.total,
                 min: 0
             },
             series: [
                 {
+                    name: 'Free',
+                    data: obj.free.map((o) => {
+                        return {
+                            x: o.timestamp * 1000,
+                            y: o.value
+                        }
+                    })
+                },
+                {
+                    name: 'Available',
+                    data: obj.available.map((o) => {
+                        return {
+                            x: o.timestamp * 1000,
+                            y: o.value
+                        }
+                    })
+                },
+                {
+                    name: 'Used',
                     data: obj.used.map((o) => {
                         return {
-                            y: o.value,
-                            x: o.timestamp
-                        };
+                            x: o.timestamp * 1000,
+                            y: o.value
+                        }
                     })
                 }
             ]

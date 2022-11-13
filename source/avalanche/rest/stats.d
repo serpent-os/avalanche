@@ -23,6 +23,8 @@ import std.array : array;
 import vibe.core.core : setTimer;
 import std.range : popFront;
 
+const auto maxEvents = 100;
+
 /**
  * Statistics API
  */
@@ -35,8 +37,7 @@ public final class AvalancheStats : StatsAPIv1
     this() @safe
     {
         minfo = new MemoryInfo();
-        events.length = 100;
-        events.reserve(100);
+        events.reserve(maxEvents);
         refresh();
     }
 
@@ -46,7 +47,7 @@ public final class AvalancheStats : StatsAPIv1
     void configure(URLRouter router) @safe
     {
         router.registerRestInterface(this);
-        () @trusted { setTimer(1.seconds, () => refresh(), true); }();
+        () @trusted { setTimer(3.seconds, () => refresh(), true); }();
     }
 
     /**
@@ -55,7 +56,9 @@ public final class AvalancheStats : StatsAPIv1
     override MemoryReport memory() @safe
     {
         MemoryReport mr;
-        mr.used = events[0 .. numEvents];
+        mr.available = availEvents[0 .. numEvents];
+        mr.free = events[0 .. numEvents];
+        mr.used = usedEvents[0 .. numEvents];
         mr.total = minfo.total;
         return mr;
     }
@@ -67,22 +70,36 @@ private:
         minfo.refresh();
 
         auto event = TimeDatapoint();
-        event.value = minfo.total - minfo.free;
+        event.value = minfo.free;
         event.timestamp = Clock.currTime(UTC()).toUnixTime();
-        if (numEvents + 1 >= 100)
+
+        auto availEvent = TimeDatapoint();
+        availEvent.timestamp = event.timestamp;
+        availEvent.value = minfo.available;
+
+        auto usedEvent = TimeDatapoint();
+        usedEvent.timestamp = event.timestamp;
+        usedEvent.value = minfo.total - minfo.free;
+
+        if (numEvents + 1 >= maxEvents)
         {
             events.popFront();
-            events ~= event;
+            availEvents.popFront();
+            usedEvents.popFront();
         }
         else
         {
-            events[numEvents] = event;
             ++numEvents;
         }
+        events ~= event;
+        availEvents ~= availEvent;
+        usedEvents ~= usedEvent;
     }
 
     MemoryInfo minfo;
 
     TimeDatapoint[] events;
+    TimeDatapoint[] availEvents;
+    TimeDatapoint[] usedEvents;
     ulong numEvents = 0;
 }
