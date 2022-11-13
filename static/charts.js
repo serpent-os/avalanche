@@ -96,6 +96,7 @@ function initialiseChartElement(element)
     let dataSource = element.getAttribute('avalanche:data-source');
     let dataForm = element.getAttribute('avalanche:data-form')
     let dataFrequency = parseInt(element.getAttribute('avalanche:data-frequency'));
+    let dataTotalEl = element.getAttribute('avalanche:data-total');
 
     var options = globalOptions;
     options.chart.type = dataForm;
@@ -123,6 +124,12 @@ function initialiseChartElement(element)
         default:
             console.log('Unsupported chart');
             return;
+    }
+
+    /* Record total value in the index page */
+    if (dataTotalEl !== null)
+    {
+        options.yaxis.max = parseFloat(dataTotalEl);
     }
 
     var chart = new ApexCharts(element, options);
@@ -156,8 +163,7 @@ function updateChart(element, chart, domain)
         }
         return response.json();
     }).then((obj) => {
-        let options = { series: obj.series };
-        chart.updateOptions(options);
+        chart.updateSeries(obj.series);
     }).catch((err) => console.log(err));
 }
 

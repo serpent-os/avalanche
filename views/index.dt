@@ -13,7 +13,7 @@ block content
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Memory
-                        div.card-lg.chart(avalanche:data-source="memory", avalanche:data-form="area", avalanche:data-frequency="1000")
+                        div.card-lg.chart(avalanche:data-source="memory", avalanche:data-form="area", avalanche:data-frequency="1000", avalanche:data-total=totalRam)
 
             // Disk usage
             div.col-4.col-sm-4.col-lg-4
@@ -39,12 +39,10 @@ block content
                         p To pair this builder with Summit, you'll need this public key
                         pre #{publicKey}
             div.col-4.col-sm-4.col-lg-4
-                - import moss.core.memoryinfo;
-                - import moss.core.sizing;
+                - import moss.core.sizing : formattedSize;
                 - import core.cpuid;
                 - import std.string : replace;
                 - import std.parallelism : totalCPUs;
-                - scope auto inf = new MemoryInfo();
                 div.card
                     div.card-header
                         h3.card-title System Information
@@ -57,8 +55,7 @@ block content
                             div.datagrid-content=totalCPUs()
                         div.datagrid-item.row.pb-2
                             div.datagrid-title RAM
-                            - immutable ramTotal = inf.total;
-                            div.datagrid-content=formattedSize(ramTotal)
+                            div.datagrid-content=formattedSize(totalRam)
                         - string[] features;
                         - if (avx()) features ~= "AVX";
                         - if (avx2()) features ~= "AVX2";

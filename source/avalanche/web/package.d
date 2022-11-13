@@ -18,6 +18,7 @@ module avalanche.web;
 import vibe.d;
 
 import moss.service.tokens.manager;
+import moss.core.memoryinfo;
 
 /**
  * Core entry into the Avalanche Web UI
@@ -33,6 +34,9 @@ import moss.service.tokens.manager;
     this(TokenManager tokenManager) @safe
     {
         this.tokenManager = tokenManager;
+
+        scope mminfo = new MemoryInfo();
+        totalRam = mminfo.total;
     }
 
     /**
@@ -49,8 +53,10 @@ import moss.service.tokens.manager;
     void index() @safe
     {
         immutable publicKey = tokenManager.publicKey;
-        render!("index.dt", publicKey);
+        render!("index.dt", publicKey, totalRam);
     }
+
+    double totalRam;
 
 private:
 
