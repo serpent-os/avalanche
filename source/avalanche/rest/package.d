@@ -29,14 +29,33 @@ import moss.db.keyvalue;
 public struct TimeDatapoint
 {
     /**
-     * When the samople was taken
+     * When the sample was taken
      */
-    long timestamp;
+    long x;
 
     /**
      * Sample value
      */
-    double value;
+    double y;
+}
+
+/**
+ * Dataseries of specific points
+ */
+public struct DataSeries(T)
+{
+    string name;
+    T[] data;
+}
+
+/**
+ * Field indexing
+ */
+public enum MemoryReportIndex : ulong
+{
+    Free = 0,
+    Used,
+    Available
 }
 
 /**
@@ -47,16 +66,12 @@ public struct MemoryReport
     /**
      * How much memory exists?
      */
-    double total;
+    double maxy;
 
-    /* Free memory */
-    TimeDatapoint[] free;
-
-    /* Available memory */
-    TimeDatapoint[] available;
-
-    /* Used memory */
-    TimeDatapoint[] used;
+    /**
+     * Raw series data
+     */
+    DataSeries!(TimeDatapoint)[3] series;
 }
 
 /**

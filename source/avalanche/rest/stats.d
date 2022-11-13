@@ -15,7 +15,7 @@
 
 module avalanche.rest.stats;
 
-public import avalanche.rest : StatsAPIv1, MemoryReport, TimeDatapoint;
+public import avalanche.rest : StatsAPIv1, MemoryReport, TimeDatapoint, DataSeries, MemoryReportIndex;
 import vibe.d;
 import moss.core.memoryinfo;
 import vibe.utils.array;
@@ -56,10 +56,10 @@ public final class AvalancheStats : StatsAPIv1
     override MemoryReport memory() @safe
     {
         MemoryReport mr;
-        mr.available = availEvents[0 .. numEvents];
-        mr.free = events[0 .. numEvents];
-        mr.used = usedEvents[0 .. numEvents];
-        mr.total = minfo.total;
+        mr.maxy = minfo.total;
+        mr.series[MemoryReportIndex.Used] = DataSeries!TimeDatapoint("Free", events[0..numEvents]);
+        mr.series[MemoryReportIndex.Available] = DataSeries!TimeDatapoint("Available", availEvents[0..numEvents]);
+        mr.series[MemoryReportIndex.Free] = DataSeries!TimeDatapoint("Free", usedEvents[0..numEvents]);
         return mr;
     }
 
@@ -70,16 +70,16 @@ private:
         minfo.refresh();
 
         auto event = TimeDatapoint();
-        event.value = minfo.free;
-        event.timestamp = Clock.currTime(UTC()).toUnixTime();
+        event.x = Clock.currTime(UTC()).toUnixTime();
+        event.y = minfo.free;
 
         auto availEvent = TimeDatapoint();
-        availEvent.timestamp = event.timestamp;
-        availEvent.value = minfo.available;
+        availEvent.x = event.x;
+        availEvent.y = minfo.available;
 
         auto usedEvent = TimeDatapoint();
-        usedEvent.timestamp = event.timestamp;
-        usedEvent.value = minfo.total - minfo.free;
+        usedEvent.x = event.x;
+        usedEvent.y = minfo.total - minfo.free;
 
         if (numEvents + 1 >= maxEvents)
         {

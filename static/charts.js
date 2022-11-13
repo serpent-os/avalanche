@@ -82,7 +82,8 @@ const globalOptions = {
         labels: {
             show: false
         }
-    },   
+    },
+    yaxis: {}
 }
 
 /**
@@ -99,75 +100,10 @@ function initialiseChartElement(element)
     var options = globalOptions;
     options.chart.type = dataForm;
 
-    var chart = new ApexCharts(element, options);
-    chart.render();
-
     switch (dataSource)
     {
         case 'memory':
-            updateMemoryChart(element, chart);
-            setInterval(() => {
-                updateMemoryChart(element, chart);
-                return true;
-            }, dataFrequency);
-            break;
-        default:
-            console.log('Unsupported chart');
-            break;
-    }
-}
-
-/**
- * Update memory chart using the Stats API
- *
- * @param {Element} element div for the chart
- * @param {ApexChart} chart corresponding Chart object
- */
-function updateMemoryChart(element, chart)
-{
-    const uri = '/api/v1/stats/memory';
-    fetch(uri, {
-        credentials: 'include',
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then((response) => {
-        if (!response.ok) {
-            throw new Error('Charts: ' + response.statusText);
-        }
-        return response.json();
-    }).then((obj) => {
-        let series = [{
-            name: 'Free',
-            data: obj.free.map((o) => {
-                return {
-                    x: o.timestamp * 1000,
-                    y: o.value
-                }
-            })
-        },
-        {
-            name: 'Available',
-            data: obj.available.map((o) => {
-                return {
-                    x: o.timestamp * 1000,
-                    y: o.value
-                }
-            })
-        },
-        {
-            name: 'Used',
-            data: obj.used.map((o) => {
-                return {
-                    x: o.timestamp * 1000,
-                    y: o.value
-                }
-            })
-        }];
-        let opts = {
-            series: series,
-            yaxis: {
+            options.yaxis =  {
                 type: 'numeric',
                 tickAmount: 4,
                 labels: {
@@ -181,11 +117,47 @@ function updateMemoryChart(element, chart)
                         return ((parseInt(val) / 1024 / 1024 / 1024).toFixed(1))  + "GiB";
                     }
                 },
-                max: obj.total,
                 min: 0
-            },
-        };
-        chart.updateOptions(opts);
+            };
+            break;
+        default:
+            console.log('Unsupported chart');
+            return;
+    }
+
+    var chart = new ApexCharts(element, options);
+    chart.render();
+
+    updateChart(element, chart, dataSource);
+    setInterval(() => {
+        updateChart(element, chart, dataSource);
+        return true;
+    }, dataFrequency);
+}
+
+/**
+ * Update memory chart using the Stats API
+ *
+ * @param {Element} element div for the chart
+ * @param {ApexChart} chart corresponding Chart object
+ */
+function updateChart(element, chart, domain)
+{
+    const uri = `/api/v1/stats/${domain}`;
+    fetch(uri, {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    }).then((response) => {
+        if (!response.ok) {
+            throw new Error('Charts: ' + response.statusText);
+        }
+        return response.json();
+    }).then((obj) => {
+        let options = { series: obj.series };
+        chart.updateOptions(options);
     }).catch((err) => console.log(err));
 }
 
