@@ -35,7 +35,7 @@ public final class AvalancheStats : StatsAPIv1
     /**
      * Construct new stats api impl
      */
-    this() @safe
+    @noRoute this() @safe
     {
         minfo = new MemoryInfo();
         events.reserve(maxEvents);
@@ -45,7 +45,7 @@ public final class AvalancheStats : StatsAPIv1
     /**
      * Integrate REST app
      */
-    void configure(URLRouter router) @safe
+    @noRoute void configure(URLRouter router) @safe
     {
         router.registerRestInterface(this);
         () @trusted { setTimer(1.seconds, () => refresh(), true); }();
