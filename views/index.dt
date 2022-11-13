@@ -13,21 +13,21 @@ block content
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Memory
-                        div.card-lg.chart(avalanche:data-source="memory")
+                        div.card-lg.chart(avalanche:data-source="memory", avalanche:data-form="area")
 
             // Disk usage
             div.col-4.col-sm-4.col-lg-4
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Disk
-                        div.card-lg.chart(avalanche:data-source="disk")
+                        div.card-lg.chart(avalanche:data-source="disk", avalanche:data-form="pie")
 
             // CPU usage
             div.col-4.col-sm-4.col-lg-4
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Processor
-                        div.card-lg.chart(avalanche:data-source="cpu")
+                        div.card-lg.chart(avalanche:data-source="cpu", avalanche:data-form="bar")
 
 
         div.row
