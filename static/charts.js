@@ -60,6 +60,7 @@ function initialiseChartElement(element)
                 theme: 'dark'
             },
         },
+        colors: [tabler.getColor("purple"), tabler.getColor("info"), tabler.getColor("primary")],
         dataLabels: {
             enabled: false
         },
@@ -76,7 +77,7 @@ function initialiseChartElement(element)
             lineCap: 'round'
         },
         fill: {
-            opacity: 0.2,
+            opacity: .16,
             type: 'solid'
         },
         noData: {
