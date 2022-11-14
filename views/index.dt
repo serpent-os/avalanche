@@ -17,7 +17,7 @@ block content
 
         div.row.pb-4
             // Memory use
-            div.col-4.col-sm-4.col-lg-4
+            div.col-8.col-sm-8.col-lg-8
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Memory
