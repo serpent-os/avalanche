@@ -83,6 +83,16 @@ const globalOptions = {
     yaxis: {}
 }
 
+function gbFormatter(val, idx)
+{
+    /* If its not an index in the series, render as GiB, otherwise percent */
+    if (!idx.hasOwnProperty('dataPointIndex'))
+    {
+        return Number(PercentLabels[idx]).toLocaleString(undefined, {style: 'percent', minimumFractionDigits: 0});
+    }
+    return ((parseInt(val) / 1024 / 1024 / 1024).toFixed(1))  + "GiB";
+}
+
 /**
  * Initialise an auto-discovered chart element
  *
@@ -105,36 +115,39 @@ function initialiseChartElement(element)
                 type: 'numeric',
                 tickAmount: 4,
                 labels: {
-                    formatter: function(val, idx)
-                    {
-                        /* If its not an index in the series, render as GiB, otherwise percent */
-                        if (!idx.hasOwnProperty('dataPointIndex'))
-                        {
-                            return Number(PercentLabels[idx]).toLocaleString(undefined, {style: 'percent', minimumFractionDigits: 0});
-                        }
-                        return ((parseInt(val) / 1024 / 1024 / 1024).toFixed(1))  + "GiB";
-                    }
+                    formatter: gbFormatter
                 },
                 min: 0
             };
             break;
         case 'disk':
             options.colors = [tabler.getColor('primary'), tabler.getColor('warning', 0.7)];
-
             delete options.fill;
             options.chart.animations.enabled = false;
+            options.yaxis = {
+                type: 'numeric',
+                labels: {
+                    formatter: gbFormatter
+                }
+            };
             break;
         case 'cpu':
             delete options.colors;
             delete options.fill;
+            options.chart.animations.animateGradually = true;
+            options.chart.animations.easing = 'linear';
+            options.chart.animations.speed = 25;
+            options.chart.animations.dynamicAnimation.speed = 125;
             options.yaxis =  {
                 type: 'numeric',
+                tickAmount: 6,
                 labels: {
                     formatter: function(val, idx)
                     {
                         return ((parseInt(val) / 1024 / 1024).toFixed(1))  + "GHz";
                     }
-                }
+                },
+                min: 0
             };
             break;
         default:
