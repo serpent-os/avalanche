@@ -28,6 +28,7 @@ import core.sys.posix.sys.statvfs;
 import avalanche.cpuinfo;
 import std.range : iota;
 import std.algorithm : each, map;
+
 const auto maxEvents = 60;
 
 /**
@@ -46,9 +47,15 @@ public final class AvalancheStats : StatsAPIv1
         events.reserve(maxEvents);
         usedEvents.reserve(maxEvents);
         availEvents.reserve(maxEvents);
+
         cpuEvents.reserve(cpuinfo.numCPU);
         cpuEvents.length = cpuinfo.numCPU;
-        iota(0, cpuinfo.numCPU).each!((i) => cpuEvents[i].reserve(maxEvents));
+        foreach (i; 0 .. cpuinfo.numCPU)
+        {
+            auto series = &cpuEvents[i];
+            series.data.reserve(numEvents);
+            series.name = format!"cpu%s"(i);
+        }
         refresh();
     }
 
@@ -79,9 +86,7 @@ public final class AvalancheStats : StatsAPIv1
     override CpuReport cpu() @safe
     {
         CpuReport cr;
-        cr.series = () @trusted {
-            return cpuEvents[0..cpuinfo.numCPU].enumerate.map!((o) => DataSeries!TimeDatapoint(format!"cpu%s"(o.index), o.value)).array;
-        }();
+        cr.series = cpuEvents;
         return cr;
     }
 
@@ -101,6 +106,8 @@ private:
     {
         minfo.refresh();
         cpuinfo.refresh();
+
+        refreshCPU();
 
         auto event = TimeDatapoint();
         /* JS Conversion */
@@ -129,7 +136,6 @@ private:
             events.popFront();
             availEvents.popFront();
             usedEvents.popFront();
-            cpuEvents[0..cpuinfo.numCPU].each!((c) => c.popFront());
         }
         else
         {
@@ -138,10 +144,33 @@ private:
         events ~= event;
         availEvents ~= availEvent;
         usedEvents ~= usedEvent;
-        cpuinfo.frequences.enumerate.each!((i, e) => cpuEvents[i] ~= TimeDatapoint(event.x, e));
 
         diskFree = freeSpace;
         diskUsed = usedSpace;
+    }
+
+    /**
+     * Refresh CPU data
+     */
+    void refreshCPU() @safe
+    {
+        immutable timestamp = (Clock.currTime(UTC()).toUnixTime) * 1000;
+        immutable needPop = numCPUEvents + 1 >= maxEvents;
+
+        if (!needPop)
+        {
+            ++numCPUEvents;
+        }
+
+        foreach (i; 0 .. cpuinfo.numCPU)
+        {
+            auto series = &cpuEvents[i];
+            if (needPop)
+            {
+                series.data.popFront();
+            }
+            series.data ~= TimeDatapoint(timestamp, cpuinfo.frequences[i]);
+        }
     }
 
     MemoryInfo minfo;
@@ -150,8 +179,11 @@ private:
     TimeDatapoint[] events;
     TimeDatapoint[] availEvents;
     TimeDatapoint[] usedEvents;
-    TimeDatapoint[][] cpuEvents;
+
+    DataSeries!(TimeDatapoint)[] cpuEvents;
     double diskUsed;
     double diskFree;
     ulong numEvents = 0;
+
+    ulong numCPUEvents = 0;
 }
