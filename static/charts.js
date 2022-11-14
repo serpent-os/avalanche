@@ -50,9 +50,6 @@ const globalOptions = {
                 speed: 150
             }
         },
-        tooltip: {
-            theme: 'dark'
-        },
     },
     colors: [tabler.getColor("purple"), tabler.getColor("info"), tabler.getColor("primary")],
     dataLabels: {
@@ -79,6 +76,9 @@ const globalOptions = {
         labels: {
             show: false
         }
+    },
+    tooltip: {
+        theme: 'dark'
     },
     yaxis: {}
 }
