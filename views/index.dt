@@ -13,7 +13,7 @@ block content
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Processor
-                        div.card-lg.chart#cpuChart(avalanche:data-source="cpu", avalanche:data-form="line", avalanche:data-frequency="1000", avalanche:data-total=4000000)
+                        div.card-lg.chart#cpuChart(avalanche:data-source="cpu", avalanche:data-form="line", avalanche:data-frequency="1000")
 
         div.row.pb-4
             // Memory use

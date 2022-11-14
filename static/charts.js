@@ -134,8 +134,7 @@ function initialiseChartElement(element)
                     {
                         return ((parseInt(val) / 1024 / 1024).toFixed(1))  + "GHz";
                     }
-                },
-                min: 0
+                }
             };
             break;
         default:
