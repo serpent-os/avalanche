@@ -8,27 +8,27 @@ block content
 
         div.row.pb-4
 
+            // CPU usage
+            div.col-12.col-sm-12.col-lg-12
+                div.card
+                    div.card-body
+                        h5.card-title.opacity-75 Processor
+                        div.card-lg.chart#cpuChart(avalanche:data-source="cpu", avalanche:data-form="line", avalanche:data-frequency="1000", avalanche:data-total=4000000)
+
+        div.row.pb-4
             // Memory use
             div.col-4.col-sm-4.col-lg-4
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Memory
-                        div.card-lg.chart(avalanche:data-source="memory", avalanche:data-form="area", avalanche:data-frequency="1000", avalanche:data-total=totalRam)
+                        div.card-lg.chart#memoryChart(avalanche:data-source="memory", avalanche:data-form="area", avalanche:data-frequency="1000", avalanche:data-total=totalRam)
 
             // Disk usage
             div.col-4.col-sm-4.col-lg-4
                 div.card
                     div.card-body
                         h5.card-title.opacity-75 Disk
-                        div.card-lg.chart(avalanche:data-source="disk", avalanche:data-form="pie", avalanche:data-frequency="5000")
-
-            // CPU usage
-            div.col-4.col-sm-4.col-lg-4
-                div.card
-                    div.card-body
-                        h5.card-title.opacity-75 Processor
-                        div.card-lg.chart(avalanche:data-source="cpu", avalanche:data-form="bar", avalanche:data-frequency="1000")
-
+                        div.card-lg.chart#diskChart(avalanche:data-source="disk", avalanche:data-form="pie", avalanche:data-frequency="5000")
 
         div.row
             div.col-8.col-sm-8.col-lg-8

@@ -74,6 +74,11 @@ public struct MemoryReport
     DataSeries!(TimeDatapoint)[3] series;
 }
 
+public struct CpuReport
+{
+    DataSeries!(TimeDatapoint)[] series;
+}
+
 public enum DiskReportIndex : ulong
 {
     Free = 0,
@@ -103,6 +108,8 @@ public struct DiskReport
      * Current disk usage
      */
     @path("disk") @method(HTTPMethod.GET) DiskReport disk() @safe;
+
+    @path("cpu") @method(HTTPMethod.GET) CpuReport cpu() @safe;
 }
 
 /**

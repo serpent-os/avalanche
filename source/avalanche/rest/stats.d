@@ -16,16 +16,18 @@
 module avalanche.rest.stats;
 
 public import avalanche.rest : StatsAPIv1, MemoryReport, TimeDatapoint,
-    DataSeries, MemoryReportIndex, DiskReport, DiskReportIndex;
+    DataSeries, MemoryReportIndex, DiskReport, DiskReportIndex, CpuReport;
 import vibe.d;
 import moss.core.sizing;
 import moss.core.memoryinfo;
 import vibe.utils.array;
 import std.array : array;
 import vibe.core.core : setTimer;
-import std.range : popFront;
+import std.range : popFront, enumerate;
 import core.sys.posix.sys.statvfs;
-
+import avalanche.cpuinfo;
+import std.range : iota;
+import std.algorithm : each, map;
 const auto maxEvents = 60;
 
 /**
@@ -40,7 +42,13 @@ public final class AvalancheStats : StatsAPIv1
     @noRoute this() @safe
     {
         minfo = new MemoryInfo();
+        cpuinfo = new CpuInfo();
         events.reserve(maxEvents);
+        usedEvents.reserve(maxEvents);
+        availEvents.reserve(maxEvents);
+        cpuEvents.reserve(cpuinfo.numCPU);
+        cpuEvents.length = cpuinfo.numCPU;
+        iota(0, cpuinfo.numCPU).each!((i) => cpuEvents[i].reserve(maxEvents));
         refresh();
     }
 
@@ -68,6 +76,15 @@ public final class AvalancheStats : StatsAPIv1
         return mr;
     }
 
+    override CpuReport cpu() @safe
+    {
+        CpuReport cr;
+        cr.series = () @trusted {
+            return cpuEvents[0..cpuinfo.numCPU].enumerate.map!((o) => DataSeries!TimeDatapoint(format!"cpu%s"(o.index), o.value)).array;
+        }();
+        return cr;
+    }
+
     override DiskReport disk() @safe
     {
         DiskReport dr;
@@ -83,6 +100,7 @@ private:
     void refresh() @safe
     {
         minfo.refresh();
+        cpuinfo.refresh();
 
         auto event = TimeDatapoint();
         /* JS Conversion */
@@ -111,6 +129,7 @@ private:
             events.popFront();
             availEvents.popFront();
             usedEvents.popFront();
+            cpuEvents[0..cpuinfo.numCPU].each!((c) => c.popFront());
         }
         else
         {
@@ -119,16 +138,19 @@ private:
         events ~= event;
         availEvents ~= availEvent;
         usedEvents ~= usedEvent;
+        cpuinfo.frequences.enumerate.each!((i, e) => cpuEvents[i] ~= TimeDatapoint(event.x, e));
 
         diskFree = freeSpace;
         diskUsed = usedSpace;
     }
 
     MemoryInfo minfo;
+    CpuInfo cpuinfo;
 
     TimeDatapoint[] events;
     TimeDatapoint[] availEvents;
     TimeDatapoint[] usedEvents;
+    TimeDatapoint[][] cpuEvents;
     double diskUsed;
     double diskFree;
     ulong numEvents = 0;

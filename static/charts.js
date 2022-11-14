@@ -95,7 +95,7 @@ function initialiseChartElement(element)
     let dataFrequency = parseInt(element.getAttribute('avalanche:data-frequency'));
     let dataTotalEl = element.getAttribute('avalanche:data-total');
 
-    var options = globalOptions;
+    let options = Object.assign({}, globalOptions);
     options.chart.type = dataForm;
 
     switch (dataSource)
@@ -123,6 +123,20 @@ function initialiseChartElement(element)
 
             delete options.fill;
             options.chart.animations.enabled = false;
+            break;
+        case 'cpu':
+            delete options.colors;
+            delete options.fill;
+            options.yaxis =  {
+                type: 'numeric',
+                labels: {
+                    formatter: function(val, idx)
+                    {
+                        return ((parseInt(val) / 1024 / 1024).toFixed(1))  + "GHz";
+                    }
+                },
+                min: 0
+            };
             break;
         default:
             console.log('Unsupported chart');
