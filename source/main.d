@@ -35,6 +35,7 @@ int main(string[] args) @safe
     immutable rc = () @trusted { return sodium_init(); }();
     enforce(rc == 0, "Failed to initialise libsodium");
 
+    setLogLevel(LogLevel.diagnostic);
     logInfo("Starting Avalanche");
     auto rootDir = absolutePath(".").asNormalizedPath.to!string;
     logInfo(format!"Root dir: %s"(rootDir));
