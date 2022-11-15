@@ -1,0 +1,55 @@
+/*
+ * SPDX-FileCopyrightText: Copyright © 2020-2022 Serpent OS Developers
+ *
+ * SPDX-License-Identifier: Zlib
+ */
+
+/**
+ * avl.js
+ *
+ * Avalanche connections, etc.
+ *
+ * Authors: Copyright © 2020-2022 Serpent OS Developers
+ * License: Zlib
+ */
+
+document.addEventListener('DOMContentLoaded', function(ev)
+{
+    loadConnections();
+    setInterval(() => {
+        loadConnections();
+        return true;
+    }, 1000);
+});
+
+function renderConnection(element)
+{
+    return `<div class="list-group-item gb-3">
+${element.id}
+<a href="#" class="btn">Accept</a>
+</div>`;
+}
+
+function loadConnections()
+{
+    const list = document.getElementById('connectionList');
+    fetch('/api/v1/services/enumerate', {
+        credentials: 'include',
+        headers: {
+            Accept: 'application/json'
+        },
+        method: 'GET'
+    }).then((response) => {
+        if (!response.ok)
+        {
+            throw new Error('Failed to fetch connections: ' + response.statusText);
+        }
+        return response.json();
+    }).then((obj) => {
+        let newHTML = '';
+        obj.forEach(element => {
+            newHTML += renderConnection(element);
+        });
+        list.innerHTML = newHTML;
+    }).catch((err) => console.log(err));
+}

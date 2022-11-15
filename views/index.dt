@@ -38,6 +38,8 @@ block content
                     div.card-body
                         p To pair this builder with Summit, you'll need this public key
                         pre #{publicKey}
+                        div.list-group.list-group-flush#connectionList
+
             div.col-4.col-sm-4.col-lg-4
                 - import moss.core.sizing : formattedSize;
                 - import core.cpuid;
@@ -71,3 +73,4 @@ block content
 block scripts
     script(src="https://cdn.jsdelivr.net/npm/apexcharts", module)
     script(src="/static/charts.js", module, defer)
+    script(src="/static/avl.js", module, defer)
