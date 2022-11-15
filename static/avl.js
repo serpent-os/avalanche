@@ -24,9 +24,17 @@ document.addEventListener('DOMContentLoaded', function(ev)
 
 function renderConnection(element)
 {
-    return `<div class="list-group-item gb-3">
-${element.id}
-<a href="#" class="btn">Accept</a>
+    return `<div class="list-group-item gb-3 align-items-center">
+<div class="row">
+    <div class="col">
+        ${element.id}
+    </div>
+    <div class="col-auto">
+        <a href="" class="btn btn-primary">Accept</a>
+    </div>
+    <div class="col-auto">
+        <a href="" class="btn btn-danger">Decline</a>
+    </div>
 </div>`;
 }
 
@@ -46,7 +54,7 @@ function loadConnections()
         }
         return response.json();
     }).then((obj) => {
-        let newHTML = '';
+        let newHTML = `<div class="list-group-header">Incoming connections</div>`;
         obj.forEach(element => {
             newHTML += renderConnection(element);
         });
