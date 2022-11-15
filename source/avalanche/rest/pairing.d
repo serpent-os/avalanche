@@ -23,6 +23,8 @@ import moss.service.tokens;
 import moss.service.tokens.manager;
 import std.sumtype : tryMatch;
 import moss.db.keyvalue;
+import std.algorithm : map;
+import std.array : array;
 
 /**
  * Implements the enrolment API for Avalanche
@@ -37,6 +39,24 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
         this.appDB = appDB;
         this.tokenManager = tokenManager;
         router.registerRestInterface(this);
+    }
+
+    /**
+     * Sanitize display of endpoints without revealing tokens
+     */
+    override VisibleEndpoint[] enumerate() @safe
+    {
+        VisibleEndpoint[] items;
+
+        appDB.view((in tx) @safe {
+            auto d = tx.list!SummitEndpoint
+                .map!((e) {
+                    return VisibleEndpoint(e.id, e.hostAddress, e.publicKey, e.status);
+                });
+            items = () @trusted { return d.array; }();
+            return NoDatabaseError;
+        });
+        return items;
     }
 
     override void enrol(ServiceEnrolmentRequest request) @safe
