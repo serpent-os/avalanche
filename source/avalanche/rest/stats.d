@@ -17,17 +17,17 @@ module avalanche.rest.stats;
 
 public import avalanche.rest : StatsAPIv1, MemoryReport, TimeDatapoint,
     DataSeries, MemoryReportIndex, DiskReport, DiskReportIndex, CpuReport;
-import vibe.d;
-import moss.core.sizing;
-import moss.core.memoryinfo;
-import vibe.utils.array;
-import std.array : array;
-import vibe.core.core : setTimer;
-import std.range : popFront, enumerate;
 import core.sys.posix.sys.statvfs;
 import moss.core.cpuinfo;
-import std.range : iota;
+import moss.core.memoryinfo;
+import moss.core.sizing;
 import std.algorithm : each, map;
+import std.array : array;
+import std.range : iota;
+import std.range : popFront, enumerate;
+import vibe.core.core : setTimer;
+import vibe.d;
+import vibe.utils.array;
 
 const auto maxEvents = 60;
 
