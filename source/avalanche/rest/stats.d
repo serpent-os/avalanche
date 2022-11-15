@@ -25,7 +25,7 @@ import std.array : array;
 import vibe.core.core : setTimer;
 import std.range : popFront, enumerate;
 import core.sys.posix.sys.statvfs;
-import avalanche.cpuinfo;
+import moss.core.cpuinfo;
 import std.range : iota;
 import std.algorithm : each, map;
 
@@ -43,14 +43,14 @@ public final class AvalancheStats : StatsAPIv1
     @noRoute this() @safe
     {
         minfo = new MemoryInfo();
-        cpuinfo = new CpuInfo();
+        cpufreqInfo = new CpufreqInfo();
         events.reserve(maxEvents);
         usedEvents.reserve(maxEvents);
         availEvents.reserve(maxEvents);
 
-        cpuEvents.reserve(cpuinfo.numCPU);
-        cpuEvents.length = cpuinfo.numCPU;
-        foreach (i; 0 .. cpuinfo.numCPU)
+        cpuEvents.reserve(cpufreqInfo.numCPU);
+        cpuEvents.length = cpufreqInfo.numCPU;
+        foreach (i; 0 .. cpufreqInfo.numCPU)
         {
             auto series = &cpuEvents[i];
             series.data.reserve(numEvents);
@@ -105,7 +105,7 @@ private:
     void refresh() @safe
     {
         minfo.refresh();
-        cpuinfo.refresh();
+        cpufreqInfo.refresh();
 
         refreshCPU();
 
@@ -162,19 +162,19 @@ private:
             ++numCPUEvents;
         }
 
-        foreach (i; 0 .. cpuinfo.numCPU)
+        foreach (i; 0 .. cpufreqInfo.numCPU)
         {
             auto series = &cpuEvents[i];
             if (needPop)
             {
                 series.data.popFront();
             }
-            series.data ~= TimeDatapoint(timestamp, cpuinfo.frequences[i]);
+            series.data ~= TimeDatapoint(timestamp, cpufreqInfo.frequencies[i]);
         }
     }
 
     MemoryInfo minfo;
-    CpuInfo cpuinfo;
+    CpufreqInfo cpufreqInfo;
 
     TimeDatapoint[] events;
     TimeDatapoint[] availEvents;
