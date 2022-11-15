@@ -74,6 +74,7 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 
         logInfo(format!"Got a pairing request: %s"(request));
         SummitEndpoint endpoint;
+        endpoint.status = EndpointStatus.AwaitingAcceptance;
         endpoint.id = request.issuer.publicKey;
         endpoint.hostAddress = request.issuer.url;
         endpoint.publicKey = request.issuer.publicKey;
