@@ -111,7 +111,7 @@ public final class AvalancheApp
      */
     void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) @safe
     {
-        immutable bool needLogin = error.code == HTTPStatus.forbidden && req.token.isNull;
+        immutable bool needLogin = error.code == HTTPStatus.forbidden && req.requestToken.isNull;
 
         if (needLogin)
         {
