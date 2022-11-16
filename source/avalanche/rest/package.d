@@ -110,6 +110,9 @@ public struct DiskReport
      */
     @anyAuth @path("disk") @method(HTTPMethod.GET) DiskReport disk() @safe;
 
+    /** 
+     * CPU metrics
+     */
     @anyAuth @path("cpu") @method(HTTPMethod.GET) CpuReport cpu() @safe;
 }
 
