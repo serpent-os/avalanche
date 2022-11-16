@@ -111,7 +111,16 @@ public final class AvalancheApp
      */
     void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) @safe
     {
-        res.render!("errors/generic.dt", req, error);
+        immutable bool needLogin = error.code == HTTPStatus.forbidden && req.token.isNull;
+
+        if (needLogin)
+        {
+            res.render!("errors/login.dt", req, error);
+        }
+        else
+        {
+            res.render!("errors/generic.dt", req, error);
+        }
     }
 
 private:
