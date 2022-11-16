@@ -23,7 +23,7 @@ html
                                     p You must be logged in to access this part of the website.
                                 div.card-footer
                                     div.d-flex
-                                        div.col-auto: a.btn(href="/act/login") Login to Avalanche
+                                        div.col-auto: a.btn(href="/accounts/login") Login to Avalanche
         include footer
 
     
