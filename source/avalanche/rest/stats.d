@@ -28,6 +28,8 @@ import std.range : popFront, enumerate;
 import vibe.core.core : setTimer;
 import vibe.d;
 import vibe.utils.array;
+import moss.service.accounts;
+import moss.service.tokens.manager;
 
 const auto maxEvents = 60;
 
@@ -59,11 +61,16 @@ public final class AvalancheStats : StatsAPIv1
         refresh();
     }
 
+    mixin AppAuthenticator;
+
     /**
      * Integrate REST app
      */
-    @noRoute void configure(URLRouter router) @safe
+    @noRoute void configure(URLRouter router, TokenManager tokenManager,
+            AccountManager accountManager) @safe
     {
+        this.accountManager = accountManager;
+        this.tokenManager = tokenManager;
         router.registerRestInterface(this);
         () @trusted { setTimer(1.seconds, () => refresh(), true); }();
     }
@@ -186,4 +193,7 @@ private:
     ulong numEvents = 0;
 
     ulong numCPUEvents = 0;
+
+    TokenManager tokenManager;
+    AccountManager accountManager;
 }

@@ -19,6 +19,7 @@ import vibe.d;
 
 import moss.service.models.endpoints;
 import moss.service.interfaces;
+import moss.service.accounts;
 import moss.service.tokens;
 import moss.service.tokens.manager;
 import std.sumtype : tryMatch;
@@ -31,12 +32,17 @@ import std.array : array;
  */
 public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 {
+
+    mixin AppAuthenticator;
+
     /**
      * Integrate pairing API
      */
-    @noRoute void configure(Database appDB, TokenManager tokenManager, URLRouter router) @safe
+    @noRoute void configure(Database appDB, TokenManager tokenManager,
+            AccountManager accountManager, URLRouter router) @safe
     {
         this.appDB = appDB;
+        this.accountManager = accountManager;
         this.tokenManager = tokenManager;
         router.registerRestInterface(this);
     }
@@ -122,6 +128,7 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 
 private:
 
+    AccountManager accountManager;
     TokenManager tokenManager;
     Database appDB;
 }

@@ -20,6 +20,7 @@ import avalanche.web;
 import moss.db.keyvalue;
 import moss.db.keyvalue.errors;
 import moss.db.keyvalue.orm;
+import moss.service.accounts;
 import moss.service.models.endpoints;
 import moss.service.sessionstore;
 import moss.service.tokens;
@@ -42,6 +43,8 @@ public final class AvalancheApp
         immutable statePath = rootDir.buildPath("state");
         immutable dbPath = statePath.buildPath("db");
         dbPath.mkdirRecurse();
+
+        accountManager = new AccountManager(dbPath);
 
         immutable driver = format!"lmdb://%s"(dbPath.buildPath("appDB"));
         appDB = Database.open(driver, DatabaseFlags.CreateIfNotExists)
@@ -76,9 +79,9 @@ public final class AvalancheApp
 
         /* Bring up our core routes */
         auto bAPI = new BuildAPI(rootDir);
-        bAPI.configure(appDB, tokenManager, router);
+        bAPI.configure(appDB, tokenManager, accountManager, router);
 
-        auto web = new AvalancheWeb(tokenManager);
+        auto web = new AvalancheWeb(accountManager, tokenManager);
         web.configure(router);
 
         router.rebuild();
@@ -99,6 +102,7 @@ public final class AvalancheApp
     {
         listener.stopListening();
         appDB.close();
+        accountManager.close();
     }
 
 private:
@@ -108,6 +112,7 @@ private:
     SessionStore sessionStore;
     HTTPServerSettings serverSettings;
     HTTPListener listener;
+    AccountManager accountManager;
     TokenManager tokenManager;
     Database appDB;
 }

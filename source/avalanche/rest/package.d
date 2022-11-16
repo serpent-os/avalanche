@@ -22,6 +22,7 @@ import avalanche.rest.pairing;
 import avalanche.rest.stats;
 import moss.service.tokens.manager;
 import moss.db.keyvalue;
+import moss.service.accounts;
 
 /**
  * Used in the statistics API
@@ -97,34 +98,35 @@ public struct DiskReport
 /**
  * Simplistic API that powers our charts
  */
-@path("/api/v1/stats") public interface StatsAPIv1
+@requiresAuth @path("/api/v1/stats") public interface StatsAPIv1
 {
     /**
      * Current memory usage
      */
-    @path("memory") @method(HTTPMethod.GET) MemoryReport memory() @safe;
+    @anyAuth @path("memory") @method(HTTPMethod.GET) MemoryReport memory() @safe;
 
     /**
      * Current disk usage
      */
-    @path("disk") @method(HTTPMethod.GET) DiskReport disk() @safe;
+    @anyAuth @path("disk") @method(HTTPMethod.GET) DiskReport disk() @safe;
 
-    @path("cpu") @method(HTTPMethod.GET) CpuReport cpu() @safe;
+    @anyAuth @path("cpu") @method(HTTPMethod.GET) CpuReport cpu() @safe;
 }
 
 /**
  * The BuildAPI
  */
-@path("/api/v1") public interface BuildAPIv1
+@requiresAuth @path("/api/v1") public interface BuildAPIv1
 {
     @path("version")
-    string versionIdentifier() @safe;
+    @noAuth string versionIdentifier() @safe;
 
     /**
      * Request a build.
      */
     @path("build_package")
-    void buildPackage(PackageBuild request) @safe;
+    @auth(Role.notExpired & Role.API & Role.serviceAccount & Role.accessToken) void buildPackage(
+            PackageBuild request) @safe;
 }
 
 /**
@@ -135,6 +137,8 @@ public final class BuildAPI : BuildAPIv1
 {
 
     @disable this();
+
+    mixin AppAuthenticator;
 
     /**
      * Construct new BuildAPI using the specified rootDir
@@ -147,13 +151,16 @@ public final class BuildAPI : BuildAPIv1
     /**
      * Configure BuildAPI for integration
      */
-    @noRoute void configure(Database appDB, TokenManager tokenManager, URLRouter root) @safe
+    @noRoute void configure(Database appDB, TokenManager tokenManager,
+            AccountManager accountManager, URLRouter root) @safe
     {
+        this.tokenManager = tokenManager;
+        this.accountManager = accountManager;
         auto apiRoot = root.registerRestInterface(this);
         auto pair = new AvalanchePairingAPI();
-        pair.configure(appDB, tokenManager, apiRoot);
+        pair.configure(appDB, tokenManager, accountManager, apiRoot);
         auto stats = new AvalancheStats();
-        stats.configure(root);
+        stats.configure(root, tokenManager, accountManager);
     }
 
     override string versionIdentifier() @safe
@@ -176,4 +183,6 @@ private:
 
     string rootDir;
     bool working = false;
+    AccountManager accountManager;
+    TokenManager tokenManager;
 }

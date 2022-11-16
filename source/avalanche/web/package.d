@@ -19,20 +19,25 @@ import vibe.d;
 
 import moss.service.tokens.manager;
 import moss.core.memoryinfo;
+import moss.service.accounts;
+import moss.service.tokens.manager;
 
 /**
  * Core entry into the Avalanche Web UI
  */
-@path("/") public final class AvalancheWeb
+@path("/") @requiresAuth public final class AvalancheWeb
 {
 
     @disable this();
 
+    mixin AppAuthenticator;
+
     /**
      * Construct new frontend with the given token manager
      */
-    this(TokenManager tokenManager) @safe
+    this(AccountManager accountManager, TokenManager tokenManager) @safe
     {
+        this.accountManager = accountManager;
         this.tokenManager = tokenManager;
 
         scope mminfo = new MemoryInfo();
@@ -50,7 +55,7 @@ import moss.core.memoryinfo;
     /**
      * Render the landing page
      */
-    void index() @safe
+    @anyAuth void index() @safe
     {
         immutable publicKey = tokenManager.publicKey;
         render!("index.dt", publicKey, totalRam);
@@ -60,5 +65,6 @@ import moss.core.memoryinfo;
 
 private:
 
+    AccountManager accountManager;
     TokenManager tokenManager;
 }
