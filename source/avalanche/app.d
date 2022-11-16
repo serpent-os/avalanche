@@ -59,6 +59,7 @@ public final class AvalancheApp
 
         /* Set up the server */
         serverSettings = new HTTPServerSettings();
+        serverSettings.errorPageHandler = &errorHandler;
         serverSettings.disableDistHost = true;
         serverSettings.useCompressionIfPossible = true;
         serverSettings.port = 8082;
@@ -103,6 +104,14 @@ public final class AvalancheApp
         listener.stopListening();
         appDB.close();
         accountManager.close();
+    }
+
+    /**
+     * Handle erronous requests
+     */
+    void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) @safe
+    {
+        res.render!("errors/generic.dt", req, error);
     }
 
 private:
