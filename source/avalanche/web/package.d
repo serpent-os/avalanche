@@ -21,6 +21,7 @@ import moss.service.tokens.manager;
 import moss.core.memoryinfo;
 import moss.service.accounts;
 import moss.service.tokens.manager;
+import avalanche.web.accounts;
 
 /**
  * Core entry into the Avalanche Web UI
@@ -49,7 +50,9 @@ import moss.service.tokens.manager;
      */
     @noRoute void configure(URLRouter router) @safe
     {
-        router.registerWebInterface(this);
+        auto acct = new AvalancheAccountsWeb(accountManager, tokenManager);
+        auto root = router.registerWebInterface(this);
+        acct.configure(root);
     }
 
     /**
