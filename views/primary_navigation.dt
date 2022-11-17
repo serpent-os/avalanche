@@ -10,9 +10,8 @@ nav.navbar.navbar-expand-lg.navbar-light
                 svg#themeSwitcherIcon(width="16px", height="16px")
                     use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")
 
-            - import moss.service.accounts.auth : requestToken;
-            - auto token = req.requestToken;
-            - if (token.isNull)
+            - string username = req.session ? req.session.get!string("accountName", null) : null;
+            - if (username is null)
             - {
                 a.nav-link(href="/accounts/login") Login
             - } else {
@@ -20,7 +19,7 @@ nav.navbar.navbar-expand-lg.navbar-light
                     a.nav-link(href="#", data-bs-toggle="dropdown", aria-expanded="false", aria-label="Open account menu")
                         svg.mx-2#themeSwitcherIcon(width="16px", height="16px")
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
-                        span=token.payload.sub
+                        span=username
                     div.dropdown-menu.dropdown-menu-start.dropdown-menu-arrow
                         a.dropdown-item(href="/accounts/logout") Logout…
             - }
