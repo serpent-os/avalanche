@@ -50,9 +50,9 @@ public final class AvalancheStats : StatsAPIv1
         usedEvents.reserve(maxEvents);
         availEvents.reserve(maxEvents);
 
-        cpuEvents.reserve(cpufreqInfo.numCPU);
-        cpuEvents.length = cpufreqInfo.numCPU;
-        foreach (i; 0 .. cpufreqInfo.numCPU)
+        cpuEvents.reserve(cpufreqInfo.numHWThreads);
+        cpuEvents.length = cpufreqInfo.numHWThreads;
+        foreach (i; 0 .. cpufreqInfo.numHWThreads)
         {
             auto series = &cpuEvents[i];
             series.data.reserve(numEvents);
@@ -169,7 +169,7 @@ private:
             ++numCPUEvents;
         }
 
-        foreach (i; 0 .. cpufreqInfo.numCPU)
+        foreach (i; 0 .. cpufreqInfo.numHWThreads)
         {
             auto series = &cpuEvents[i];
             if (needPop)
