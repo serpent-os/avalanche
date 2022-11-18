@@ -22,6 +22,8 @@ import moss.core.memoryinfo;
 import moss.service.accounts;
 import moss.service.tokens.manager;
 import avalanche.web.accounts;
+import moss.db.keyvalue;
+import moss.db.keyvalue.orm;
 
 /**
  * Core entry into the Avalanche Web UI
@@ -36,10 +38,11 @@ import avalanche.web.accounts;
     /**
      * Construct new frontend with the given token manager
      */
-    this(AccountManager accountManager, TokenManager tokenManager) @safe
+    this(AccountManager accountManager, TokenManager tokenManager, Database appDB) @safe
     {
         this.accountManager = accountManager;
         this.tokenManager = tokenManager;
+        this.appDB = appDB;
 
         scope mminfo = new MemoryInfo();
         totalRam = mminfo.total;
@@ -68,7 +71,8 @@ import avalanche.web.accounts;
      * Admin accepting enrolment
      */
     @path("avl/accept/:id")
-    @anyAuth @method(HTTPMethod.GET) void acceptEnrolment(string _id) @safe
+    @auth(Role.notExpired & Role.web & Role.accessToken & Role.userAccount) @method(HTTPMethod.GET) void acceptEnrolment(
+            string _id) @safe
     {
         redirect("/");
     }
@@ -79,4 +83,5 @@ private:
 
     AccountManager accountManager;
     TokenManager tokenManager;
+    Database appDB;
 }

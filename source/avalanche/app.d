@@ -82,7 +82,7 @@ public final class AvalancheApp
         auto bAPI = new BuildAPI(rootDir);
         bAPI.configure(appDB, tokenManager, accountManager, router);
 
-        auto web = new AvalancheWeb(accountManager, tokenManager);
+        auto web = new AvalancheWeb(accountManager, tokenManager, appDB);
         web.configure(router);
 
         router.rebuild();
