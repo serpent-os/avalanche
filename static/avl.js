@@ -30,7 +30,7 @@ function renderConnection(element)
         ${element.id}
     </div>
     <div class="col-auto">
-        <a href="" class="btn btn-primary">Accept</a>
+        <a href="/avl/accept/${element.id}" class="btn btn-primary">Accept</a>
     </div>
     <div class="col-auto">
         <a href="" class="btn btn-danger">Decline</a>

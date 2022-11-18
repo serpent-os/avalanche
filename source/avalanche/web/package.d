@@ -64,6 +64,15 @@ import avalanche.web.accounts;
         render!("index.dt", publicKey, totalRam);
     }
 
+    /**
+     * Admin accepting enrolment
+     */
+    @path("avl/accept/:id")
+    @anyAuth @method(HTTPMethod.GET) void acceptEnrolment(string _id) @safe
+    {
+        redirect("/");
+    }
+
     double totalRam;
 
 private:
