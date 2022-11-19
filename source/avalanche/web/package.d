@@ -125,6 +125,9 @@ import moss.service.models.endpoints;
         /* assuming this works, we'll update our own model now */
         logInfo(format!"Sending .accept() to %s (%s)"(endpoint.hostAddress, endpoint.publicKey));
         auto client = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
+        client.requestFilter = (req) {
+            req.headers["Authorization"] = format!"Bearer %s"(endpoint.bearerToken);
+        };
         client.accept(request);
 
         /* all done! */

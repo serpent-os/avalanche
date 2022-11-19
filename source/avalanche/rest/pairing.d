@@ -84,6 +84,7 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
         endpoint.id = request.issuer.publicKey;
         endpoint.hostAddress = request.issuer.url;
         endpoint.publicKey = request.issuer.publicKey;
+        endpoint.bearerToken = request.issueToken;
         immutable err = appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
