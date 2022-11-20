@@ -92,7 +92,7 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
     /**
      * Noop: We don't accept enrolments locally
      */
-    override void accept(ServiceEnrolmentRequest request) @safe
+    override void accept(ServiceEnrolmentRequest request, NullableToken token) @safe
     {
         throw new HTTPStatusException(HTTPStatus.methodNotAllowed,
                 "accept(): Avalanche doesn't accept requests");
@@ -101,27 +101,27 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
     /**
      * Noop: We don't decline enrolments locally
      */
-    override void decline() @safe
+    override void decline(NullableToken token) @safe
     {
         throw new HTTPStatusException(HTTPStatus.methodNotAllowed,
                 "decline(): Avalanche doesn't decline requests");
     }
 
-    override void leave() @safe
+    override void leave(NullableToken token) @safe
     {
         throw new HTTPStatusException(HTTPStatus.notImplemented, "leave(): Not yet implemented");
     }
 
-    override string refreshToken() @safe
+    override string refreshToken(NullableToken token) @safe
     {
         TokenPayload payload;
         payload.iss = "avalanche";
         payload.sub = "user";
-        Token token = tokenManager.createAPIToken(payload);
-        return tokenManager.signToken(token).tryMatch!((string s) => s);
+        Token refreshedToken = tokenManager.createAPIToken(payload);
+        return tokenManager.signToken(refreshedToken).tryMatch!((string s) => s);
     }
 
-    override string refreshIssueToken() @safe
+    override string refreshIssueToken(NullableToken token) @safe
     {
         throw new HTTPStatusException(HTTPStatus.notImplemented,
                 "refreshIssueToken(): Not yet implemented");

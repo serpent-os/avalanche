@@ -128,7 +128,7 @@ import moss.service.models.endpoints;
         client.requestFilter = (req) {
             req.headers["Authorization"] = format!"Bearer %s"(endpoint.bearerToken);
         };
-        client.accept(request);
+        client.accept(request, NullableToken(Token.init));
 
         /* all done! */
         endpoint.serviceAccount = serviceAccount.id;
