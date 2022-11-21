@@ -20,6 +20,7 @@ import avalanche.build;
 import avalanche.build.job;
 import avalanche.rest.pairing;
 import avalanche.rest.stats;
+import moss.service.interfaces.avalanche;
 import moss.service.tokens.manager;
 import moss.db.keyvalue;
 import moss.service.accounts;
@@ -117,26 +118,10 @@ public struct DiskReport
 }
 
 /**
- * The BuildAPI
- */
-@requiresAuth @path("/api/v1") public interface BuildAPIv1
-{
-    @path("version")
-    @noAuth string versionIdentifier() @safe;
-
-    /**
-     * Request a build.
-     */
-    @path("build_package")
-    @auth(Role.notExpired & Role.API & Role.serviceAccount & Role.accessToken) void buildPackage(
-            PackageBuild request) @safe;
-}
-
-/**
  * Main entry point from the server side, storing our
  * databases and interfaces.
  */
-public final class BuildAPI : BuildAPIv1
+public final class BuildAPI : AvalancheAPI
 {
 
     @disable this();
@@ -166,15 +151,10 @@ public final class BuildAPI : BuildAPIv1
         stats.configure(root, tokenManager, accountManager);
     }
 
-    override string versionIdentifier() @safe
-    {
-        return "0.0.1";
-    }
-
     /**
      * Go ahead and schedule build of the package on a separate fiber
      */
-    override void buildPackage(PackageBuild request) @safe
+    override void buildPackage(PackageBuild request, NullableToken token) @safe
     {
         enforceHTTP(!working, HTTPStatus.serviceUnavailable, "Sorry, already building something");
         enforceHTTP(request.collections.length > 0, HTTPStatus.badRequest, "Missing collections");
