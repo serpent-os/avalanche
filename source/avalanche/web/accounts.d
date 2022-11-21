@@ -31,7 +31,7 @@ import vibe.d;
      */
     this(AccountManager accountManager, TokenManager tokenManager) @safe
     {
-        super(accountManager, tokenManager);
+        super(accountManager, tokenManager, "avalanche");
     }
 
     /**
