@@ -124,16 +124,27 @@ import moss.service.models.endpoints;
 
         /* assuming this works, we'll update our own model now */
         logInfo(format!"Sending .accept() to %s (%s)"(endpoint.hostAddress, endpoint.publicKey));
-        auto client = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
-        client.requestFilter = (req) {
-            req.headers["Authorization"] = format!"Bearer %s"(endpoint.bearerToken);
-        };
-        client.accept(request, NullableToken(Token.init));
 
-        /* all done! */
+        /* So, all in, all out. */
         endpoint.serviceAccount = serviceAccount.id;
-        endpoint.status = EndpointStatus.Operational;
-        immutable stErr = appDB.update((scope tx) => endpoint.save(tx));
+        try
+        {
+            auto client = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
+            client.requestFilter = (req) {
+                req.headers["Authorization"] = format!"Bearer %s"(endpoint.bearerToken);
+            };
+            client.accept(request, NullableToken(Token.init));
+            endpoint.status = EndpointStatus.Operational;
+            endpoint.statusText = "Fully configured";
+        }
+        catch (RestException rx)
+        {
+            endpoint.status = EndpointStatus.Failed;
+            endpoint.statusText = format!"%s"(rx.message);
+        }
+
+        immutable uErr = appDB.update((scope tx) => endpoint.save(tx));
+        enforceHTTP(uErr.isNull, HTTPStatus.internalServerError, uErr.message);
 
         redirect("/");
     }
