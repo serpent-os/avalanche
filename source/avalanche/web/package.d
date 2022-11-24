@@ -59,7 +59,7 @@ import moss.service.models.endpoints;
     {
         auto acct = new AvalancheAccountsWeb(accountManager, tokenManager);
         auto root = router.registerWebInterface(this);
-        acct.configure(root);
+        root.registerWebInterface(cast(AccountsWeb) acct);
     }
 
     /**
