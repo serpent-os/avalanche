@@ -63,7 +63,7 @@ public final class AvalancheApp
         serverSettings.disableDistHost = true;
         serverSettings.useCompressionIfPossible = true;
         serverSettings.port = 8082;
-        serverSettings.sessionOptions = SessionOption.secure | SessionOption.httpOnly;
+        serverSettings.sessionOptions = SessionOption.httpOnly;
         serverSettings.serverString = "avalanche/0.0.1";
         serverSettings.sessionIdCookie = "avalanche.session_id";
 
