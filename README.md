@@ -20,6 +20,6 @@ Run `dub build --parallel` to build.
 
 ## License
 
-Copyright &copy; 2020-2022 Serpent OS Developers
+Copyright &copy; 2020-2023 Serpent OS Developers
 
 Available under the terms of the [Zlib](https://spdx.org/licenses/Zlib.html) license.
