@@ -112,11 +112,24 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
         throw new HTTPStatusException(HTTPStatus.notImplemented, "leave(): Not yet implemented");
     }
 
+    /** 
+     * Largely clone the original token and sign it. Access checks have already
+     * been performed, and we know the bearer token is in use.
+     *
+     * Params:
+     *   token = Session token
+     * Returns: Newly refreshed token
+     */
     override string refreshToken(NullableToken token) @safe
     {
+        enforceHTTP(!token.isNull, HTTPStatus.forbidden);
         TokenPayload payload;
         payload.iss = "avalanche";
-        payload.sub = "user";
+        payload.sub = token.payload.sub;
+        payload.aud = token.payload.aud;
+        payload.admin = token.payload.admin;
+        payload.uid = token.payload.uid;
+        payload.act = token.payload.act;
         Token refreshedToken = tokenManager.createAPIToken(payload);
         return tokenManager.signToken(refreshedToken).tryMatch!((string s) => s);
     }
