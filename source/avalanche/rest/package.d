@@ -21,9 +21,8 @@ import avalanche.build.job;
 import avalanche.rest.pairing;
 import avalanche.rest.stats;
 import moss.service.interfaces.avalanche;
-import moss.service.tokens.manager;
 import moss.db.keyvalue;
-import moss.service.accounts;
+import moss.service.context;
 
 /**
  * Used in the statistics API
@@ -126,29 +125,26 @@ public final class BuildAPI : AvalancheAPI
 
     @disable this();
 
-    mixin AppAuthenticator;
+    mixin AppAuthenticatorContext;
 
     /**
      * Construct new BuildAPI using the specified rootDir
      */
-    this(string rootDir) @safe
+    this(ServiceContext context) @safe
     {
-        this.rootDir = rootDir;
+        this.context = context;
     }
 
     /**
      * Configure BuildAPI for integration
      */
-    @noRoute void configure(Database appDB, TokenManager tokenManager,
-            AccountManager accountManager, URLRouter root) @safe
+    @noRoute void configure(URLRouter root) @safe
     {
-        this.tokenManager = tokenManager;
-        this.accountManager = accountManager;
         auto apiRoot = root.registerRestInterface(this);
-        auto pair = new AvalanchePairingAPI();
-        pair.configure(appDB, tokenManager, accountManager, apiRoot);
-        auto stats = new AvalancheStats();
-        stats.configure(root, tokenManager, accountManager);
+        auto pair = new AvalanchePairingAPI(context);
+        pair.configure(apiRoot);
+        auto stats = new AvalancheStats(context);
+        stats.configure(root);
     }
 
     /**
@@ -159,13 +155,16 @@ public final class BuildAPI : AvalancheAPI
         enforceHTTP(!working, HTTPStatus.serviceUnavailable, "Sorry, already building something");
         enforceHTTP(request.collections.length > 0, HTTPStatus.badRequest, "Missing collections");
         working = true;
-        runTask({ auto b = new BuildJob(rootDir, request); b.run(); working = false; });
+        runTask({
+            auto b = new BuildJob(context.rootDirectory, request);
+            b.run();
+            working = false;
+        });
     }
 
 private:
 
     string rootDir;
     bool working = false;
-    AccountManager accountManager;
-    TokenManager tokenManager;
+    ServiceContext context;
 }

@@ -15,8 +15,7 @@
 
 module avalanche.web.accounts;
 
-import moss.service.accounts;
-import moss.service.tokens.manager;
+import moss.service.context;
 import vibe.d;
 
 /**
@@ -29,9 +28,9 @@ import vibe.d;
     /**
      * Construct a new accounts web
      */
-    this(AccountManager accountManager, TokenManager tokenManager) @safe
+    this(ServiceContext context) @safe
     {
-        super(accountManager, tokenManager, "avalanche");
+        super(context.accountManager, context.tokenManager, "avalanche");
     }
 
     /**

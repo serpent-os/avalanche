@@ -17,6 +17,8 @@ module main;
 
 import vibe.d;
 import avalanche.app;
+import moss.service.context;
+import moss.service.models;
 import std.path : absolutePath, asNormalizedPath;
 import std.string : format;
 import std.conv : to;
@@ -38,8 +40,12 @@ int main(string[] args) @safe
     setLogLevel(LogLevel.trace);
     logInfo("Starting Avalanche");
     auto rootDir = absolutePath(".").asNormalizedPath.to!string;
-    logInfo(format!"Root dir: %s"(rootDir));
-    auto app = new AvalancheApp(rootDir);
+
+    auto context = new ServiceContext(rootDir);
+    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(SummitEndpoint));
+    enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
+
+    auto app = new AvalancheApp(context);
     app.start();
     scope (exit)
     {

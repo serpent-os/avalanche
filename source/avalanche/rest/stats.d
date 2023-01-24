@@ -28,8 +28,7 @@ import std.range : popFront, enumerate;
 import vibe.core.core : setTimer;
 import vibe.d;
 import vibe.utils.array;
-import moss.service.accounts;
-import moss.service.tokens.manager;
+import moss.service.context;
 
 const auto maxEvents = 60;
 
@@ -42,8 +41,9 @@ public final class AvalancheStats : StatsAPIv1
     /**
      * Construct new stats api impl
      */
-    @noRoute this() @safe
+    @noRoute this(ServiceContext context) @safe
     {
+        this.context = context;
         minfo = new MemoryInfo();
         cpufreqInfo = new CpufreqInfo();
         events.reserve(maxEvents);
@@ -61,16 +61,13 @@ public final class AvalancheStats : StatsAPIv1
         refresh();
     }
 
-    mixin AppAuthenticator;
+    mixin AppAuthenticatorContext;
 
     /**
      * Integrate REST app
      */
-    @noRoute void configure(URLRouter router, TokenManager tokenManager,
-            AccountManager accountManager) @safe
+    @noRoute void configure(URLRouter router) @safe
     {
-        this.accountManager = accountManager;
-        this.tokenManager = tokenManager;
         router.registerRestInterface(this);
         () @trusted { setTimer(1.seconds, () => refresh(), true); }();
     }
@@ -194,6 +191,5 @@ private:
 
     ulong numCPUEvents = 0;
 
-    TokenManager tokenManager;
-    AccountManager accountManager;
+    ServiceContext context;
 }

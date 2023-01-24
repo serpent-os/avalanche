@@ -20,14 +20,12 @@ import avalanche.web;
 import moss.db.keyvalue;
 import moss.db.keyvalue.errors;
 import moss.db.keyvalue.orm;
-import moss.service.accounts;
 import moss.service.models.endpoints;
 import moss.service.sessionstore;
-import moss.service.tokens;
-import moss.service.tokens.manager;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import vibe.d;
+import moss.service.context;
 
 /**
  * Main entry point from the server side, storing our
@@ -36,25 +34,10 @@ import vibe.d;
 public final class AvalancheApp
 {
     /**
-     * Construct a new SummitApp
+     * Construct a new app
      */
-    this(string rootDir) @safe
+    this(ServiceContext context) @safe
     {
-        immutable statePath = rootDir.buildPath("state");
-        immutable dbPath = statePath.buildPath("db");
-        dbPath.mkdirRecurse();
-
-        accountManager = new AccountManager(dbPath);
-
-        immutable driver = format!"lmdb://%s"(dbPath.buildPath("appDB"));
-        appDB = Database.open(driver, DatabaseFlags.CreateIfNotExists)
-            .tryMatch!((Database db) => db);
-        immutable dbErr = appDB.update((scope tx) => tx.createModel!(SummitEndpoint));
-        enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
-
-        tokenManager = new TokenManager(statePath);
-        logInfo(format!"Instance pubkey: %s"(tokenManager.publicKey));
-
         router = new URLRouter();
 
         /* Set up the server */
@@ -68,7 +51,7 @@ public final class AvalancheApp
         serverSettings.sessionIdCookie = "avalanche.session_id";
 
         /* Session persistence */
-        sessionStore = new DBSessionStore(dbPath.buildPath("session"));
+        sessionStore = new DBSessionStore(context.dbPath.buildPath("session"));
         serverSettings.sessionStore = sessionStore;
 
         /* File settings for /static/ serving */
@@ -76,16 +59,15 @@ public final class AvalancheApp
         fileSettings.serverPathPrefix = "/static";
         //fileSettings.maxAge = 30.days;
         fileSettings.options = HTTPFileServerOption.failIfNotFound;
-        router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
+        router.get("/static/*",
+                serveStaticFiles(context.rootDirectory.buildPath("static/"), fileSettings));
 
         /* Bring up our core routes */
-        auto bAPI = new BuildAPI(rootDir);
-        bAPI.configure(appDB, tokenManager, accountManager, router);
+        auto bAPI = new BuildAPI(context);
+        bAPI.configure(router);
 
-        auto web = new AvalancheWeb(accountManager, tokenManager, appDB);
+        auto web = new AvalancheWeb(context);
         web.configure(router);
-
-        router.rebuild();
     }
 
     /**
@@ -102,8 +84,7 @@ public final class AvalancheApp
     void stop() @safe
     {
         listener.stopListening();
-        appDB.close();
-        accountManager.close();
+        context.close();
     }
 
     /**
@@ -131,7 +112,5 @@ private:
     SessionStore sessionStore;
     HTTPServerSettings serverSettings;
     HTTPListener listener;
-    AccountManager accountManager;
-    TokenManager tokenManager;
-    Database appDB;
+    ServiceContext context;
 }

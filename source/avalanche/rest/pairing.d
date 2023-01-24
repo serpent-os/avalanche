@@ -26,6 +26,7 @@ import std.sumtype : tryMatch;
 import moss.db.keyvalue;
 import std.algorithm : map;
 import std.array : array;
+import moss.service.context;
 
 /**
  * Implements the enrolment API for Avalanche
@@ -33,17 +34,26 @@ import std.array : array;
 public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 {
 
-    mixin AppAuthenticator;
+    mixin AppAuthenticatorContext;
+
+    @disable this();
+
+    /** 
+     * Construct new pairing API
+     *
+     * Params:
+     *   context = global shared context
+     */
+    @noRoute this(ServiceContext context) @safe
+    {
+        this.context = context;
+    }
 
     /**
      * Integrate pairing API
      */
-    @noRoute void configure(Database appDB, TokenManager tokenManager,
-            AccountManager accountManager, URLRouter router) @safe
+    @noRoute void configure(URLRouter router) @safe
     {
-        this.appDB = appDB;
-        this.accountManager = accountManager;
-        this.tokenManager = tokenManager;
         router.registerRestInterface(this);
     }
 
@@ -54,7 +64,7 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
     {
         VisibleEndpoint[] items;
 
-        appDB.view((in tx) @safe {
+        context.appDB.view((in tx) @safe {
             auto d = tx.list!SummitEndpoint
                 .map!((e) {
                     return VisibleEndpoint(e.id, e.hostAddress, e.publicKey, e.status);
@@ -69,7 +79,7 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
     {
         /* Grab the token itself. */
         Token tk = Token.decode(request.issueToken).tryMatch!((Token tk) => tk);
-        enforceHTTP(tokenManager.verify(tk, request.issuer.publicKey),
+        enforceHTTP(context.tokenManager.verify(tk, request.issuer.publicKey),
                 HTTPStatus.forbidden, "Fraudulent packet");
         enforceHTTP(request.role == EnrolmentRole.Builder,
                 HTTPStatus.methodNotAllowed, "Avalanche only supports Builder role");
@@ -85,7 +95,7 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
         endpoint.hostAddress = request.issuer.url;
         endpoint.publicKey = request.issuer.publicKey;
         endpoint.bearerToken = request.issueToken;
-        immutable err = appDB.update((scope tx) => endpoint.save(tx));
+        immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
@@ -130,8 +140,8 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
         payload.admin = token.payload.admin;
         payload.uid = token.payload.uid;
         payload.act = token.payload.act;
-        Token refreshedToken = tokenManager.createAPIToken(payload);
-        return tokenManager.signToken(refreshedToken).tryMatch!((string s) => s);
+        Token refreshedToken = context.tokenManager.createAPIToken(payload);
+        return context.tokenManager.signToken(refreshedToken).tryMatch!((string s) => s);
     }
 
     override string refreshIssueToken(NullableToken token) @safe
@@ -142,7 +152,5 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 
 private:
 
-    AccountManager accountManager;
-    TokenManager tokenManager;
-    Database appDB;
+    ServiceContext context;
 }

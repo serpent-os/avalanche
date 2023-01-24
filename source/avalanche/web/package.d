@@ -28,6 +28,7 @@ import moss.db.keyvalue.orm;
 import moss.service.interfaces;
 import moss.service.models.bearertoken;
 import moss.service.models.endpoints;
+import moss.service.context;
 
 /**
  * Core entry into the Avalanche Web UI
@@ -37,16 +38,14 @@ import moss.service.models.endpoints;
 
     @disable this();
 
-    mixin AppAuthenticator;
+    mixin AppAuthenticatorContext;
 
     /**
-     * Construct new frontend with the given token manager
+     * Construct new frontend with the given context
      */
-    this(AccountManager accountManager, TokenManager tokenManager, Database appDB) @safe
+    this(ServiceContext context) @safe
     {
-        this.accountManager = accountManager;
-        this.tokenManager = tokenManager;
-        this.appDB = appDB;
+        this.context = context;
 
         scope mminfo = new MemoryInfo();
         totalRam = mminfo.total;
@@ -57,9 +56,8 @@ import moss.service.models.endpoints;
      */
     @noRoute void configure(URLRouter router) @safe
     {
-        auto acct = new AvalancheAccountsWeb(accountManager, tokenManager);
         auto root = router.registerWebInterface(this);
-        root.registerWebInterface(cast(AccountsWeb) acct);
+        root.registerWebInterface(cast(AccountsWeb) new AvalancheAccountsWeb(context));
     }
 
     /**
@@ -67,7 +65,7 @@ import moss.service.models.endpoints;
      */
     @anyAuth void index() @safe
     {
-        immutable publicKey = tokenManager.publicKey;
+        immutable publicKey = context.tokenManager.publicKey;
         render!("index.dt", publicKey, totalRam);
     }
 
@@ -80,15 +78,14 @@ import moss.service.models.endpoints;
     {
         /* Grab the endpoint. */
         SummitEndpoint endpoint;
-        immutable err = appDB.view((in tx) => endpoint.load(tx, _id));
+        immutable err = context.appDB.view((in tx) => endpoint.load(tx, _id));
         enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
 
         /* OK - first up we need a service account */
         immutable serviceUser = format!"%s%s"(serviceAccountPrefix, endpoint.id);
         Account serviceAccount;
-        accountManager.registerService(serviceUser, endpoint.hostAddress).match!((Account u) {
-            serviceAccount = u;
-        }, (DatabaseError e) {
+        context.accountManager.registerService(serviceUser,
+                endpoint.hostAddress).match!((Account u) { serviceAccount = u; }, (DatabaseError e) {
             throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
         });
 
@@ -101,8 +98,8 @@ import moss.service.models.endpoints;
         payload.sub = serviceAccount.username;
         payload.uid = serviceAccount.id;
         payload.act = serviceAccount.type;
-        Token bearer = tokenManager.createBearerToken(payload);
-        tokenManager.signToken(bearer).match!((TokenError err) {
+        Token bearer = context.tokenManager.createBearerToken(payload);
+        context.tokenManager.signToken(bearer).match!((TokenError err) {
             throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
         }, (string s) { encodedToken = s; });
 
@@ -111,7 +108,7 @@ import moss.service.models.endpoints;
         storedToken.id = serviceAccount.id;
         storedToken.rawToken = encodedToken;
         storedToken.expiryUTC = bearer.payload.exp;
-        immutable bErr = accountManager.setBearerToken(serviceAccount, storedToken);
+        immutable bErr = context.accountManager.setBearerToken(serviceAccount, storedToken);
         enforceHTTP(bErr.isNull, HTTPStatus.internalServerError, bErr.message);
 
         /* Set up a corresponding acceptance call */
@@ -119,7 +116,7 @@ import moss.service.models.endpoints;
         request.role = EnrolmentRole.Hub;
         request.issueToken = encodedToken;
         request.issuer.role = EnrolmentRole.Builder;
-        request.issuer.publicKey = tokenManager.publicKey;
+        request.issuer.publicKey = context.tokenManager.publicKey;
         // request.issuer.url = ;
 
         /* assuming this works, we'll update our own model now */
@@ -143,7 +140,7 @@ import moss.service.models.endpoints;
             endpoint.statusText = format!"%s"(rx.message);
         }
 
-        immutable uErr = appDB.update((scope tx) => endpoint.save(tx));
+        immutable uErr = context.appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(uErr.isNull, HTTPStatus.internalServerError, uErr.message);
 
         redirect("/");
@@ -153,7 +150,5 @@ import moss.service.models.endpoints;
 
 private:
 
-    AccountManager accountManager;
-    TokenManager tokenManager;
-    Database appDB;
+    ServiceContext context;
 }
