@@ -17,6 +17,7 @@ module main;
 
 import vibe.d;
 import avalanche.app;
+import avalanche.models;
 import moss.service.context;
 import moss.service.models;
 import std.path : absolutePath, asNormalizedPath;
@@ -42,7 +43,7 @@ int main(string[] args) @safe
     auto rootDir = absolutePath(".").asNormalizedPath.to!string;
 
     auto context = new ServiceContext(rootDir);
-    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(SummitEndpoint));
+    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(SummitEndpoint, Settings));
     enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
     auto app = new AvalancheApp(context);
