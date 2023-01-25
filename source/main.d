@@ -15,15 +15,17 @@
 
 module main;
 
-import vibe.d;
 import avalanche.app;
 import avalanche.models;
+import avalanche.setup;
+import libsodium;
 import moss.service.context;
 import moss.service.models;
+import moss.service.server;
+import std.conv : to;
 import std.path : absolutePath, asNormalizedPath;
 import std.string : format;
-import std.conv : to;
-import libsodium;
+import vibe.d;
 
 /**
  * Gets our builder up and running
@@ -42,15 +44,21 @@ int main(string[] args) @safe
     logInfo("Starting Avalanche");
     auto rootDir = absolutePath(".").asNormalizedPath.to!string;
 
-    auto context = new ServiceContext(rootDir);
-    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(SummitEndpoint, Settings));
-    enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
-
-    auto app = new AvalancheApp(context);
-    app.start();
+    auto server = new Server!(AvalancheSetup, AvalancheApp)(rootDir);
     scope (exit)
     {
-        app.stop();
+        server.close();
     }
+    server.serverSettings.port = 8082;
+    server.serverSettings.serverString = "avalanche/0.0.1";
+    server.serverSettings.sessionIdCookie = "avalanche.session_id";
+
+    immutable dbErr = server.context.appDB.update((scope tx) => tx.createModel!(SummitEndpoint, Settings));
+    enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
+
+    const settings = server.context.appDB.getSettings.tryMatch!((Settings s) => s);
+    server.mode = settings.setupComplete ? ApplicationMode.Main : ApplicationMode.Setup;
+    server.start();
+
     return runApplication();
 }

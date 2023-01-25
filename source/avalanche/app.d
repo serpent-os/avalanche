@@ -20,47 +20,26 @@ import avalanche.web;
 import moss.db.keyvalue;
 import moss.db.keyvalue.errors;
 import moss.db.keyvalue.orm;
+import moss.service.context;
 import moss.service.models.endpoints;
+import moss.service.server;
 import moss.service.sessionstore;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import vibe.d;
-import moss.service.context;
 
 /**
  * Main entry point from the server side, storing our
  * databases and interfaces.
  */
-public final class AvalancheApp
+public final class AvalancheApp : Application
 {
     /**
      * Construct a new app
      */
-    this(ServiceContext context) @safe
+    override void initialize(ServiceContext context) @safe
     {
-        router = new URLRouter();
-
-        /* Set up the server */
-        serverSettings = new HTTPServerSettings();
-        serverSettings.errorPageHandler = &errorHandler;
-        serverSettings.disableDistHost = true;
-        serverSettings.useCompressionIfPossible = true;
-        serverSettings.port = 8082;
-        serverSettings.sessionOptions = SessionOption.httpOnly;
-        serverSettings.serverString = "avalanche/0.0.1";
-        serverSettings.sessionIdCookie = "avalanche.session_id";
-
-        /* Session persistence */
-        sessionStore = new DBSessionStore(context.dbPath.buildPath("session"));
-        serverSettings.sessionStore = sessionStore;
-
-        /* File settings for /static/ serving */
-        fileSettings = new HTTPFileServerSettings();
-        fileSettings.serverPathPrefix = "/static";
-        //fileSettings.maxAge = 30.days;
-        fileSettings.options = HTTPFileServerOption.failIfNotFound;
-        router.get("/static/*",
-                serveStaticFiles(context.rootDirectory.buildPath("static/"), fileSettings));
+        _router = new URLRouter();
 
         /* Bring up our core routes */
         auto bAPI = new BuildAPI(context);
@@ -70,47 +49,15 @@ public final class AvalancheApp
         web.configure(router);
     }
 
-    /**
-     * Start the app properly
-     */
-    void start() @safe
-    {
-        listener = listenHTTP(serverSettings, router);
-    }
+    override void close() @safe {}
 
-    /**
-     * Correctly stop the application
-     */
-    void stop() @safe
+    override pure @property URLRouter router() @safe @nogc nothrow
     {
-        listener.stopListening();
-        context.close();
-    }
-
-    /**
-     * Handle erronous requests
-     */
-    void errorHandler(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) @safe
-    {
-        immutable bool needLogin = error.code == HTTPStatus.forbidden
-            && retrieveToken(req, res).isNull;
-
-        if (needLogin)
-        {
-            res.render!("errors/login.dt", req, error);
-        }
-        else
-        {
-            res.render!("errors/generic.dt", req, error);
-        }
+        return _router;
     }
 
 private:
 
-    URLRouter router;
-    HTTPFileServerSettings fileSettings;
-    SessionStore sessionStore;
-    HTTPServerSettings serverSettings;
-    HTTPListener listener;
+    URLRouter _router;
     ServiceContext context;
 }

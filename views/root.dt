@@ -9,23 +9,13 @@ html
     
         // TODO: Use a site prefix
         link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
-        link(rel="stylesheet", href="/static/custom.css")
     body.d-flex.flex-column.min-vh-100
-        include primary_navigation
-        block banner
-        main
-            div.container-fluid.py-0.px-0.my-0.mx-0
-                div.container-fluid.py-5
-                    block content
-                        h1 undefined content
-        include footer
+        block body
+            h1 add a body
 
-        block dialogs
-            // Add dialogs in this here
     
-
     // TODO: Use a site prefix
-    script(src="/static/tabler/js/tabler.min.js", defer, module)
+    script(src="/static/tabler/js/tabler.min.js", defer, async)
     script(src="/static/darkMode.js")
 
     block scripts
