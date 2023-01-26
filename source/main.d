@@ -53,7 +53,8 @@ int main(string[] args) @safe
     server.serverSettings.serverString = "avalanche/0.0.1";
     server.serverSettings.sessionIdCookie = "avalanche.session_id";
 
-    immutable dbErr = server.context.appDB.update((scope tx) => tx.createModel!(SummitEndpoint, Settings));
+    immutable dbErr = server.context.appDB.update(
+            (scope tx) => tx.createModel!(SummitEndpoint, Settings));
     enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
     const settings = server.context.appDB.getSettings.tryMatch!((Settings s) => s);
