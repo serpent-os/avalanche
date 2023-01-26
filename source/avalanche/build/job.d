@@ -25,6 +25,10 @@ import std.path : buildPath;
 import std.string : startsWith;
 import std.file : rmdirRecurse, mkdirRecurse, exists;
 import std.array : appender;
+import moss.service.context;
+import moss.service.models.endpoints;
+import moss.service.interfaces.summit;
+import moss.service.tokens.refresh;
 
 /**
  * Encapsulation of the entire build job from cloning
@@ -41,10 +45,12 @@ public final class BuildJob
     /**
      * Construct a new BuildJob from the given definition
      */
-    this(string rootDir, PackageBuild def) @safe
+    this(ServiceContext context, PackageBuild def, SummitEndpoint endpoint) @safe
     {
+        this.context = context;
         this.def = def;
-        this.rootDir = rootDir;
+        this.rootDir = context.rootDirectory;
+        this.endpoint = endpoint;
         cacheDir = rootDir.buildPath("avl", "cache");
         workDir = rootDir.buildPath("avl", "work");
         sourceDir = workDir.buildPath("source");
@@ -83,6 +89,7 @@ public final class BuildJob
         configureRoot();
         buildRecipe();
         publishArtefacts();
+        publishStatus();
     }
 
 private:
@@ -202,6 +209,34 @@ private:
         logInfo("Publishing artefacts");
     }
 
+    /** 
+     * Publish the build status to Summit
+     */
+    void publishStatus() @safe
+    {
+        if (!ensureEndpointUsable(endpoint, context))
+        {
+            logError(format!"Unable to publish status for %s"(def));
+            return;
+        }
+        auto api = new RestInterfaceClient!SummitAPI(endpoint.hostAddress);
+        api.requestFilter = (req) {
+            req.headers["Authorization"] = format!"Bearer %s"(endpoint.apiToken);
+        };
+
+        /**
+         * For now - everything fails.
+         */
+        try
+        {
+            api.buildFailed(def.buildID, NullableToken());
+        }
+        catch (Exception ex)
+        {
+            logError(ex.message);
+        }
+    }
+
     /**
      * Build definition
      */
@@ -231,4 +266,11 @@ private:
      * Where do we sync assets?
      */
     string assetDir;
+
+    ServiceContext context;
+
+    /** 
+     * From whence we came
+     */
+    SummitEndpoint endpoint;
 }

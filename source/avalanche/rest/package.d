@@ -23,6 +23,7 @@ import avalanche.rest.stats;
 import moss.service.interfaces.avalanche;
 import moss.db.keyvalue;
 import moss.service.context;
+import moss.service.models.endpoints;
 
 /**
  * Used in the statistics API
@@ -154,9 +155,17 @@ public final class BuildAPI : AvalancheAPI
     {
         enforceHTTP(!working, HTTPStatus.serviceUnavailable, "Sorry, already building something");
         enforceHTTP(request.collections.length > 0, HTTPStatus.badRequest, "Missing collections");
+        enforceHTTP(!token.isNull, HTTPStatus.forbidden);
+
+        SummitEndpoint endpoint;
+        immutable err = context.appDB.view((in tx) => endpoint.load(tx, token.payload.sub));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, "Request from unconfigured SummitEndpoint");
+
+        logInfo(format!"Got a build request from endpoint: %s"(endpoint));
+
         working = true;
         runTask({
-            auto b = new BuildJob(context.rootDirectory, request);
+            auto b = new BuildJob(context, request, endpoint);
             b.run();
             working = false;
         });
