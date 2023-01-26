@@ -98,6 +98,7 @@ import moss.service.context;
         payload.sub = endpoint.id;
         payload.uid = serviceAccount.id;
         payload.act = serviceAccount.type;
+        payload.aud = "summit";
         Token bearer = context.tokenManager.createBearerToken(payload);
         context.tokenManager.signToken(bearer).match!((TokenError err) {
             throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
