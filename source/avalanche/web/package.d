@@ -95,7 +95,7 @@ import moss.service.context;
         string encodedToken;
         TokenPayload payload;
         payload.iss = "avalanche";
-        payload.sub = serviceAccount.username;
+        payload.sub = endpoint.id;
         payload.uid = serviceAccount.id;
         payload.act = serviceAccount.type;
         Token bearer = context.tokenManager.createBearerToken(payload);
