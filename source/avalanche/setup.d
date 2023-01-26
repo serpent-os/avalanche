@@ -88,7 +88,6 @@ import vibe.d;
             throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
         });
 
-
         /* Now save the settings! */
         immutable err = context.appDB.update((scope tx) => appSettings.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);

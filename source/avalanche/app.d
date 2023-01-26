@@ -49,7 +49,9 @@ public final class AvalancheApp : Application
         web.configure(router);
     }
 
-    override void close() @safe {}
+    override void close() @safe
+    {
+    }
 
     override pure @property URLRouter router() @safe @nogc nothrow
     {
