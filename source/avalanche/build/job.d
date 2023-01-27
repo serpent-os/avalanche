@@ -85,17 +85,28 @@ public final class BuildJob
         workDir.mkdirRecurse();
         assetDir.mkdirRecurse();
 
-        ensureCached();
-        checkoutRecipe();
+        if (!ensureCached())
+        {
+            publishStatus(false);
+            return;
+        }
+        if (!checkoutRecipe())
+        {
+            publishStatus(false);
+            return;
+        }
         configureRoot();
-        buildRecipe();
-        publishArtefacts();
-        publishStatus();
+        if (!buildRecipe())
+        {
+            publishStatus(false);
+            return;
+        }
+        publishStatus(true);
     }
 
 private:
 
-    void ensureCached() @safe
+    bool ensureCached() @safe
     {
         scope (failure)
         {
@@ -125,12 +136,13 @@ private:
         string[string] env;
         auto p = spawnProcess(cmd, env, Config.none, NativePath(cmdWorkDir));
         auto statusCode = p.wait();
+        return statusCode == 0;
     }
 
     /**
      * Get the recipe
      */
-    void checkoutRecipe() @safe
+    bool checkoutRecipe() @safe
     {
         logInfo("Cloning to work tree");
         string[string] env;
@@ -138,10 +150,16 @@ private:
         auto p = spawnProcess(cmd, env, Config.none, NativePath(workDir));
         auto statusCode = p.wait();
 
+        if (statusCode != 0)
+        {
+            return false;
+        }
+
         logInfo(format!"Reset clone to ref %s"(def.commitRef));
         cmd = ["git", "reset", "--hard", def.commitRef,];
         auto pc = spawnProcess(cmd, env, Config.none, NativePath(sourceDir));
         statusCode = pc.wait();
+        return statusCode == true;
     }
 
     /**
@@ -176,7 +194,7 @@ private:
     /**
      * Actually *build* the recipe
      */
-    void buildRecipe() @safe
+    bool buildRecipe() @safe
     {
         logInfo(format!"Building recipe %s"(def.relativePath));
         string[string] env;
@@ -200,6 +218,7 @@ private:
         auto p = adoptProcessID(pid);
 
         auto statusCode = p.wait();
+        return statusCode == 0;
     }
 
     /**
@@ -213,7 +232,7 @@ private:
     /** 
      * Publish the build status to Summit
      */
-    void publishStatus() @safe
+    void publishStatus(bool succeeded) @safe
     {
         if (!ensureEndpointUsable(endpoint, context))
         {
@@ -230,7 +249,14 @@ private:
          */
         try
         {
-            api.buildFailed(def.buildID, NullableToken());
+            if (succeeded)
+            {
+                api.buildSucceeded(def.buildID, NullableToken());
+            }
+            else
+            {
+                api.buildFailed(def.buildID, NullableToken());
+            }
         }
         catch (Exception ex)
         {
