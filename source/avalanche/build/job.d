@@ -51,10 +51,11 @@ public final class BuildJob
         this.def = def;
         this.rootDir = context.rootDirectory;
         this.endpoint = endpoint;
-        cacheDir = rootDir.buildPath("avl", "cache");
-        workDir = rootDir.buildPath("avl", "work");
+
+        cacheDir = context.cachePath;
+        workDir = context.statePath.buildPath("work");
         sourceDir = workDir.buildPath("source");
-        assetDir = rootDir.buildPath("avl", "assets");
+        assetDir = rootDir.buildPath("public");
 
         /* Determine the cache portion of the URI */
         auto uri = URL(def.uri);
