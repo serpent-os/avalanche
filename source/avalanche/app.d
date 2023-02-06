@@ -47,6 +47,14 @@ public final class AvalancheApp : Application
 
         auto web = new AvalancheWeb(context);
         web.configure(router);
+
+        /* Serve asset path R/O over web */
+        auto s = new HTTPFileServerSettings();
+        s.options = HTTPFileServerOption.failIfNotFound;
+        s.serverPathPrefix = "/assets";
+        immutable assetPath = context.rootDirectory.buildPath("public");
+        assetPath.mkdirRecurse();
+        router.get("/assets/*", serveStaticFiles(assetPath, s));
     }
 
     override void close() @safe
