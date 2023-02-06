@@ -29,6 +29,7 @@ import moss.service.context;
 import moss.service.models.endpoints;
 import moss.service.interfaces.summit;
 import moss.service.tokens.refresh;
+import std.experimental.logger.core;
 
 /**
  * Encapsulation of the entire build job from cloning
@@ -55,7 +56,8 @@ public final class BuildJob
         cacheDir = context.cachePath;
         workDir = context.statePath.buildPath("work");
         sourceDir = workDir.buildPath("source");
-        assetDir = rootDir.buildPath("public");
+        /* Job specific path */
+        assetDir = rootDir.buildPath("public".buildPath(to!string(def.buildID)));
 
         /* Determine the cache portion of the URI */
         auto uri = URL(def.uri);
@@ -251,11 +253,11 @@ private:
         {
             if (succeeded)
             {
-                api.buildSucceeded(def.buildID, NullableToken());
+                api.buildSucceeded(def.buildID, null, NullableToken());
             }
             else
             {
-                api.buildFailed(def.buildID, NullableToken());
+                api.buildFailed(def.buildID, null, NullableToken());
             }
         }
         catch (Exception ex)
