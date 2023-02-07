@@ -232,14 +232,6 @@ private:
         return statusCode == 0;
     }
 
-    /**
-     * make the stones available
-     */
-    void publishArtefacts() @safe nothrow
-    {
-        logInfo("Publishing artefacts");
-    }
-
     /** 
      * Publish the build status to Summit
      */
