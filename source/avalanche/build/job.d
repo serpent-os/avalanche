@@ -17,18 +17,20 @@ module avalanche.build.job;
 
 public import avalanche.build : PackageBuild;
 
+import avalanche.models.settings;
+import moss.core.util;
 import moss.service.context;
-import moss.service.interfaces.summit;
+import moss.service.interfaces;
 import moss.service.models.endpoints;
 import moss.service.tokens.refresh;
-import std.algorithm : map;
-import std.array : appender;
+import std.algorithm : filter, map;
+import std.array : appender, array;
 import std.experimental.logger.core;
-import std.file : exists, mkdirRecurse, rmdirRecurse;
-import std.path : buildPath;
+import std.file : dirEntries, exists, mkdirRecurse, rmdirRecurse, SpanMode;
+import std.path : buildPath, baseName, dirName;
+import std.range : chain;
 import std.stdio : File;
-import std.string : join;
-import std.string : startsWith;
+import std.string : startsWith, join;
 import vibe.core.process;
 import vibe.d;
 
@@ -88,6 +90,12 @@ public final class BuildJob
         {
             workDir.rmdirRecurse();
         }
+
+        if (assetDir.exists)
+        {
+            assetDir.rmdirRecurse();
+        }
+
         workDir.mkdirRecurse();
         assetDir.mkdirRecurse();
 
@@ -247,6 +255,8 @@ private:
             req.headers["Authorization"] = format!"Bearer %s"(endpoint.apiToken);
         };
 
+        auto col = scanCollectables();
+
         /**
          * For now - everything fails.
          */
@@ -254,17 +264,48 @@ private:
         {
             if (succeeded)
             {
-                api.buildSucceeded(def.buildID, null, NullableToken());
+                api.buildSucceeded(def.buildID, col, NullableToken());
             }
             else
             {
-                api.buildFailed(def.buildID, null, NullableToken());
+                api.buildFailed(def.buildID, col, NullableToken());
             }
         }
         catch (Exception ex)
         {
             logError(ex.message);
         }
+    }
+
+    /** 
+     * Returns: A set of collectables for the build
+     */
+    Collectable[] scanCollectables() @safe
+    {
+        auto settings = context.appDB.getSettings().tryMatch!((Settings s) => s);
+
+        auto diskResults = () @trusted {
+            return assetDir.dirEntries(SpanMode.shallow, false).map!((n) => n.name).array;
+        }();
+        auto allResults = diskResults.chain([logFile]).filter!((f) => f.exists)
+            .map!((f) {
+                CollectableType t = CollectableType.Unknown;
+                if (f.endsWith(".bin"))
+                {
+                    t = CollectableType.Manifest;
+                }
+                else if (f.endsWith(".log") || f.endsWith(".log.gz"))
+                {
+                    t = CollectableType.Log;
+                }
+                else if (f.endsWith(".stone"))
+                {
+                    t = CollectableType.Package;
+                }
+                auto uri = format!"%s/assets/%s/%s"(settings.instanceURI, f.dirName, f.baseName);
+                return Collectable(t, uri, computeSHA256(t, true));
+            });
+        return () @trusted { return allResults.array; }();
     }
 
     /**
