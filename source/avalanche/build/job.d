@@ -17,19 +17,20 @@ module avalanche.build.job;
 
 public import avalanche.build : PackageBuild;
 
-import vibe.d;
-import vibe.core.process;
-import std.algorithm : map;
-import std.string : join;
-import std.path : buildPath;
-import std.string : startsWith;
-import std.file : rmdirRecurse, mkdirRecurse, exists;
-import std.array : appender;
 import moss.service.context;
-import moss.service.models.endpoints;
 import moss.service.interfaces.summit;
+import moss.service.models.endpoints;
 import moss.service.tokens.refresh;
+import std.algorithm : map;
+import std.array : appender;
 import std.experimental.logger.core;
+import std.file : exists, mkdirRecurse, rmdirRecurse;
+import std.path : buildPath;
+import std.stdio : File;
+import std.string : join;
+import std.string : startsWith;
+import vibe.core.process;
+import vibe.d;
 
 /**
  * Encapsulation of the entire build job from cloning
@@ -58,6 +59,9 @@ public final class BuildJob
         sourceDir = workDir.buildPath("source");
         /* Job specific path */
         assetDir = rootDir.buildPath("public".buildPath(to!string(def.buildID)));
+
+        /* Eventually compressed */
+        logFile = assetDir.buildPath("build.log");
 
         /* Determine the cache portion of the URI */
         auto uri = URL(def.uri);
@@ -198,6 +202,12 @@ private:
      */
     bool buildRecipe() @safe
     {
+        auto logOutputFile = File(logFile, "w");
+        scope (exit)
+        {
+            logOutputFile.close();
+        }
+
         logInfo(format!"Building recipe %s"(def.relativePath));
         string[string] env;
         string[] cmd = [
@@ -209,13 +219,12 @@ private:
         ];
 
         import std.process : spawnProcess, pipe;
-        import std.stdio : stdout;
 
         auto stdin_fake = pipe();
 
         auto pid = () @trusted {
-            return spawnProcess(cmd, stdin_fake.readEnd, stdout, stdout, env,
-                    Config.none, sourceDir);
+            return spawnProcess(cmd, stdin_fake.readEnd, logOutputFile,
+                    logOutputFile, env, Config.none, sourceDir);
         }();
         auto p = adoptProcessID(pid);
 
@@ -295,6 +304,8 @@ private:
      * Where do we sync assets?
      */
     string assetDir;
+
+    string logFile;
 
     ServiceContext context;
 
