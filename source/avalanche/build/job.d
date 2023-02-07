@@ -173,7 +173,7 @@ private:
         cmd = ["git", "reset", "--hard", def.commitRef,];
         auto pc = spawnProcess(cmd, env, Config.none, NativePath(sourceDir));
         statusCode = pc.wait();
-        return statusCode == true;
+        return statusCode == 0;
     }
 
     /**
