@@ -292,7 +292,11 @@ private:
                 CollectableType t = CollectableType.Unknown;
                 if (f.endsWith(".bin"))
                 {
-                    t = CollectableType.Manifest;
+                    t = CollectableType.BinaryManifest;
+                }
+                else if (f.endsWith(".jsonc"))
+                {
+                    t = CollectableType.JSONManifest;
                 }
                 else if (f.endsWith(".log") || f.endsWith(".log.gz"))
                 {
