@@ -302,7 +302,8 @@ private:
                 {
                     t = CollectableType.Package;
                 }
-                auto uri = format!"%s/assets/%s/%s"(settings.instanceURI, f.dirName, f.baseName);
+                auto uri = format!"%s/assets/%s/%s"(settings.instanceURI,
+                    f.dirName.baseName, f.baseName);
                 return Collectable(t, uri, computeSHA256(f, true));
             });
         return () @trusted { return allResults.array; }();
