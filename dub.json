@@ -11,9 +11,6 @@
 		"vibe-d": ">=0.9.5",
 		"vibe-d:tls": ">=0.9.5",
 		"openssl": "~>3.1",
-		"moss-core": {
-			"path": "../moss-core"
-        },
 		"moss-service": {
 			"path": "../moss-service"
 		}
