@@ -26,6 +26,7 @@ import std.conv : to;
 import std.path : absolutePath, asNormalizedPath;
 import std.string : format;
 import vibe.d;
+import std.getopt;
 
 /**
  * Gets our builder up and running
@@ -36,6 +37,20 @@ import vibe.d;
  */
 int main(string[] args) @safe
 {
+    ushort portNumber = 8082;
+    string[] addresses = ["::", "0.0.0.0"];
+
+    auto opts = () @trusted {
+        return getopt(args, config.bundling, "p|port", "Specific port to serve on",
+                &portNumber, "a|address", "Host address to bind to", &addresses);
+    }();
+
+    if (opts.helpWanted)
+    {
+        defaultGetoptPrinter("avalanche", opts.options);
+        return 1;
+    }
+
     logInfo("Initialising libsodium");
     immutable rc = () @trusted { return sodium_init(); }();
     enforce(rc == 0, "Failed to initialise libsodium");
@@ -49,10 +64,10 @@ int main(string[] args) @safe
     {
         server.close();
     }
-    server.serverSettings.port = 8082;
+    server.serverSettings.port = portNumber;
     server.serverSettings.serverString = "avalanche/0.0.1";
     server.serverSettings.sessionIdCookie = "avalanche.session_id";
-
+    server.serverSettings.bindAddresses = addresses;
     immutable dbErr = server.context.appDB.update(
             (scope tx) => tx.createModel!(SummitEndpoint, Settings));
     enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
