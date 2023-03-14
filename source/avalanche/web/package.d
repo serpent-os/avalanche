@@ -73,8 +73,8 @@ import moss.service.context;
      * Admin accepting enrolment
      */
     @path("avl/accept/:id")
-    @auth(Role.notExpired & Role.web & Role.accessToken & Role.userAccount) @method(HTTPMethod.GET) void acceptEnrolment(
-            string _id) @safe
+    @auth(Role.notExpired & Role.web & Role.accessToken & Role.userAccount & Role.admin) @method(
+            HTTPMethod.GET) void acceptEnrolment(string _id) @safe
     {
         /* Grab the endpoint. */
         SummitEndpoint endpoint;
