@@ -63,7 +63,7 @@ import moss.service.context;
     /**
      * Render the landing page
      */
-    @anyAuth void index() @safe
+    @noAuth void index() @safe
     {
         immutable publicKey = context.tokenManager.publicKey;
         render!("index.dt", publicKey, totalRam);

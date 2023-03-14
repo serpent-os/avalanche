@@ -1,0 +1,4 @@
+// need admin privs.
+div.empty
+    div.empty-title You must be logged in to view this page
+    div.empty-subtitle Visit the #[a(href="/accounts/login") login] page and try again

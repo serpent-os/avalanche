@@ -6,16 +6,21 @@ block title
 block content
     div.container
 
-        div.row.pb-4
-            include widgets/cpu
-    
-        div.row.pb-4
-            include widgets/memory
-            include widgets/disk
+        - if (req.session && req.session.get!string("accountName", null) !is null)
+        - {
+            div.row.pb-4
+                include widgets/cpu
+        
+            div.row.pb-4
+                include widgets/memory
+                include widgets/disk
 
-        div.row
-            include widgets/pairing
-            include widgets/sysinfo
+            div.row
+                include widgets/pairing
+                include widgets/sysinfo
+        - } else {
+            include widgets/admin
+        - }
 
 block scripts
     script(src="https://cdn.jsdelivr.net/npm/apexcharts", module)
