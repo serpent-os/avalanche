@@ -1,0 +1,5 @@
+div.col-12.col-sm-12.col-lg-12
+    div.card
+        div.card-body
+            h5.card-title.opacity-75 Processor
+            div.card-lg.chart#cpuChart(avalanche:data-source="cpu", avalanche:data-form="line", avalanche:data-frequency="1000", avalanche:data-total=5000000)

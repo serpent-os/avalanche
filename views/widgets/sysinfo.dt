@@ -1,0 +1,26 @@
+div.col-4.col-sm-4.col-lg-4
+    - import moss.core.cpuinfo;
+    - import moss.core.sizing : formattedSize;
+    - import core.cpuid;
+    - import std.string : replace;
+    - auto cpu = new CpuInfo();
+    div.card
+        div.card-header
+            h3.card-title System Information
+        div.card-body
+            div.datagrid-item.row.pb-2
+                div.datagrid-title CPU
+                div.datagrid-content!=cpu.modelName().replace("(TM)", "&trade;").replace("(R)", "&reg;")
+            div.datagrid-item.row.pb-2
+                div.datagrid-title Cores / Threads
+                div.datagrid-content=cpu.numCoresThreads
+            div.datagrid-item.row.pb-2
+                div.datagrid-title RAM
+                div.datagrid-content=formattedSize(totalRam)
+            - string[] features = cpu.ISALevels;
+            div.datagrid-item.row.pb-2
+                div.datagrid-title Features
+                div.dagagrid-content
+                    - foreach (f; features) {
+                        span.status.m-1 #{f}
+                    - }

@@ -1,0 +1,5 @@
+div.col-8.col-sm-8.col-lg-8
+    div.card
+        div.card-body
+            h5.card-title.opacity-75 Memory
+            div.card-lg.chart#memoryChart(avalanche:data-source="memory", avalanche:data-form="area", avalanche:data-frequency="1000", avalanche:data-total=totalRam)

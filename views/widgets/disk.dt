@@ -1,0 +1,5 @@
+div.col-4.col-sm-4.col-lg-4
+    div.card
+        div.card-body
+            h5.card-title.opacity-75 Disk
+            div.card-lg.chart#diskChart(avalanche:data-source="disk", avalanche:data-form="pie", avalanche:data-frequency="5000")
