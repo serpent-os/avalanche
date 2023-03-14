@@ -41,6 +41,8 @@ public final class AvalancheApp : Application
     {
         _router = new URLRouter();
 
+        context.accountManager.userRegistrationsAllowed = false;
+
         /* Bring up our core routes */
         auto bAPI = new BuildAPI(context);
         bAPI.configure(router);

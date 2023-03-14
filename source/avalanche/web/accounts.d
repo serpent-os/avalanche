@@ -31,6 +31,7 @@ import vibe.d;
     this(ServiceContext context) @safe
     {
         super(context.accountManager, context.tokenManager, "avalanche");
+        this.context = context;
     }
 
     /**
@@ -46,6 +47,12 @@ import vibe.d;
      */
     override void renderRegister() @safe
     {
+        enforceHTTP(context.accountManager.userRegistrationsAllowed,
+                HTTPStatus.forbidden, "User registration not permitted");
         render!"accounts/register.dt";
     }
+
+private:
+
+    ServiceContext context;
 }
