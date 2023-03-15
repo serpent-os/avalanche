@@ -16,3 +16,4 @@ avalanche-test-*
 dub.selections.json
 /db
 state
+public
