@@ -255,6 +255,7 @@ private:
             req.headers["Authorization"] = format!"Bearer %s"(endpoint.apiToken);
         };
 
+        compressLogFile();
         auto col = scanCollectables();
 
         /**
@@ -311,6 +312,16 @@ private:
                 return Collectable(t, uri, computeSHA256(f, true));
             });
         return () @trusted { return allResults.array; }();
+    }
+
+    void compressLogFile() @safe
+    {
+        string[] cmd = ["gzip", "-9", logFile];
+        auto ret = execute(cmd);
+        if (ret.status != 0)
+        {
+            logError(format!"Failed to run gzip on logfile: %s"(ret.output));
+        }
     }
 
     /**
