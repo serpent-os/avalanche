@@ -17,18 +17,19 @@ module avalanche.web;
 
 import vibe.d;
 
-import moss.service.tokens.manager;
-import moss.core.memoryinfo;
-import moss.service.accounts;
-import moss.service.tokens;
-import moss.service.tokens.manager;
+import avalanche.models.settings;
 import avalanche.web.accounts;
-import moss.db.keyvalue;
+import moss.core.memoryinfo;
 import moss.db.keyvalue.orm;
+import moss.db.keyvalue;
+import moss.service.accounts;
+import moss.service.context;
 import moss.service.interfaces;
 import moss.service.models.bearertoken;
 import moss.service.models.endpoints;
-import moss.service.context;
+import moss.service.tokens.manager;
+import moss.service.tokens.manager;
+import moss.service.tokens;
 
 /**
  * Core entry into the Avalanche Web UI
@@ -66,7 +67,8 @@ import moss.service.context;
     @noAuth void index() @safe
     {
         immutable publicKey = context.tokenManager.publicKey;
-        render!("index.dt", publicKey, totalRam);
+        const settings = context.appDB.getSettings().tryMatch!((Settings s) => s);
+        render!("index.dt", publicKey, settings, totalRam);
     }
 
     /**
