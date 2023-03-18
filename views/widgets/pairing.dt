@@ -3,6 +3,8 @@ div.col-8.col-sm-8.col-lg-8
         div.card-header
             h3.card-title Connections
         div.card-body
-            p To pair this builder with Summit, you'll need this public key
-            pre #{publicKey}
+            h4 Public URI for this builder (<i>#{settings.instanceDescription}</i>)
+            p <code>#{settings.instanceURI}</code>
+            h4 To pair this builder with Summit, you'll need this public key
+            p <code>#{publicKey}</code>
             div.list-group.list-group-flush#connectionList
