@@ -17,7 +17,7 @@ module avalanche.rest.pairing;
 
 import vibe.d;
 
-import moss.service.models.endpoints;
+import moss.service.models;
 import moss.service.interfaces;
 import moss.service.accounts;
 import moss.service.tokens;
@@ -146,8 +146,30 @@ public final class AvalanchePairingAPI : ServiceEnrolmentAPI
 
     override string refreshIssueToken(NullableToken token) @safe
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented,
-                "refreshIssueToken(): Not yet implemented");
+        string newToken;
+
+        enforceHTTP(!token.isNull, HTTPStatus.forbidden);
+        context.accountManager.getUser(token.payload.uid).match!((Account account) {
+            TokenPayload payload;
+            payload.iss = "summit";
+            payload.sub = token.payload.sub;
+            payload.aud = token.payload.aud;
+            payload.admin = context.accountManager.accountInGroup(account.id,
+                BuiltinGroups.Admin).tryMatch!((bool b) => b);
+            payload.uid = account.id;
+            payload.act = account.type;
+            Token refreshedToken = context.tokenManager.createBearerToken(payload);
+            newToken = context.tokenManager.signToken(refreshedToken).tryMatch!((string s) => s);
+            BearerToken bt;
+            bt.rawToken = newToken;
+            bt.id = account.id;
+            bt.expiryUTC = refreshedToken.payload.exp;
+            auto err = context.accountManager.setBearerToken(account, bt);
+            enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
+        }, (DatabaseError err) {
+            throw new HTTPStatusException(HTTPStatus.forbidden, err.message);
+        });
+        return newToken;
     }
 
 private:
