@@ -23,10 +23,10 @@ import moss.service.context;
 import moss.service.models;
 import moss.service.server;
 import std.conv : to;
+import std.getopt;
 import std.path : absolutePath, asNormalizedPath;
 import std.string : format;
 import vibe.d;
-import std.getopt;
 
 /**
  * Gets our builder up and running
@@ -38,11 +38,13 @@ import std.getopt;
 int main(string[] args) @safe
 {
     ushort portNumber = 8082;
-    string[] addresses = ["::", "0.0.0.0"];
+    /* It's safer to set this to localhost and allow the user to override (not append!) */
+    static string[] defaultAddress = ["localhost"];
+    string[] cmdLineAddresses;
 
     auto opts = () @trusted {
         return getopt(args, config.bundling, "p|port", "Specific port to serve on",
-                &portNumber, "a|address", "Host address to bind to", &addresses);
+                &portNumber, "a|address", "Host address to bind to", &cmdLineAddresses);
     }();
 
     if (opts.helpWanted)
@@ -66,7 +68,7 @@ int main(string[] args) @safe
     server.serverSettings.port = portNumber;
     server.serverSettings.serverString = "avalanche/0.0.1";
     server.serverSettings.sessionIdCookie = "avalanche.session_id";
-    server.serverSettings.bindAddresses = addresses;
+    server.serverSettings.bindAddresses = cmdLineAddresses.empty ? defaultAddress : cmdLineAddresses;
     immutable dbErr = server.context.appDB.update(
             (scope tx) => tx.createModel!(SummitEndpoint, Settings));
     enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
