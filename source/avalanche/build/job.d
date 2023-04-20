@@ -255,7 +255,7 @@ private:
             req.headers["Authorization"] = format!"Bearer %s"(endpoint.apiToken);
         };
 
-        compressLogFile();
+        () @trusted { compressFile(logFile); }();
         auto col = scanCollectables();
 
         /**
@@ -314,13 +314,33 @@ private:
         return () @trusted { return allResults.array; }();
     }
 
-    void compressLogFile() @safe
+    void compressFile(in string filepath) @system
     {
-        string[] cmd = ["gzip", "-9", logFile];
-        auto ret = execute(cmd);
-        if (ret.status != 0)
+        import std.file : exists, read, remove, write;
+        import std.string : format;
+        import std.zlib : Compress, HeaderFormat;
+
+        if (!filepath.exists)
         {
-            logError(format!"Failed to run gzip on logfile: %s"(ret.output));
+            logError(format!"compressFile: %s doesn't exist"(filepath));
+        }
+
+        immutable ext = ".gz";
+        immutable compressedFile = format!"%s%s"(filepath, ext);
+
+        Compress cmp = new Compress(9, HeaderFormat.gzip);
+        auto file = read(filepath);
+        auto compressedPage = cmp.compress(file) ~ cmp.flush();
+
+        write(compressedFile, compressedPage);
+
+        if (compressedFile.exists)
+        {
+            remove(filepath);
+        }
+        else
+        {
+            logError(format!"Failed to compress %s with gzip"(logFile));
         }
     }
 
