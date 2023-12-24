@@ -220,7 +220,8 @@ private:
         string[string] env;
         string[] cmd = [
             "sudo",
-            //"-n",
+            /* build as pure background priority */
+            "nice", "-n20",
             "boulder", "build", "-o", assetDir, "-p", "avalanche", "-C",
             workDir, "-a", def.buildArchitecture, "-j", "0", "--",
             def.relativePath,
