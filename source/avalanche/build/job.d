@@ -185,7 +185,7 @@ private:
 
         immutable collections = def.collections.map!((c) {
             return format!"
-        - %s:
+        %s:
             uri: \"%s\"
             description: \"%s\"
             priority: %s
@@ -193,11 +193,11 @@ private:
         }).join("\n");
 
         immutable boulderConf = format!"
-- avalanche:
-    collections:
+avalanche:
+    repositories:
 %s"(collections);
 
-        immutable confDir = workDir.buildPath("etc", "boulder", "profiles.conf.d");
+        immutable confDir = workDir.buildPath("etc", "boulder", "profile.d");
         immutable confFile = confDir.buildPath("avalanche.conf");
         confDir.mkdirRecurse();
         import std.file : write;
@@ -222,8 +222,8 @@ private:
             "sudo",
             /* build as pure background priority */
             "nice", "-n20",
-            "boulder", "build", "-o", assetDir, "-p", "avalanche", "-C",
-            workDir, "-a", def.buildArchitecture, "-j", "0", "--",
+            "boulder", "build", "-o", assetDir, "-p", "avalanche", "--config-dir",
+            workDir, "--update", "--",
             def.relativePath,
         ];
 
