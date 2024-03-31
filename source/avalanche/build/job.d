@@ -227,13 +227,12 @@ avalanche:
             def.relativePath,
         ];
 
-        import std.process : spawnProcess, pipe;
-
-        auto stdin_fake = pipe();
+        import std.process : spawnProcess;
+        import std.stdio : stdin;
 
         auto pid = () @trusted {
-            return spawnProcess(cmd, stdin_fake.readEnd, logOutputFile,
-                    logOutputFile, env, Config.none, sourceDir);
+            return spawnProcess(cmd, stdin, logOutputFile,
+                    logOutputFile, env, Config.retainStderr | Config.retainStdin | Config.retainStdout, sourceDir);
         }();
         auto p = adoptProcessID(pid);
 
