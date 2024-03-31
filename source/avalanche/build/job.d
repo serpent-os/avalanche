@@ -198,7 +198,7 @@ avalanche:
 %s"(collections);
 
         immutable confDir = workDir.buildPath("etc", "boulder", "profile.d");
-        immutable confFile = confDir.buildPath("avalanche.conf");
+        immutable confFile = confDir.buildPath("avalanche.yaml");
         confDir.mkdirRecurse();
         import std.file : write;
 
@@ -223,7 +223,7 @@ avalanche:
             /* build as pure background priority */
             "nice", "-n20",
             "boulder", "build", "-o", assetDir, "-p", "avalanche", "--config-dir",
-            workDir, "--update", "--",
+            workDir.buildPath("etc", "boulder"), "--update", "--",
             def.relativePath,
         ];
 
