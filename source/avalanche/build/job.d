@@ -183,9 +183,9 @@ private:
     {
         logInfo("Configuring recipe root");
 
-        immutable collections = def.collections.map!((c) {
+        immutable repositories = def.collections.map!((c) {
             return format!"
-        - %s:
+        %s:
             uri: \"%s\"
             description: \"%s\"
             priority: %s
@@ -193,12 +193,12 @@ private:
         }).join("\n");
 
         immutable boulderConf = format!"
-- avalanche:
-    collections:
-%s"(collections);
+avalanche:
+    repositories:
+%s"(repositories);
 
-        immutable confDir = workDir.buildPath("etc", "boulder", "profiles.conf.d");
-        immutable confFile = confDir.buildPath("avalanche.conf");
+        immutable confDir = workDir.buildPath("etc", "boulder", "profile.d");
+        immutable confFile = confDir.buildPath("avalanche.yaml");
         confDir.mkdirRecurse();
         import std.file : write;
 
@@ -221,9 +221,8 @@ private:
         string[] cmd = [
             "sudo",
             /* build as pure background priority */
-            "nice", "-n20",
-            "boulder", "build", "-o", assetDir, "-p", "avalanche", "-C",
-            workDir, "-a", def.buildArchitecture, "-j", "0", "--",
+            "nice", "-n20", "boulder", "build", "-o", assetDir, "-p", "avalanche",
+            "-C", workDir, "-a", def.buildArchitecture, "-j", "0", "--",
             def.relativePath,
         ];
 
