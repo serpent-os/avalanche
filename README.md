@@ -1,3 +1,7 @@
+**This project is no longer active**
+
+---
+
 # avalanche
 
 Expose [boulder](https://github.com/serpent-os/boulder/) as a service for the build infrastructure of Serpent OS. This software makes use of `vibe.d` to provide a sane RPC API for build management.
